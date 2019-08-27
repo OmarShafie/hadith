@@ -259,7 +259,7 @@
         data.addColumn('string', 'To');
         data.addColumn('number', 'Weight');
         var tempData = [];
-        for(var i = 1; i < 3000;i++)
+        for(var i = 1; i < hadithData.length;i++)
         {
           hadith++;
           row =0;
