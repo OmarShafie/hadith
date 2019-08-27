@@ -250,16 +250,15 @@
       function process(hadithData, narratorsData){
 
         console.log("Start Processing...");
+        console.log(narratorsData);
         var row =0;
         var hadith=0;
-        var name1;
-        var name2;
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'From');
         data.addColumn('string', 'To');
         data.addColumn('number', 'Weight');
         var tempData = [];
-        for(var i = 1; i < hadithData.length;i++)
+        for(var i = 1; i < 2000;i++)
         {
           hadith++;
           row =0;
@@ -267,18 +266,22 @@
              var chain = hadithData[i][6].split(", ");
              for(var n = 0; n < chain.length -1;n++)
              {
-               var narrator = lookupNarrator(chain[n]);
-               if(narrator) {
-                  var teachers = narrator[10];
-                  if (teachers.includes(chain[n+1])) {
-                    name1 = lookupNarrator(chain[n])[1].slice(0,20);
-                    name2 = lookupNarrator(chain[n+1])[1].slice(0,20);
-                    updateCount(tempData, name1, name2);
-                 row++;
-                  }
+               var student = lookupNarrator(chain[n]);
+               var teacher = lookupNarrator(chain[n+1]);
+               if(!student) {
+                 
+                 console.log("narrator is missing", chain[n]);
+               } else if (!teacher) {
+                   
+                 console.log("narrator is missing", chain[n+1]);
                }
                else{
-                 console.log("narrator is missing", chain[n]);
+                  var teachers = student[10];
+                  var students = teacher[11];
+                  if (teachers.includes(chain[n+1]) && students.includes(chain[n])) {
+                    updateCount(tempData, student[1].slice(0,20), teacher[1].slice(0,20));
+                 row++;
+                  }
                }
           }
         }
