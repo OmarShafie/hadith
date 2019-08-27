@@ -1,10 +1,3 @@
-<html>
-  <head>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.0.2/papaparse.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.0.2/papaparse.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script>
       var hadithURL = "https://raw.githubusercontent.com/OmarShafie/VizHadith/master/all_hadiths_clean.csv";
       var narratorsURL = "https://raw.githubusercontent.com/OmarShafie/VizHadith/master/all_rawis.csv";
 
@@ -239,17 +232,34 @@
         return element[0] == index;
       });
       }
+      function updateCount(data, source, target){
+        var found;
+        var i = 0; 
+        
+        while(!found && i < data.length){
+          if(data[i][0] == source && data[i][1] == target){
+            found = true;
+            data[i][2]++;
+          }
+          i++;
+        }
+        if (!found){
+          data.push([source, target, 1]);
+        }
+      }
       function process(hadithData, narratorsData){
 
         console.log("Start Processing...");
         var row =0;
         var hadith=0;
+        var name1;
+        var name2;
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'From');
         data.addColumn('string', 'To');
         data.addColumn('number', 'Weight');
-
-        for(var i = 1; i < hadithData.length;i++)
+        var tempData = [];
+        for(var i = 1; i < 3000;i++)
         {
           hadith++;
           row =0;
@@ -261,147 +271,18 @@
                if(narrator) {
                   var teachers = narrator[10];
                   if (teachers.includes(chain[n+1])) {
-                    data.addRow([lookupNarrator(chain[n])[1].slice(0,20), lookupNarrator(chain[n+1])[1].slice(0,20),1]);
+                    name1 = lookupNarrator(chain[n])[1].slice(0,20);
+                    name2 = lookupNarrator(chain[n+1])[1].slice(0,20);
+                    updateCount(tempData, name1, name2);
                  row++;
                   }
-                 else{
-                  console.log("narrator is missing", chain[n]);
-                 }
+               }
+               else{
+                 console.log("narrator is missing", chain[n]);
                }
           }
         }
       }
+      data.addRows(tempData);
       google.charts.setOnLoadCallback(drawChart(data));
       }
-    </script>
-    <script type="text/javascript">
-      google.charts.load('current', {'packages':['sankey']});
-      function drawChart(data) {
-        /*var data = new google.visualization.DataTable();
-        data.addColumn('string', 'From');
-        data.addColumn('string', 'To');
-        data.addColumn('number', 'Weight');
-        data.addRows([
-          [ 'سالم بن عبد الله بن عمر', 'عبد الله بن عمر', 2946],
-          [ 'عبيد الله بن عبد الله بن عتبة', 'ابن عباس', 1093],
-          [ 'سعيد بن المسيب', 'أبو هريرة', 2009],
-          [ 'الأعرج', 'أبو هريرة', 1948],
-          [ 'أبو سلمة بن عبد الرحمن بن عوف', 'أبو هريرة', 3649],
-          [ 'أبو سلمة بن عبد الرحمن بن عوف', 'عائشة', 877],
-          [ 'عمرة بنت عبد الرحمن', 'عائشة', 1000],
-          [ 'عروة بن الزبير', 'عائشة', 5815],
-          
-          [ 'الزهري', 'أنس بن مالك', 961],
-          [ 'الزهري', 'سعيد بن المسيب', 2563],
-          [ 'الزهري', 'أبو سلمة بن عبد الرحمن بن عوف', 2020],
-          [ 'الزهري', 'الأعرج', 177],
-          [ 'الزهري', 'سالم بن عبد الله بن عمر', 2103],
-          [ 'الزهري', 'عبد الله بن عمر', 53],
-          [ 'الزهري', 'عروة بن الزبير', 2990],
-          [ 'الزهري', 'عمرة بنت عبد الرحمن', 183],
-          [ 'الزهري', 'عبيد الله بن عبد الله بن عتبة', 1693],
-          
-          [ 'مالك بن أنس', 'الزهري', 1792],
-          [ 'سفيان بن عيينة', 'الزهري', 2368],
-          [ 'معمر بن راشد الأزدي', 'الزهري', 4758],
-          [ 'عقيل بن خالد', 'الزهري', 1026],
-          [ 'يونس بن يزيد الأيلي', 'الزهري', 2480],
-          [ 'شعيب بن أبي حمزة', 'الزهري', 801],
-          
-          [ 'قتيبة بن سعيد', 'مالك بن أنس', 573],
-          [ 'قتيبة بن سعيد', 'سفيان بن عيينة', 400],
-          [ 'قتيبة بن سعيد', 'الليث بن سعد', 1168],
-          
-          [ 'زهير بن حرب', 'سفيان بن عيينة', 418],
-          
-          [ 'أحمد بن حنبل', 'سفيان بن عيينة', 839],
-          [ 'أحمد بن حنبل', 'عبد الرزاق الصنعاني', 1870],
-          
-          [ 'عبد الرزاق الصنعاني', 'معمر بن راشد الأزدي', 10848],
-          [ 'عبد الله بن المبارك', 'معمر بن راشد الأزدي', 493],
-          
-          [ 'عبد الله بن المبارك', 'يونس بن يزيد الأيلي', 363],
-          [ 'عبد الله بن وهب', 'يونس بن يزيد الأيلي', 1452],
-          
-          [ 'الليث بن سعد', 'يونس بن يزيد الأيلي', 158],
-          [ 'الليث بن سعد', 'عقيل بن خالد', 724],
-          
-          [ 'الحكم بن نافع', 'شعيب بن أبي حمزة', 774],
-          
-          [ 'إسحاق بن راهويه', 'عبد الرزاق الصنعاني', 1],
-          [ 'الحسن بن علي الخلال', 'عبد الرزاق الصنعاني', 1],
-          
-          [ 'أبو كريب محمد بن العلاء', 'عبد الله بن المبارك', 54],
-          
-          [ 'أبو الطاهر بن السرح', 'عبد الله بن وهب', 	602],
-          [ 'هارون بن سعيد الأيلي', 'عبد الله بن وهب', 	170],
-          [ 'حرملة بن يحيى النجيبي', 'عبد الله بن وهب', 866],
-          
-          [ 'البخاري', 'قتيبة بن سعيد', 325],
-          [ 'مسلم', 'قتيبة بن سعيد', 689],
-          [ 'أبو داود', 'قتيبة بن سعيد', 266],
-          [ 'النسائي', 'قتيبة بن سعيد', 1938],
-          [ 'الترمذي', 'قتيبة بن سعيد', 667],
-          
-          
-          [ 'البخاري', 'زهير بن حرب', 12],
-          [ 'مسلم', 'زهير بن حرب', 764],
-          [ 'أبو داود', 'زهير بن حرب', 52],
-          [ 'ابن ماجه', 'زهير بن حرب', 2],
-          
-          
-          [ 'البخاري', 'أحمد بن حنبل', 2],
-          [ 'مسلم', 'أحمد بن حنبل', 21],
-          [ 'أبو داود', 'أحمد بن حنبل', 309],
-          
-          [ 'مسلم', 'الحسن بن علي الخلال', 	108],
-          [ 'أبو داود', 'الحسن بن علي الخلال', 	178],
-          [ 'الترمذي', 'الحسن بن علي الخلال', 95],
-          [ 'ابن ماجه', 'الحسن بن علي الخلال', 	24],
-          
-          [ 'البخاري', 'أبو كريب محمد بن العلاء', 53],
-          [ 'مسلم', 'أبو كريب محمد بن العلاء', 514],
-          [ 'أبو داود', 'أبو كريب محمد بن العلاء', 133],
-          [ 'النسائي', 'أبو كريب محمد بن العلاء', 128],
-          [ 'الترمذي', 'أبو كريب محمد بن العلاء', 189],
-          [ 'ابن ماجه', 'أبو كريب محمد بن العلاء', 104],
-          
-          [ 'مسلم', 'أبو الطاهر بن السرح', 237],
-          [ 'أبو داود', 'أبو الطاهر بن السرح', 139],
-          [ 'النسائي', 'أبو الطاهر بن السرح', 137],
-          [ 'ابن ماجه', 'أبو الطاهر بن السرح', 26],
-          
-          [ 'مسلم', 'هارون بن سعيد الأيلي', 114],
-          [ 'أبو داود', 'هارون بن سعيد الأيلي', 4],
-          [ 'النسائي', 'هارون بن سعيد الأيلي', 16],
-          [ 'ابن ماجه', 'هارون بن سعيد الأيلي', 6],
-          
-          [ 'مسلم', 'حرملة بن يحيى النجيبي', 271],
-          [ 'ابن ماجه', 'حرملة بن يحيى النجيبي', 	50],
-          
-          [ 'البخاري', 'الحكم بن نافع', 	289],
-          
-        ]);*/
-        // Sets chart options.
-        var options = {
-          width: 1200,
-        };
-        // Instantiates and draws our chart, passing in some options.
-        var chart = new google.visualization.Sankey(document.getElementById('sankey_basic'));
-        chart.draw(data, options);
-      }
-    </script>
-  </head>
-  <body>
-    <div id="sankey_basic" style="width: 1000px; height: 600px;"></div>
-    <div class="input-area" id="input-remote">
-
-      <div class="text-center">
-        Type the URL of the file to be downloaded and parsed.
-        <br>
-        <small>(cross-origin requests require Access-Control-Allow-Origin header)</small>
-      </div>
-    </div>
-    <button id="submit" class="green">Parse</button>
-  </body>
-</html>
