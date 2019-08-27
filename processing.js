@@ -87,7 +87,7 @@ $(function()
 
       console.log(csv);
 
-      setTimeout(enableButton, 100);	// hackity-hack
+      setTimeout(enableButton, 100);  // hackity-hack
     }
 
     else
@@ -202,7 +202,7 @@ function lookupNarrator(index){
   });
 }
 function updateCount(data, source, target){
-  var found;
+  var found = false;
   var i = 0; 
 
   while(!found && i < data.length){
@@ -219,18 +219,13 @@ function updateCount(data, source, target){
 function process(hadithData, narratorsData){
 
   console.log("Start Processing...");
-  console.log(narratorsData);
-  var row =0;
-  var hadith=0;
-  var data = new google.visualization.DataTable();
-  data.addColumn('string', 'From');
-  data.addColumn('string', 'To');
-  data.addColumn('number', 'Weight');
+  console.log("narrators:", narratorsData);
+  
+  
   var tempData = [];
-  for(var i = 1; i < hadithData.length;i++)
+  for(var i = 1; i < hadithData.length-1 ;i++)
   {
-    hadith++;
-    row = 0;
+    console.log("i:",hadithData[i]);
     if(hadithData[i][6].includes(input)){
       var chain = hadithData[i][6].split(", ");
       for(var n = 0; n < chain.length -1;n++)
@@ -247,14 +242,22 @@ function process(hadithData, narratorsData){
         else{
           var teachers = student[10];
           var students = teacher[11];
-          if (teachers.includes(chain[n+1]) && students.includes(chain[n])) {
+          if (teachers.includes(chain[n+1]) || students.includes(chain[n])) {
             updateCount(tempData, student[1].slice(0,20), teacher[1].slice(0,20));
-            row++;
+          }
+          else {
+            console.log("student teacher relation is missing", chain[n], chain[n+1]);
           }
         }
       }
     }
   }
+  
+  console.log("Done Processing...");
+  var data = new google.visualization.DataTable();
+  data.addColumn('string', 'From');
+  data.addColumn('string', 'To');
+  data.addColumn('number', 'Weight');
   data.addRows(tempData);
   google.charts.setOnLoadCallback(drawChart(data));
 }
