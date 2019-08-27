@@ -201,7 +201,47 @@ function lookupNarrator(index){
     return element[0] == index;
   });
 }
-function updateCount(data, source, target){
+
+function isCyclicUtil(v, visited, recStack, graph){
+  visited[v] = true;
+  recStack[v] = true;
+  var index = -1;
+  for(var j = 0; j < graph.length-1; j++){
+    if (graph[j][0] == v) {
+      index = j;
+    }
+  }
+  if (index >= 0) {
+    for(var neighbour = 1; neighbour < graph[index].length -1; neighbour++)
+    { 
+      if (!visited[graph[index][neighbour]]) {
+        if (isCyclicUtil(neighbour, visited, recStack, graph)){ 
+          return true;
+        } else if (recStack[v] == true) {
+          return true
+        }
+      }
+    }
+  }
+  recStack[v] = false;
+  return false;
+}
+
+function isCyclic(data, graph){
+  //console.log("checking for cycle", graph);
+  var visited = {};
+  var recStack = {};
+  for (var n = 0; n < graph.length -1;n++)
+  {
+    if(!visited[graph[n][0]]){
+      if (isCyclicUtil(graph[n][0],visited,recStack, graph)){
+        return true
+      }
+    }
+  }
+  return false
+}
+function updateCount(data, source, target, graph){
   var found = false;
   var i = 0; 
 
@@ -213,19 +253,46 @@ function updateCount(data, source, target){
     i++;
   }
   if (!found){
+    //Avoid a cycle
     data.push([source, target, 1]);
+    var index = -1;
+    for(var j = 0; j < graph.length-1; j++){
+      if (graph[j][0] == source) {
+        index = j;
+      }
+    }
+    if (index >=0 && graph[index].length > 1) {
+      graph[index].push(target);
+    }
+    else {
+      //console.log("graph adds",source);
+      graph.push([source, target]);
+    }
+    if (isCyclic(data, graph)) {
+      data.pop();
+
+      for(var j = 0; j < graph.length-1; j++){
+      if (graph[j][0] == source) {
+        index = j;
+      }
+    }
+      //console.log("graph adds",source);
+      graph[index].pop();
+      //console.log("cycle avoided from",source, target)
+    }
   }
+  return graph;
 }
 function process(hadithData, narratorsData){
 
   console.log("Start Processing...");
   console.log("narrators:", narratorsData);
   
+  var graph = [];
   
   var tempData = [];
   for(var i = 1; i < hadithData.length-1 ;i++)
   {
-    console.log("i:",hadithData[i]);
     if(hadithData[i][6].includes(input)){
       var chain = hadithData[i][6].split(", ");
       for(var n = 0; n < chain.length -1;n++)
@@ -237,16 +304,16 @@ function process(hadithData, narratorsData){
           console.log("narrator is missing", chain[n]);
         } else if (!teacher) {
 
-          console.log("narrator is missing", chain[n+1]);
+          //console.log("narrator is missing", chain[n+1]);
         }
         else{
           var teachers = student[10];
           var students = teacher[11];
           if (teachers.includes(chain[n+1]) || students.includes(chain[n])) {
-            updateCount(tempData, student[1].slice(0,20), teacher[1].slice(0,20));
+            graph = updateCount(tempData, student[1].slice(0,20), teacher[1].slice(0,20), graph);
           }
           else {
-            console.log("student teacher relation is missing", chain[n], chain[n+1]);
+            //console.log("student teacher relation is missing", chain[n], chain[n+1]);
           }
         }
       }
@@ -259,5 +326,6 @@ function process(hadithData, narratorsData){
   data.addColumn('string', 'To');
   data.addColumn('number', 'Weight');
   data.addRows(tempData);
+  console.log(tempData);
   google.charts.setOnLoadCallback(drawChart(data));
 }
