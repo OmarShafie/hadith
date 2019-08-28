@@ -4,8 +4,8 @@ var hadithURL = URL+"all_hadiths_clean.csv";
 var narratorsURL = URL+"all_rawis.csv";
 
 //TODO: Take input from user
-var input ="11013";
-var numNarrators = 50;
+var input = "11013";
+var numNarrators = 100;
 
 //Parse Parameters
 var inputType = "remote";
@@ -17,8 +17,8 @@ var maxUnparseLength = 10000;
 $(function()
   {
   // Demo invoked
-  $('#submit').click(function()
-                     {
+  $('#submit').click(
+    function(){
     if ($(this).prop('disabled') == "true")
       return;
 
@@ -31,7 +31,19 @@ $(function()
 
     // Allow only one parse at a time
     $(this).prop('disabled', true);
-
+      document.getElementById("submit").innerHTML = '<span class="spinner-border spinner-border-sm"></span> Loading..';
+      input = document.getElementById("rawi").value;
+      numNarrators = document.getElementById("numNarrators").value;
+      if (input == ""){
+        input = "11013";
+      }
+      if (numNarrators < 1){
+        numNarrators = 100;
+      }
+      else
+        {
+          numNarrators = parseInt(numNarrators)
+        }
     if (!firstRun)
       console.log("--------------------------------------------------");
     else
@@ -50,7 +62,6 @@ $(function()
         before: function(file, inputElem)
         {
           start = now();
-          console.log("Parsing file...", file);
         },
         error: function(err, file)
         {
@@ -110,7 +121,7 @@ $(function()
         download: inputType == "remote"
       });
       if (config.worker || config.download)
-        console.log("Running...");
+        document.getElementById("btnMessage").innerHTML = "Running...";
     }
   });
 });
@@ -136,7 +147,7 @@ $(function()
 function saveNarrators(results)
 {
 
-  console.log("Parsed Narrators...");
+  document.getElementById("btnMessage").innerHTML = "Parsed Narrators...";
   end = now();
 
   if (results && results.errors)
@@ -151,14 +162,11 @@ function saveNarrators(results)
   }
   narratorsData = results.data;
   Papa.parse(hadithURL, buildConfig());
-
-  // icky hack
-  setTimeout(enableButton, 100);
 }
 
 function completeFn(results)
 { 
-  console.log("Parsed Hadiths...");
+  document.getElementById("btnMessage").innerHTML = "Parsed Hadiths...";
   end = now();
 
   if (results && results.errors)
@@ -188,6 +196,7 @@ function errorFn(err, file)
 function enableButton()
 {
   $('#submit').prop('disabled', false);
+  document.getElementById("submit").innerHTML = "Submit";
 }
 
 function now()
@@ -286,7 +295,7 @@ function isCyclic(graph){
         graph[index].pop(); //remove point as it creates a cycle
       }
       else {
-        data.push([source[0],target[0], weight]);
+        data.push([source[0] + " " +source[1].slice(0,20),target[0] + " " + target[1].slice(0,20), weight]);
       }
     }
       return data;
@@ -294,14 +303,14 @@ function isCyclic(graph){
      
 function process(hadithData, narratorsData){
 
-  console.log("Start Processing...");
+  document.getElementById("btnMessage").innerHTML = "Start Processing...";
   //console.log("narrators:", narratorsData);
   
   var tempData = []; // get lables, sort and remove cycles at the end
-  for(var i = 1; i < 1000 ;i++)
+  for(var i = 1; i < 500 ;i++)
   {
-    if(hadithData[i][6].includes(input)){ // hadith has the Rawi(input) in the sanad(index 6)
-      var chain = hadithData[i][6].split(", "); // list of chain of narrators
+    var chain = hadithData[i][6].split(", "); // list of chain of narrators in the sanad(index 6)
+    if(chain.includes(input)){ // hadith has the Rawi(input)
       for(var n = 0; n < chain.length -1;n++)
       {
         var student = lookupNarrator(chain[n]); //get student details
@@ -337,7 +346,7 @@ function process(hadithData, narratorsData){
   return b[2] - a[2];
 });
   
-  console.log("Done Processing...");
+  document.getElementById("btnMessage").innerHTML = "Done Processing!";
   var data = new google.visualization.DataTable();
   data.addColumn('string', 'From');
   data.addColumn('string', 'To');
@@ -345,7 +354,9 @@ function process(hadithData, narratorsData){
   //filter cycles and only select to numNarrators and add lables
   var filtered = cycleFilter(tempData);
   
-  console.log(filtered);
+  setTimeout(enableButton, 100);
+  
+  document.getElementById("btnMessage").innerHTML = "Total of links:" + filtered.length;
   data.addRows(filtered.slice(0,numNarrators));
   google.charts.setOnLoadCallback(drawChart(data));
 }
