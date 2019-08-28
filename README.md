@@ -6,6 +6,6 @@ Web-based using pure HTML, Bootstrap and JavaScript.
 Sankey Diagram is built using Google Chart's Sankey.
 
 Data Sets are:
-https://www.kaggle.com/fahd09/hadith-dataset/downloads/hadith-dataset.zip/1 
+https://www.kaggle.com/fahd09/hadith-dataset/
 and
 https://www.kaggle.com/fahd09/hadith-narrators
