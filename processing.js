@@ -121,7 +121,7 @@ $(function()
         download: inputType == "remote"
       });
       if (config.worker || config.download)
-        document.getElementById("btnMessage").innerHTML = "Running...";
+        console.log("Running...");
     }
   });
 });
@@ -147,7 +147,7 @@ $(function()
 function saveNarrators(results)
 {
 
-  document.getElementById("btnMessage").innerHTML = "Parsed Narrators...";
+  console.log("Parsed Narrators...");
   end = now();
 
   if (results && results.errors)
@@ -166,7 +166,7 @@ function saveNarrators(results)
 
 function completeFn(results)
 { 
-  document.getElementById("btnMessage").innerHTML = "Parsed Hadiths...";
+  console.log("Parsed Hadiths...");
   end = now();
 
   if (results && results.errors)
@@ -208,16 +208,20 @@ function now()
 /*-------------- Main Code -------------*/
 function lookupNarrator(index){
   //returns data of the narrator with index from the narratorsData
-  return narratorsData.find(function(element) {
+  var found = narratorsData.find(function(element) {
     return element[0] == index;
   });
+  if (!found){
+    found = [index,index]
+  }
+  return found
 }
 
 function updateCount(data, source, target){
   var found = false;
   var i = 0; 
   //TODO: Optimize this
-  while(!found && i < data.length -1){
+  while(!found && i < data.length){
     if(data[i][0][0] == source[0] && data[i][1][0] == target[0]){
       // narrators index matches
       found = true;
@@ -231,13 +235,13 @@ function updateCount(data, source, target){
     }
 }
   function getIndex(key, graph){
-    for(var i = 0; i < graph.length-1; i++){
+    for(var i = 0; i < graph.length; i++){
       var vertix = graph[i][0];
-      if (vertix == key[0]) {
+      if (vertix == key) {
         return i;
       }
-      return -1;
     }
+    return -1;
   }
 
 function isCyclicUtil(v, visited, recStack, graph){
@@ -247,14 +251,13 @@ function isCyclicUtil(v, visited, recStack, graph){
   
   var index = getIndex(v, graph);
   if (index >= 0) {
-    for(var neighbour = 1; neighbour < graph[index].length -1; neighbour++)
-    { 
+    for(var neighbour = 1; neighbour < graph[index].length; neighbour++){
       if (!visited[graph[index][neighbour]]) {
-        if (isCyclicUtil(neighbour, visited, recStack, graph)){ 
+        if (isCyclicUtil(graph[index][neighbour], visited, recStack, graph)){
           return true;
-        } else if (recStack[v] == true) {
-          return true
         }
+      } else if (recStack[graph[index][neighbour]] == true) {
+        return true
       }
     }
   }
@@ -263,10 +266,9 @@ function isCyclicUtil(v, visited, recStack, graph){
 }
 
 function isCyclic(graph){
-  //console.log("checking for cycle", graph);
   var visited = {}; // list of visited nodes
   var recStack = {};
-  for (var n = 0; n < graph.length -1;n++)
+  for (var n = 0; n < graph.length; n++)
   {
     if(!visited[graph[n][0]]){
       if (isCyclicUtil(graph[n][0],visited,recStack, graph)){
@@ -276,41 +278,59 @@ function isCyclic(graph){
   }
   return false
 }
-  function cycleFilter (edges){
-    var graph = []; // create an adjacency list of narrators indices graph
-    var data = []; // to be returned as polished data
-    for(var e = 0; e < edges.length -1; e++){
-      // for each edge, add to graph, check if it creates a cycle
-      var source = edges[e][0];
-      var target = edges[e][1];
-      var weight = edges[e][2];
-      var index = getIndex(source, graph);
-      if (index >= 0) {
-        graph[index].push(target[0]);
-      }
-      else {
-        graph.push([source[0],target[0]]);
-      }
-      if (isCyclic(graph)) {
-        graph[index].pop(); //remove point as it creates a cycle
-      }
-      else {
-        data.push([source[0] + " " +source[1].slice(0,20),target[0] + " " + target[1].slice(0,20), weight]);
-      }
+function cycleFilter (edges){
+  var graph = []; // create an adjacency list of narrators indices graph
+  var data = []; // to be returned as polished data
+  for(var e = 0; e < edges.length; e++){
+    // for each edge, add to graph, check if it creates a cycle
+    var source = edges[e][0];
+    var target = edges[e][1];
+    var weight = edges[e][2];
+    var index = getIndex(source, graph);
+    if (index >= 0) {
+      graph[index].push(target[0]);
     }
-      return data;
+    else {
+      index = graph.length;
+      graph.push([source[0],target[0]]);
+    }
+    if (isCyclic(graph)) {
+      console.log("removing link as it creates a cycle", [source[0],target[0]])
+      graph[index].pop(); //remove point as it creates a cycle
+    }
+    else {
+      data.push([source[0] + " " +source[1].slice(0,20),target[0] + " " + target[1].slice(0,20), weight]);
+    }
   }
-     
+    return data;
+}
+
+function getTeachers(narrator){
+  if (narrator.length == 25){
+    return narrator[10];
+  }
+  return "";
+} 
+
+function getStudents(narrator){
+  if (narrator.length == 25){
+    return narrator[11];
+  }
+  return "";
+} 
+
 function process(hadithData, narratorsData){
 
-  document.getElementById("btnMessage").innerHTML = "Start Processing...";
-  //console.log("narrators:", narratorsData);
+  console.log("Start Processing...");
   
   var tempData = []; // get lables, sort and remove cycles at the end
-  for(var i = 1; i < hadithData.length-1 ;i++)
+  for(var i = 1; i < hadithData.length -1; i++)
   {
     var chain = hadithData[i][6].split(", "); // list of chain of narrators in the sanad(index 6)
     if(chain.includes(input)){ // hadith has the Rawi(input)
+      if (lookupNarrator(chain[0])) {
+        updateCount(tempData, [hadithData[i][2],hadithData[i][2]], lookupNarrator(chain[0]));
+      }
       for(var n = 0; n < chain.length -1;n++)
       {
         var student = lookupNarrator(chain[n]); //get student details
@@ -328,9 +348,9 @@ function process(hadithData, narratorsData){
           // this solves the case of a narration that has multiple shifts
           // example: A -> B -> C, B -> D, C ->E, D ->E
           // issue rises when processing C,B as C -> B
-          var teachers = student[10]; // get list of student teachers
-          var students = teacher[11]; // get list of teacher students
-          if (teachers.includes(chain[n+1]) || students.includes(chain[n])) { 
+          var teachers = getTeachers(student); // get list of student teachers
+          var students = getStudents(teacher); // get list of teacher students
+          if (teachers.includes("["+chain[n+1]+"]") || students.includes("["+chain[n]+"]") || teachers == "" || students == "") { 
             // if one of them is in the data
             updateCount(tempData, student, teacher);
           }
@@ -346,7 +366,7 @@ function process(hadithData, narratorsData){
   return b[2] - a[2];
 });
   
-  document.getElementById("btnMessage").innerHTML = "Done Processing!";
+  console.log("Done Processing!");
   var data = new google.visualization.DataTable();
   data.addColumn('string', 'From');
   data.addColumn('string', 'To');
