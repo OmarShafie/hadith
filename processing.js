@@ -307,7 +307,7 @@ function process(hadithData, narratorsData){
   //console.log("narrators:", narratorsData);
   
   var tempData = []; // get lables, sort and remove cycles at the end
-  for(var i = 1; i < 500 ;i++)
+  for(var i = 1; i < hadithData.length-1 ;i++)
   {
     var chain = hadithData[i][6].split(", "); // list of chain of narrators in the sanad(index 6)
     if(chain.includes(input)){ // hadith has the Rawi(input)
