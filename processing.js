@@ -5,6 +5,7 @@ var narratorsURL = URL+"all_rawis.csv";
 
 //TODO: Take input from user
 var input ="11013";
+var numNarrators = 50;
 
 //Parse Parameters
 var inputType = "remote";
@@ -197,20 +198,45 @@ function now()
 }
 /*-------------- Main Code -------------*/
 function lookupNarrator(index){
+  //returns data of the narrator with index from the narratorsData
   return narratorsData.find(function(element) {
     return element[0] == index;
   });
 }
 
-function isCyclicUtil(v, visited, recStack, graph){
-  visited[v] = true;
-  recStack[v] = true;
-  var index = -1;
-  for(var j = 0; j < graph.length-1; j++){
-    if (graph[j][0] == v) {
-      index = j;
+function updateCount(data, source, target){
+  var found = false;
+  var i = 0; 
+  //TODO: Optimize this
+  while(!found && i < data.length -1){
+    if(data[i][0][0] == source[0] && data[i][1][0] == target[0]){
+      // narrators index matches
+      found = true;
+      data[i][2]++; //increment count of the link
+    }
+    i++;
+  }
+  if (!found){
+    // not found, so add a new link
+    data.push([source, target, 1]);
+    }
+}
+  function getIndex(key, graph){
+    for(var i = 0; i < graph.length-1; i++){
+      var vertix = graph[i][0];
+      if (vertix == key[0]) {
+        return i;
+      }
+      return -1;
     }
   }
+
+function isCyclicUtil(v, visited, recStack, graph){
+  //mark as visited
+  visited[v] = true;
+  recStack[v] = true;
+  
+  var index = getIndex(v, graph);
   if (index >= 0) {
     for(var neighbour = 1; neighbour < graph[index].length -1; neighbour++)
     { 
@@ -227,9 +253,9 @@ function isCyclicUtil(v, visited, recStack, graph){
   return false;
 }
 
-function isCyclic(data, graph){
+function isCyclic(graph){
   //console.log("checking for cycle", graph);
-  var visited = {};
+  var visited = {}; // list of visited nodes
   var recStack = {};
   for (var n = 0; n < graph.length -1;n++)
   {
@@ -241,76 +267,63 @@ function isCyclic(data, graph){
   }
   return false
 }
-function updateCount(data, source, target, graph){
-  var found = false;
-  var i = 0; 
-
-  while(!found && i < data.length){
-    if(data[i][0] == source && data[i][1] == target){
-      found = true;
-      data[i][2]++;
-    }
-    i++;
-  }
-  if (!found){
-    //Avoid a cycle
-    data.push([source, target, 1]);
-    var index = -1;
-    for(var j = 0; j < graph.length-1; j++){
-      if (graph[j][0] == source) {
-        index = j;
+  function cycleFilter (edges){
+    var graph = []; // create an adjacency list of narrators indices graph
+    var data = []; // to be returned as polished data
+    for(var e = 0; e < edges.length -1; e++){
+      // for each edge, add to graph, check if it creates a cycle
+      var source = edges[e][0];
+      var target = edges[e][1];
+      var weight = edges[e][2];
+      var index = getIndex(source, graph);
+      if (index >= 0) {
+        graph[index].push(target[0]);
+      }
+      else {
+        graph.push([source[0],target[0]]);
+      }
+      if (isCyclic(graph)) {
+        graph[index].pop(); //remove point as it creates a cycle
+      }
+      else {
+        data.push([source[0],target[0], weight]);
       }
     }
-    if (index >=0 && graph[index].length > 1) {
-      graph[index].push(target);
-    }
-    else {
-      //console.log("graph adds",source);
-      graph.push([source, target]);
-    }
-    if (isCyclic(data, graph)) {
-      data.pop();
-
-      for(var j = 0; j < graph.length-1; j++){
-      if (graph[j][0] == source) {
-        index = j;
-      }
-    }
-      //console.log("graph adds",source);
-      graph[index].pop();
-      //console.log("cycle avoided from",source, target)
-    }
+      return data;
   }
-  return graph;
-}
+     
 function process(hadithData, narratorsData){
 
   console.log("Start Processing...");
-  console.log("narrators:", narratorsData);
+  //console.log("narrators:", narratorsData);
   
-  var graph = [];
-  
-  var tempData = [];
-  for(var i = 1; i < hadithData.length-1 ;i++)
+  var tempData = []; // get lables, sort and remove cycles at the end
+  for(var i = 1; i < 1000 ;i++)
   {
-    if(hadithData[i][6].includes(input)){
-      var chain = hadithData[i][6].split(", ");
+    if(hadithData[i][6].includes(input)){ // hadith has the Rawi(input) in the sanad(index 6)
+      var chain = hadithData[i][6].split(", "); // list of chain of narrators
       for(var n = 0; n < chain.length -1;n++)
       {
-        var student = lookupNarrator(chain[n]);
-        var teacher = lookupNarrator(chain[n+1]);
+        var student = lookupNarrator(chain[n]); //get student details
+        // TODO: optimize perfomance
+        var teacher = lookupNarrator(chain[n+1]); //get teacher details
         if(!student) {
-
-          console.log("narrator is missing", chain[n]);
+          // student is missing from the dataset
+          //console.log("narrator is missing", chain[n]);
         } else if (!teacher) {
-
+          // teacher is missing from the dataset
           //console.log("narrator is missing", chain[n+1]);
         }
         else{
-          var teachers = student[10];
-          var students = teacher[11];
-          if (teachers.includes(chain[n+1]) || students.includes(chain[n])) {
-            graph = updateCount(tempData, student[1].slice(0,20), teacher[1].slice(0,20), graph);
+          //confirm the chain of narration
+          // this solves the case of a narration that has multiple shifts
+          // example: A -> B -> C, B -> D, C ->E, D ->E
+          // issue rises when processing C,B as C -> B
+          var teachers = student[10]; // get list of student teachers
+          var students = teacher[11]; // get list of teacher students
+          if (teachers.includes(chain[n+1]) || students.includes(chain[n])) { 
+            // if one of them is in the data
+            updateCount(tempData, student, teacher);
           }
           else {
             //console.log("student teacher relation is missing", chain[n], chain[n+1]);
@@ -319,13 +332,20 @@ function process(hadithData, narratorsData){
       }
     }
   }
+  // sort data in decending order of importance
+  tempData.sort(function(a, b) {
+  return b[2] - a[2];
+});
   
   console.log("Done Processing...");
   var data = new google.visualization.DataTable();
   data.addColumn('string', 'From');
   data.addColumn('string', 'To');
   data.addColumn('number', 'Weight');
-  data.addRows(tempData);
-  console.log(tempData);
+  //filter cycles and only select to numNarrators and add lables
+  var filtered = cycleFilter(tempData);
+  
+  console.log(filtered);
+  data.addRows(filtered.slice(0,numNarrators));
   google.charts.setOnLoadCallback(drawChart(data));
 }
