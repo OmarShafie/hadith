@@ -52,7 +52,7 @@ $(function()
     else {
       firstRun = false;
     }
-    if (!false/*isParsingDone*/) {
+    if (!isParsingDone) {
       var narratorsData;
       Papa.parse(narratorsURL,  {
         delimiter: $('#delimiter').val(),
