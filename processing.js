@@ -40,70 +40,15 @@ $(function()
       if (numNarrators < 1){
         numNarrators = 100;
       }
-      else
-        {
-          numNarrators = parseInt(numNarrators)
-        }
-    if (!firstRun)
+      else {
+        numNarrators = parseInt(numNarrators)
+      }
+    if (!firstRun){
       console.log("--------------------------------------------------");
-    else
+    }
+    else {
       firstRun = false;
-
-    if (inputType == "local")
-    {
-      if (!$('#files')[0].files.length)
-      {
-        alert("Please choose at least one file to parse.");
-        return enableButton();
-      }
-
-      $('#files').parse({
-        config: config,
-        before: function(file, inputElem)
-        {
-          start = now();
-        },
-        error: function(err, file)
-        {
-          console.log("ERROR:", err, file);
-          firstError = firstError || err;
-          errorCount++;
-        },
-        complete: function()
-        {
-          end = now();
-          printStats("Done with all files");
-        }
-      });
     }
-    else if (inputType == "json")
-    {
-      if (!input)
-      {
-        alert("Please enter a valid JSON string to convert to CSV.");
-        return enableButton();
-      }
-
-      start = now();
-      var csv = Papa.unparse(input, config);
-      end = now();
-
-      console.log("Unparse complete");
-      console.log("Time:", (end-start || "(Unknown; your browser does not support the Performance API)"), "ms");
-
-      if (csv.length > maxUnparseLength)
-      {
-        csv = csv.substr(0, maxUnparseLength);
-        console.log("(Results truncated for brevity)");
-      }
-
-      console.log(csv);
-
-      setTimeout(enableButton, 100);  // hackity-hack
-    }
-
-    else
-    {
       start = now();
       var narratorsData;
       Papa.parse(narratorsURL,  {
@@ -122,7 +67,6 @@ $(function()
       });
       if (config.worker || config.download)
         console.log("Running...");
-    }
   });
 });
   
@@ -212,12 +156,14 @@ function lookupNarrator(index){
     return element[0] == index;
   });
   if (!found){
+    // else create a narrator data
     found = [index,index]
   }
   return found
 }
 
 function updateCount(data, source, target){
+  // updates the count for [source, target, count] in data
   var found = false;
   var i = 0; 
   //TODO: Optimize this
@@ -235,6 +181,8 @@ function updateCount(data, source, target){
     }
 }
   function getIndex(key, graph){
+    // returns the index of key in the graph
+    // graph = [..., [key, n1, n2 ...], ...]
     for(var i = 0; i < graph.length; i++){
       var vertix = graph[i][0];
       if (vertix == key) {
@@ -251,12 +199,13 @@ function isCyclicUtil(v, visited, recStack, graph){
   
   var index = getIndex(v, graph);
   if (index >= 0) {
-    for(var neighbour = 1; neighbour < graph[index].length; neighbour++){
-      if (!visited[graph[index][neighbour]]) {
-        if (isCyclicUtil(graph[index][neighbour], visited, recStack, graph)){
+    var node = graph[index];
+    for(var neighbour = 1; neighbour < node.length; neighbour++){
+      if (!visited[node[neighbour]]) {
+        if (isCyclicUtil(node[neighbour], visited, recStack, graph)){
           return true;
         }
-      } else if (recStack[graph[index][neighbour]] == true) {
+      } else if (recStack[node[neighbour]] == true) {
         return true
       }
     }
@@ -268,17 +217,18 @@ function isCyclicUtil(v, visited, recStack, graph){
 function isCyclic(graph){
   var visited = {}; // list of visited nodes
   var recStack = {};
-  for (var n = 0; n < graph.length; n++)
-  {
+  for (var n = 0; n < graph.length; n++){
     if(!visited[graph[n][0]]){
       if (isCyclicUtil(graph[n][0],visited,recStack, graph)){
         return true
       }
     }
   }
-  return false
+  return false;
 }
+
 function cycleFilter (edges){
+  // edges = [..., [source, target, weight], ...]
   var graph = []; // create an adjacency list of narrators indices graph
   var data = []; // to be returned as polished data
   for(var e = 0; e < edges.length; e++){
@@ -286,7 +236,7 @@ function cycleFilter (edges){
     var source = edges[e][0];
     var target = edges[e][1];
     var weight = edges[e][2];
-    var index = getIndex(source, graph);
+    var index = getIndex(source[0], graph);
     if (index >= 0) {
       graph[index].push(target[0]);
     }
@@ -307,16 +257,16 @@ function cycleFilter (edges){
 
 function getTeachers(narrator){
   if (narrator.length == 25){
-    return narrator[10];
+    return narrator[16].split(", ");
   }
-  return "";
+  return [];
 } 
 
 function getStudents(narrator){
   if (narrator.length == 25){
-    return narrator[11];
+    return narrator[15].split(", ");
   }
-  return "";
+  return [];
 } 
 
 function process(hadithData, narratorsData){
@@ -324,8 +274,8 @@ function process(hadithData, narratorsData){
   console.log("Start Processing...");
   
   var tempData = []; // get lables, sort and remove cycles at the end
-  for(var i = 1; i < hadithData.length -1; i++)
-  {
+  //for(var i = 1; i < 500; i++){
+  for(var i = 1; i < hadithData.length; i++){
     var chain = hadithData[i][6].split(", "); // list of chain of narrators in the sanad(index 6)
     if(chain.includes(input)){ // hadith has the Rawi(input)
       if (lookupNarrator(chain[0])) {
@@ -336,10 +286,10 @@ function process(hadithData, narratorsData){
         var student = lookupNarrator(chain[n]); //get student details
         // TODO: optimize perfomance
         var teacher = lookupNarrator(chain[n+1]); //get teacher details
-        if(!student) {
+        if(student.length == 2) {
           // student is missing from the dataset
           //console.log("narrator is missing", chain[n]);
-        } else if (!teacher) {
+        } else if (teacher.length == 2) {
           // teacher is missing from the dataset
           //console.log("narrator is missing", chain[n+1]);
         }
@@ -350,12 +300,9 @@ function process(hadithData, narratorsData){
           // issue rises when processing C,B as C -> B
           var teachers = getTeachers(student); // get list of student teachers
           var students = getStudents(teacher); // get list of teacher students
-          if (teachers.includes("["+chain[n+1]+"]") || students.includes("["+chain[n]+"]") || teachers == "" || students == "") { 
+          if (teachers.includes(chain[n+1]) || students.includes(chain[n]) || teachers.length == 0 || students.length == 0) { 
             // if one of them is in the data
             updateCount(tempData, student, teacher);
-          }
-          else {
-            //console.log("student teacher relation is missing", chain[n], chain[n+1]);
           }
         }
       }
