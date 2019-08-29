@@ -160,7 +160,6 @@ function getNarratorGrade(tag){
 }
 
 function gradeToColor(grade){
-  console.log(grade);
   var mapping = {
     1 : "darkgreen",
     2 : "seagreen",
