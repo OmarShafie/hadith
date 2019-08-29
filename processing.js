@@ -14,6 +14,9 @@ var start, end;
 var firstRun = true;
 var maxUnparseLength = 10000;
 
+var isParsingDone = false;
+var parsedData;
+
 $(function()
   {
   // Demo invoked
@@ -49,7 +52,7 @@ $(function()
     else {
       firstRun = false;
     }
-      start = now();
+    if (!false/*isParsingDone*/) {
       var narratorsData;
       Papa.parse(narratorsURL,  {
         delimiter: $('#delimiter').val(),
@@ -67,6 +70,11 @@ $(function()
       });
       if (config.worker || config.download)
         console.log("Running...");
+
+      }
+      else {
+        main(parsedData, narratorsData);
+      }
   });
 });
   
@@ -123,8 +131,9 @@ function completeFn(results)
     if (results.data && results.data.length > 0)
       rowCount = results.data.length;
   }
-
-  process(results.data, narratorsData); //main function
+  isParsingDone = true;
+  parsedData = results.data;
+  main(results.data, narratorsData);
 
   // icky hack
   setTimeout(enableButton, 100);
@@ -357,10 +366,9 @@ function getStudents(narrator){
 function process(hadithData, narratorsData){
 
   console.log("Start Processing...");
-  
   var tempData = []; // get lables, sort and remove cycles at the end
   //for(var i = 1; i < 500; i++){
-  for(var i = 1; i < hadithData.length -1; i++){
+  for(var i = 0; i < hadithData.length -1; i++){
     var chain = hadithData[i][6].split(", "); // list of chain of narrators in the sanad(index 6)
     if(chain.includes(input)){ // hadith has the Rawi(input)
       if (lookupNarrator(chain[0])) {
@@ -393,10 +401,31 @@ function process(hadithData, narratorsData){
       }
     }
   }
+  console.log("Done Processing!");
+  return tempData;
+}
+
+function main(hadithData, narratorsData){
+
+  var temp = [];
+  var num_books = 6;
+  var books = {
+    0: [1    , 7371],
+    1: [7371 , 14967],
+    2: [14967, 20227],
+    3: [20227, 24441],
+    4: [24441, 30215],
+    5: [30215, 34443],
+  }
+  for (var i = 0; i < num_books; i++) {
+    if(true){
+      temp = temp.concat(process(hadithData.slice(books[i][0], books[i][1]), narratorsData));
+    }
+  }
   // sort data in decending order of importance
-  tempData.sort(function(a, b) {
-  return b[2] - a[2];
-});
+  temp.sort(function(a, b) {
+    return b[2] - a[2];
+    });
   
   console.log("Done Processing!");
   var data = new google.visualization.DataTable();
@@ -404,7 +433,7 @@ function process(hadithData, narratorsData){
   data.addColumn('string', 'To');
   data.addColumn('number', 'Weight');
   //filter cycles and only select to numNarrators and add lables
-  var filtered = cycleFilter(tempData);
+  var filtered = cycleFilter(temp);
   
   setTimeout(enableButton, 100);
   
