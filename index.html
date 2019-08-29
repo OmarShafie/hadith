@@ -14,15 +14,49 @@
     <script type="text/javascript">
       google.charts.load('current', {'packages':['sankey']});
       function drawChart(data) {
-       
+        
         // Sets chart options.
         var options = {
           width: 1920,
           height: 700,
-          sankey: {iterations: 100},
+          sankey: {
+            iterations: 100,
+            node: {
+               //nodePadding: 80,
+              label: { fontName: 'Times-Roman',
+                         fontSize: 12,
+                         italic: true }
+            },
+          }
         };
-        // Instantiates and draws our chart, passing in some options.
-        var chart = new google.visualization.Sankey(document.getElementById('sankey_basic'));
+
+  var chartDiv = document.getElementById('sankey_basic');
+  var chart = new google.visualization.Sankey(chartDiv);
+        
+        var colorMap = {};
+        var textIndex = 0;
+        var rectIndex = 0;
+        var pathIndex = 0;
+  var observer = new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
+      mutation.addedNodes.forEach(function (node) {
+        if (node.tagName === 'text') {
+          colorMap[textIndex] = gradeToColor(getNarratorGrade(node.innerHTML));
+          textIndex++;
+        }
+        if (node.tagName === 'rect') {
+          node.setAttribute('fill', colorMap[rectIndex]);
+          rectIndex++;
+        }
+      });
+    });
+  });
+        
+  observer.observe(chartDiv, {
+    childList: true,
+    subtree: true
+  });
+
         chart.draw(data, options);
       }
     </script>
