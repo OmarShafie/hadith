@@ -5,7 +5,7 @@ var narratorsURL = URL+"all_rawis.csv";
 
 //TODO: Take input from user
 var input = "11013";
-var numLinks = 100;
+var numNarrators = 100;
 
 //Parse Parameters
 var inputType = "remote";
@@ -37,15 +37,15 @@ $(function()
       document.getElementById("submit").innerHTML = '<span class="spinner-border spinner-border-sm"></span> Loading..';
       console.log("clicked!");
       input = document.getElementById("rawi").value;
-      numLinks = document.getElementById("numLinks").value;
+      numNarrators = document.getElementById("numNarrators").value;
       if (input == ""){
         input = "11013";
       }
-      if (numLinks < 1){
-        numLinks = 100;
+      if (numNarrators < 1){
+        numNarrators = 100;
       }
       else {
-        numLinks = parseInt(numLinks)
+        numNarrators = parseInt(numNarrators)
       }
     if (!firstRun){
       console.log("--------------------------------------------------");
@@ -360,81 +360,51 @@ function getStudents(narrator){
   return [];
 } 
 
-function now() {
-        return new Date().getTime();
-    }
+function process(hadithData, narratorsData){
 
-function process(array, callback){
   console.log("Start Processing...");
-  var startTime = now();
-  var tempData = [];
-  var chunk = 300;
-  var i = 1;
-  function loop() {
-    var cnt = chunk;
-    while (cnt-- && i < array.length-1) {
-      var chain = array[i][6].split(", "); // list of chain of narrators in the sanad(index 6)
-      if(chain.includes(input)){ // hadith has the Rawi(input)
-        if (lookupNarrator(chain[0])) {
-          updateCount(tempData, [array[i][2],""], lookupNarrator(chain[0]));
+  var tempData = []; // get lables, sort and remove cycles at the end
+  //for(var i = 1; i < 500; i++){
+  for(var i = 0; i < hadithData.length -1; i++){
+    var chain = hadithData[i][6].split(", "); // list of chain of narrators in the sanad(index 6)
+    if(chain.includes(input)){ // hadith has the Rawi(input)
+      if (lookupNarrator(chain[0])) {
+        updateCount(tempData, [hadithData[i][2],hadithData[i][2]], lookupNarrator(chain[0]));
+      }
+      for(var n = 0; n < chain.length -1;n++)
+      {
+        var student = lookupNarrator(chain[n]); //get student details
+        // TODO: optimize perfomance
+        var teacher = lookupNarrator(chain[n+1]); //get teacher details
+        if(student.length == 2) {
+          // student is missing from the dataset
+          //console.log("narrator is missing", chain[n]);
+        } else if (teacher.length == 2) {
+          // teacher is missing from the dataset
+          //console.log("narrator is missing", chain[n+1]);
         }
-        for(var n = 0; n < chain.length -1;n++) {
-          var student = lookupNarrator(chain[n]); //get student details
-          // TODO: optimize perfomance
-          var teacher = lookupNarrator(chain[n+1]); //get teacher details
-          if(student.length == 2) {
-            // student is missing from the dataset
-            //console.log("narrator is missing", chain[n]);
-          } else if (teacher.length == 2) {
-            // teacher is missing from the dataset
-            //console.log("narrator is missing", chain[n+1]);
-          }
-          else{
-            //confirm the chain of narration
-            // this solves the case of a narration that has multiple shifts
-            // example: A -> B -> C, B -> D, C ->E, D ->E
-            // issue rises when processing C,B as C -> B
-            var teachers = getTeachers(student); // get list of student teachers
-            var students = getStudents(teacher); // get list of teacher students
-            if (teachers.includes(chain[n+1]) || students.includes(chain[n]) || teachers.length == 0 || students.length == 0) { 
-              // if one of them is in the data
-              updateCount(tempData, student, teacher);
-            }
+        else{
+          //confirm the chain of narration
+          // this solves the case of a narration that has multiple shifts
+          // example: A -> B -> C, B -> D, C ->E, D ->E
+          // issue rises when processing C,B as C -> B
+          var teachers = getTeachers(student); // get list of student teachers
+          var students = getStudents(teacher); // get list of teacher students
+          if (teachers.includes(chain[n+1]) || students.includes(chain[n]) || teachers.length == 0 || students.length == 0) { 
+            // if one of them is in the data
+            updateCount(tempData, student, teacher);
           }
         }
       }
-      ++i;
-    }
-    if ( i < array.length-1) {                      //the condition
-      setTimeout(loop, 1); //rerun when condition is true
-    } else { 
-      callback(tempData);
-      console.log("Done Processing in ...", now() - startTime);
     }
   }
-  loop();                                         //start with 0
+  console.log("Done Processing!");
+  return tempData;
 }
 
-function afterProcess(temp){
-  // sort data in decending order of importance
-  temp.sort(function(a, b) {
-    return b[2] - a[2];
-    });
-  
-  var data = new google.visualization.DataTable();
-  data.addColumn('string', 'From');
-  data.addColumn('string', 'To');
-  data.addColumn('number', 'Weight');
-  //filter cycles and only select to numLinks and add lables
-  var filtered = cycleFilter(temp);
-  
-  document.getElementById("btnMessage").innerHTML = "Total of links: " + filtered.length;
-  data.addRows(filtered.slice(0,numLinks));
-  google.charts.setOnLoadCallback(drawChart(data));
-  enableButton();
-}
-function main(hadithData){
-  var arr = [];
+function main(hadithData, narratorsData){
+
+  var temp = [];
   var num_books = 6;
   var books = {
     0: [1    , 7371],
@@ -446,12 +416,27 @@ function main(hadithData){
   }
   
   for (var i = 0; i < num_books; i++) {
-    if(document.getElementById(i).checked){
-      console.log(i)
-      arr = arr.concat(hadithData.slice(books[i][0], books[i][1]));
+    if(true){
+      document.getElementById("btnMessage").innerHTML = "Processed " + i + "/6";
+      temp = temp.concat(process(hadithData.slice(books[i][0], books[i][1]), narratorsData));
     }
   }
-  process(arr, afterProcess);
+  // sort data in decending order of importance
+  temp.sort(function(a, b) {
+    return b[2] - a[2];
+    });
+  
+  var data = new google.visualization.DataTable();
+  data.addColumn('string', 'From');
+  data.addColumn('string', 'To');
+  data.addColumn('number', 'Weight');
+  //filter cycles and only select to numNarrators and add lables
+  var filtered = cycleFilter(temp);
+  
+  document.getElementById("btnMessage").innerHTML = "Total of links: " + filtered.length;
+  data.addRows(filtered.slice(0,numNarrators));
+  google.charts.setOnLoadCallback(drawChart(data));
+  enableButton();
 }
 
 window.onload = function (){ document.getElementById("submit").click();}
