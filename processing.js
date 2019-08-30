@@ -35,7 +35,6 @@ $(function()
     $(this).prop('disabled', true);
 
       document.getElementById("submit").innerHTML = '<span class="spinner-border spinner-border-sm"></span> Loading..';
-      console.log("clicked!");
       input = document.getElementById("rawi").value;
       numLinks = document.getElementById("numLinks").value;
       if (input == ""){
@@ -70,7 +69,7 @@ $(function()
         download: inputType == "remote"
       });
       if (config.worker || config.download)
-        console.log("Running...");
+        document.getElementById("btnMessage").innerHTML = "Running...";
     } else {
       main(parsedData, narratorsData);
     }
@@ -98,7 +97,7 @@ $(function()
 function saveNarrators(results)
 {
 
-  console.log("Parsed Narrators...");
+  document.getElementById("btnMessage").innerHTML = "Parsed Narrators...";
   end = now();
 
   if (results && results.errors)
@@ -117,7 +116,7 @@ function saveNarrators(results)
 
 function completeFn(results)
 { 
-  console.log("Parsed Hadiths...");
+  document.getElementById("btnMessage").innerHTML = "Parsed Hadith Dataset!";
   end = now();
 
   if (results && results.errors)
@@ -365,7 +364,7 @@ function now() {
     }
 
 function process(array, callback){
-  console.log("Start Processing...");
+  document.getElementById("btnMessage").innerHTML = "Start Processing...";
   var startTime = now();
   var tempData = [];
   var chunk = 300;
@@ -384,10 +383,10 @@ function process(array, callback){
           var teacher = lookupNarrator(chain[n+1]); //get teacher details
           if(student.length == 2) {
             // student is missing from the dataset
-            //console.log("narrator is missing", chain[n]);
+            console.log("narrator is missing", chain[n]);
           } else if (teacher.length == 2) {
             // teacher is missing from the dataset
-            //console.log("narrator is missing", chain[n+1]);
+            console.log("narrator is missing", chain[n+1]);
           }
           else{
             //confirm the chain of narration
@@ -447,7 +446,6 @@ function main(hadithData){
   
   for (var i = 0; i < num_books; i++) {
     if(document.getElementById(i).checked){
-      console.log(i)
       arr = arr.concat(hadithData.slice(books[i][0], books[i][1]));
     }
   }
