@@ -26,8 +26,8 @@ Data Challenges:
 - Grades are missing
 - Grade are inconsistant
 
-To scale:
-- Get more resource/books.
+Out of scope:
+- Get more resource data/books.
 - search for hadith and view its sankey
 
 Next Steps:
@@ -38,9 +38,7 @@ Next Steps:
 - Optimize performance
 
 UI:
-- Select wanted books
 - show grade legend
 
 Interaction:
 - Rawi details
-- 
