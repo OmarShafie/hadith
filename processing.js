@@ -252,7 +252,7 @@ function lookupNarrator(index){
   return found
 }
 
-function updateCount(data, source, target){
+function updateCount(data, source, target, hadith){
   // updates the count for [source, target, count] in data
   var found = false;
   var i = 0; 
@@ -262,12 +262,13 @@ function updateCount(data, source, target){
       // narrators index matches
       found = true;
       data[i][2]++; //increment count of the link
+      data[i][3].push(hadith);
     }
     i++;
   }
   if (!found){
     // not found, so add a new link
-    data.push([source, target, 1]);
+    data.push([source, target, 1, [hadith]]);
     }
 }
   function getIndex(key, graph){
@@ -318,7 +319,7 @@ function isCyclic(graph){
 }
 
 function cycleFilter (edges){
-  // edges = [..., [source, target, weight], ...]
+  // edges = [..., [source, target, weight,[h1,h2...]], ...]
   var graph = []; // create an adjacency list of narrators indices graph
   var data = []; // to be returned as polished data
   for(var e = 0; e < edges.length; e++){
@@ -326,14 +327,15 @@ function cycleFilter (edges){
     var source = edges[e][0];
     var target = edges[e][1];
     var weight = edges[e][2];
+    var hadiths = edges[e][3];
     var sourceIndex = getIndex(source[0] + " " + source[1].slice(0,20), graph);
     var targetIndex = getIndex(target[0] + " " + target[1].slice(0,20), graph);
     if (sourceIndex >= 0) {
-      graph[sourceIndex].push([target[0] + " " + target[1].slice(0,20), weight]);
+      graph[sourceIndex].push([target[0] + " " + target[1].slice(0,20), weight, hadiths]);
     }
     else {
       sourceIndex = graph.length;
-      graph.push([[source[0] + " " + source[1].slice(0,20),0],[target[0] + " " + target[1].slice(0,20), weight]]);
+      graph.push([[source[0] + " " + source[1].slice(0,20),0],[target[0] + " " + target[1].slice(0,20), weight, hadiths]]);
     }
 
     if (isCyclic(graph)) {
@@ -347,7 +349,6 @@ function cycleFilter (edges){
       }
       graph[targetIndex][0][1] += weight;
       graph[sourceIndex][0][1] += weight;
-      //data.push([,target[0] + " " + target[1].slice(0,20), weight]);
       //console.log(graph);
     }
   }
@@ -382,10 +383,11 @@ function process(array, callback){
   function loop() {
     var cnt = chunk;
     while (cnt-- && i < array.length-1) {
-      var chain = array[i][6].split(", "); // list of chain of narrators in the sanad(index 6)
+      var hadith = array[i];
+      var chain = hadith[6].split(", "); // list of chain of narrators in the sanad(index 6)
       if(chain.includes(input)){ // hadith has the Rawi(input)
         if (lookupNarrator(chain[0])) {
-          updateCount(tempData, [array[i][2],""], lookupNarrator(chain[0]));
+          updateCount(tempData, [array[i][2],""], lookupNarrator(chain[0]), hadith);
         }
         for(var n = 0; n < chain.length -1;n++) {
           var student = lookupNarrator(chain[n]); //get student details
@@ -407,7 +409,7 @@ function process(array, callback){
             var students = getStudents(teacher); // get list of teacher students
             if (teachers.includes(chain[n+1]) || students.includes(chain[n]) || teachers.length == 0 || students.length == 0) { 
               // if one of them is in the data
-              updateCount(tempData, student, teacher);
+              updateCount(tempData, student, teacher, hadith);
             }
           }
         }
@@ -432,21 +434,26 @@ function afterProcess(temp){
     });
   
   //filter cycles and add lables
-  var graph = cycleFilter(temp); // graph = [..., [[key, Sum(w[1],w[2] ...w[m])], [n1,w[1]], [n2,w[2]], ..., [nm,w[m]] ], ...]
+  var graph = cycleFilter(temp); // graph = [..., [[key, Sum(w[1],w[2] ...w[m])], [n1,w[1]], [n2,w[2]], ..., [nm,w[m]] [h1,h2...] ], ...]
   graph.sort(function(a, b) {
     return b[0][1] - a[0][1];
     });
 
   document.getElementById("btnMessage").innerHTML = "Total of Narrators: " + graph.length;
   var ready_data = [];
-  console.log(graph);
   graph = graph.slice(0, numNarrators);
   console.log(graph);
 
   for (var i = 0; i < graph.length; i++){
     for (var j = 1; j < graph[i].length; j++){
       if (getIndex(graph[i][j][0], graph) >= 0) {
-        ready_data.push([graph[i][0][0], graph[i][j][0], graph[i][j][1]]);
+        var tooltip = "<p>";
+        for(var h = 0; h < graph[i][j][2].length; h++){
+          tooltip += graph[i][j][2][h][7];
+          tooltip += "<br>";
+        }
+        tooltip += "<p>";
+        ready_data.push([graph[i][0][0], graph[i][j][0], graph[i][j][1], tooltip]);
       }
     }
   }
@@ -455,6 +462,7 @@ function afterProcess(temp){
   data.addColumn('string', 'From');
   data.addColumn('string', 'To');
   data.addColumn('number', 'Weight');
+  data.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
   data.addRows(ready_data);
   google.charts.setOnLoadCallback(drawChart(data));
   enableButton();
