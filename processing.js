@@ -5,7 +5,7 @@ var narratorsURL = URL+"all_rawis.csv";
 
 //TODO: Take input from user
 var input = "11013";
-var numLinks = 100;
+var numNarrators = 50;
 
 //Parse Parameters
 var inputType = "remote";
@@ -36,15 +36,15 @@ $(function()
 
       document.getElementById("submit").innerHTML = '<span class="spinner-border spinner-border-sm"></span> Loading..';
       input = document.getElementById("rawi").value;
-      numLinks = document.getElementById("numLinks").value;
+      numNarrators = document.getElementById("numNarrators").value;
       if (input == ""){
         input = "11013";
       }
-      if (numLinks < 1){
-        numLinks = 100;
+      if (numNarrators < 1){
+        numNarrators = 50;
       }
       else {
-        numLinks = parseInt(numLinks)
+        numNarrators = parseInt(numNarrators)
       }
     if (!firstRun){
       console.log("--------------------------------------------------");
@@ -272,9 +272,9 @@ function updateCount(data, source, target){
 }
   function getIndex(key, graph){
     // returns the index of key in the graph
-    // graph = [..., [key, n1, n2 ...], ...]
+    // graph = [..., [[key, Sum(w[1],w[2] ...w[m])], [n1,w[1]], [n2,w[2]], ..., [nm,w[m]] ], ...]
     for(var i = 0; i < graph.length; i++){
-      var vertix = graph[i][0];
+      var vertix = graph[i][0][0];
       if (vertix == key) {
         return i;
       }
@@ -283,19 +283,19 @@ function updateCount(data, source, target){
   }
 
 function isCyclicUtil(v, visited, recStack, graph){
+  //console.log("visiting", v, visited);
   //mark as visited
   visited[v] = true;
   recStack[v] = true;
-  
   var index = getIndex(v, graph);
   if (index >= 0) {
     var node = graph[index];
     for(var neighbour = 1; neighbour < node.length; neighbour++){
-      if (!visited[node[neighbour]]) {
-        if (isCyclicUtil(node[neighbour], visited, recStack, graph)){
+      if (!visited[node[neighbour][0]]) {
+        if (isCyclicUtil(node[neighbour][0], visited, recStack, graph)){
           return true;
         }
-      } else if (recStack[node[neighbour]] == true) {
+      } else if (recStack[node[neighbour][0]] == true) {
         return true
       }
     }
@@ -309,7 +309,7 @@ function isCyclic(graph){
   var recStack = {};
   for (var n = 0; n < graph.length; n++){
     if(!visited[graph[n][0]]){
-      if (isCyclicUtil(graph[n][0],visited,recStack, graph)){
+      if (isCyclicUtil(graph[n][0][0],visited,recStack, graph)){
         return true
       }
     }
@@ -326,23 +326,33 @@ function cycleFilter (edges){
     var source = edges[e][0];
     var target = edges[e][1];
     var weight = edges[e][2];
-    var index = getIndex(source[0], graph);
-    if (index >= 0) {
-      graph[index].push(target[0]);
+    var sourceIndex = getIndex(source[0] + " " + source[1].slice(0,20), graph);
+    var targetIndex = getIndex(target[0] + " " + target[1].slice(0,20), graph);
+    if (sourceIndex >= 0) {
+      graph[sourceIndex].push([target[0] + " " + target[1].slice(0,20), weight]);
     }
     else {
-      index = graph.length;
-      graph.push([source[0],target[0]]);
+      sourceIndex = graph.length;
+      graph.push([[source[0] + " " + source[1].slice(0,20),0],[target[0] + " " + target[1].slice(0,20), weight]]);
     }
+
     if (isCyclic(graph)) {
       console.log("removing link as it creates a cycle", [source[0],target[0]])
-      graph[index].pop(); //remove point as it creates a cycle
+      graph[sourceIndex].pop(); //remove point as it creates a cycle
     }
     else {
-      data.push([source[0] + " " +source[1].slice(0,20),target[0] + " " + target[1].slice(0,20), weight]);
+      if (targetIndex < 0) {
+        targetIndex = graph.length;
+        graph.push([[target[0] + " " + target[1].slice(0,20),0]]);
+      }
+      graph[targetIndex][0][1] += weight;
+      graph[sourceIndex][0][1] += weight;
+      //data.push([,target[0] + " " + target[1].slice(0,20), weight]);
+      //console.log(graph);
     }
   }
-    return data;
+
+  return graph;
 }
 
 function getTeachers(narrator){
@@ -415,20 +425,37 @@ function process(array, callback){
 }
 
 function afterProcess(temp){
+
   // sort data in decending order of importance
   temp.sort(function(a, b) {
     return b[2] - a[2];
     });
   
+  //filter cycles and add lables
+  var graph = cycleFilter(temp); // graph = [..., [[key, Sum(w[1],w[2] ...w[m])], [n1,w[1]], [n2,w[2]], ..., [nm,w[m]] ], ...]
+  graph.sort(function(a, b) {
+    return b[0][1] - a[0][1];
+    });
+
+  document.getElementById("btnMessage").innerHTML = "Total of Narrators: " + graph.length;
+  var ready_data = [];
+  console.log(graph);
+  graph = graph.slice(0, numNarrators);
+  console.log(graph);
+
+  for (var i = 0; i < graph.length; i++){
+    for (var j = 1; j < graph[i].length; j++){
+      if (getIndex(graph[i][j][0], graph) >= 0) {
+        ready_data.push([graph[i][0][0], graph[i][j][0], graph[i][j][1]]);
+      }
+    }
+  }
+
   var data = new google.visualization.DataTable();
   data.addColumn('string', 'From');
   data.addColumn('string', 'To');
   data.addColumn('number', 'Weight');
-  //filter cycles and only select to numLinks and add lables
-  var filtered = cycleFilter(temp);
-  
-  document.getElementById("btnMessage").innerHTML = "Total of links: " + filtered.length;
-  data.addRows(filtered.slice(0,numLinks));
+  data.addRows(ready_data);
   google.charts.setOnLoadCallback(drawChart(data));
   enableButton();
 }
