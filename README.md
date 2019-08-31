@@ -32,7 +32,6 @@ Out of scope:
 
 Next Steps:
 - Show Hadiths in the link
-- Sort by total wight of narrator
 - Sanad Search (squence of rawi)
 - search for rawi
 - Optimize performance
