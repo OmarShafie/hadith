@@ -28,16 +28,36 @@ Data Challenges:
 
 Out of scope:
 - Get more resource data/books.
-- search for hadith and view its sankey
+- Classification of Hadith (Saheeh/ hasan/ Dha'eef)
+  - Possible crowd sourced
+  - Percentage of score for each rawi of accuracy
+  -filter by classification
+  
+
+Ready Features:
+- Visulaize Sankey diagram of Hadiths of any rawi in the 6 books
+- filter by top K number of narrators
+- Filter Hadiths by book
+- Narrators are color coded to highlight grade of narration
+- Sankey Diagram weights represent number of hadiths between any 2 rawis'
 
 Next Steps:
-- Show Hadiths in the link
-- Sanad Search (squence of rawi)
-- search for rawi
+- Populate Hadiths in Link in a table
+- Sanad Search (squence of rawi's)
+- Regex Search/ Bool Search
+- search for rawi by name
 - Optimize performance
-
-UI:
 - show grade legend
-
-Interaction:
-- Rawi details
+- Hover + color code link based on the connection level
+  - tooltip rawi details
+  - add notes and comments: weak kn arabic - israeliyat - marfoo3 7ukmn - 
+  - Tadlees
+  - No connection
+    -who could be missing?
+  - different places
+  - narration term (صيغ التخمل)
+- search for hadith (content) and view its sankey
+  - prefix and suffix + ignore punctuations
+  - find similar hadiths (mutaba'at & shuhood)
+  - color code each route/chain as visual analysis
+  - combine the "Zeyadat" narrations into one steched narration color coded by its route
