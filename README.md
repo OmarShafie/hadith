@@ -32,6 +32,13 @@ Out of scope:
   - Possible crowd sourced
   - Percentage of score for each rawi of accuracy
   -filter by classification
+- Hover + color code link based on the connection level?
+  - add rawi notes and comments: weak in arabic - israeliyat - marfoo3 7ukmn - 
+  - Tadlees
+  - No connection
+    -who could be missing?
+  - different places
+  - narration term (صيغ التخمل)
   
 
 Ready Features:
@@ -40,22 +47,15 @@ Ready Features:
 - Filter Hadiths by book
 - Narrators are color coded to highlight grade of narration
 - Sankey Diagram weights represent number of hadiths between any 2 rawis'
+- Populate Hadiths in Link in a table
 
 Next Steps:
-- Populate Hadiths in Link in a table
-- Sanad Search (squence of rawi's)
-- Regex Search/ Bool Search
-- search for rawi by name
-- Optimize performance
 - show grade legend
-- Hover + color code link based on the connection level
-  - tooltip rawi details
-  - add notes and comments: weak kn arabic - israeliyat - marfoo3 7ukmn - 
-  - Tadlees
-  - No connection
-    -who could be missing?
-  - different places
-  - narration term (صيغ التخمل)
+- tooltip rawi details
+- search for rawi by name
+- Sanad Search (squence of rawi's)
+  - Regex Search/ Bool Search
+- Optimize performance
 - search for hadith (content) and view its sankey
   - prefix and suffix + ignore punctuations
   - find similar hadiths (mutaba'at & shuhood)
