@@ -447,13 +447,14 @@ function afterProcess(temp){
   for (var i = 0; i < graph.length; i++){
     for (var j = 1; j < graph[i].length; j++){
       if (getIndex(graph[i][j][0], graph) >= 0) {
-        var tooltip = "<p>";
+        var tooltip = '<div class="hadithTooltip" ><table><thead><tr><th>'+graph[i][0][0]+"<br>---"+graph[i][j][2].length+"---><br>"+graph[i][j][0]+'</th></tr></thead><tbody>';
         for(var h = 0; h < graph[i][j][2].length; h++){
+          tooltip += "<tr><td>";
           tooltip += graph[i][j][2][h][7];
-          tooltip += "<br>";
+          tooltip += "</td></tr>";
         }
-        tooltip += "<p>";
-        ready_data.push([graph[i][0][0], graph[i][j][0], graph[i][j][1], tooltip]);
+        tooltip += "</tbody></table></div>";
+        ready_data.push([graph[i][0][0], graph[i][j][0], graph[i][j][1],tooltip]);
       }
     }
   }
@@ -464,6 +465,7 @@ function afterProcess(temp){
   data.addColumn('number', 'Weight');
   data.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
   data.addRows(ready_data);
+
   google.charts.setOnLoadCallback(drawChart(data));
   enableButton();
 }

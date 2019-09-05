@@ -11,6 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.0.2/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script type="text/javascript">
+
       google.charts.load('current', {'packages':['sankey']});
       function drawChart(data) {
         
@@ -27,7 +28,7 @@
             iterations: 100,
             link: { color: { fill: 'paleturquoise', fillOpacity: 0.8 } },
             node: {
-               //nodePadding: 80,
+              interactivity:true,
               label: { fontName: 'Times-Roman',
                          fontSize: 12,
                          italic: true }
@@ -35,36 +36,44 @@
           }
         };
 
-  var chartDiv = document.getElementById('sankey_basic');
-  var chart = new google.visualization.Sankey(chartDiv);
-        
-        var colorMap = {};
-        var textIndex = 0;
-        var rectIndex = 0;
-        var pathIndex = 0;
-  var observer = new MutationObserver(function (mutations) {
-    mutations.forEach(function (mutation) {
-      mutation.addedNodes.forEach(function (node) {
-        if (node.tagName === 'text') {
-          colorMap[textIndex] = gradeToColor(getNarratorGrade(node.innerHTML));
-          textIndex++;
-        }
-        if (node.tagName === 'rect') {
-          node.setAttribute('fill', colorMap[rectIndex]);
-          rectIndex++;
+        var chartDiv = document.getElementById('sankey_basic');
+        var chart = new google.visualization.Sankey(chartDiv);
+              
+              var colorMap = {};
+              var textIndex = 0;
+              var rectIndex = 0;
+              var pathIndex = 0;
+        var observer = new MutationObserver(function (mutations) {
+          mutations.forEach(function (mutation) {
+            mutation.addedNodes.forEach(function (node) {
+              if (node.tagName === 'text') {
+                colorMap[textIndex] = gradeToColor(getNarratorGrade(node.innerHTML));
+                textIndex++;
+              }
+              if (node.tagName === 'rect') {
+                node.setAttribute('fill', colorMap[rectIndex]);
+                rectIndex++;
+              }
+            });
+          });
+        });
+              
+        observer.observe(chartDiv, {
+          childList: true,
+          subtree: true
+        });
+
+        google.visualization.events.addListener(chart, 'select', function() {
+        var sel = chart.getSelection();
+        if (sel.length) {
+          console.log(sel[0].name)
         }
       });
-    });
-  });
-        
-  observer.observe(chartDiv, {
-    childList: true,
-    subtree: true
-  });
 
         chart.draw(data, options);
       }
     </script>
+    <link rel="stylesheet" type="text/css" href="main.css">
   </head>
   <body>
     <h1 class="text-center">Hadith Visualizer</h1>
@@ -103,5 +112,20 @@
       </div>
     </div> 
     <script src="processing.js"></script>
+    <script type="text/javascript">
+      const el = document.querySelector("#sankey_basic");
+      el.addEventListener("click", (e) => {
+        el.style.setProperty('--x', e.offsetX -200 + "px");
+        el.style.setProperty('--y', e.offsetY -150 + "px");
+        el.style.setProperty('--v', "visible");
+      }, true);
+
+      el.addEventListener("mousemove", (e) => {
+        if (e.offsetX > 400 || e.offsetX < 10 || e.offsetY > 200 || e.offsetY < -100) {
+          el.style.setProperty('--v', "hidden");
+        }
+        console.log(e.offsetX, e.offsetY);
+      });
+    </script>
   </body>
 </html>
