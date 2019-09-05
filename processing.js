@@ -339,7 +339,7 @@ function cycleFilter (edges){
     }
 
     if (isCyclic(graph)) {
-      console.log("removing link as it creates a cycle", [source[0],target[0]])
+      //console.log("removing link as it creates a cycle", [source[0],target[0]])
       graph[sourceIndex].pop(); //remove point as it creates a cycle
     }
     else {
@@ -349,7 +349,6 @@ function cycleFilter (edges){
       }
       graph[targetIndex][0][1] += weight;
       graph[sourceIndex][0][1] += weight;
-      //console.log(graph);
     }
   }
 
@@ -395,10 +394,10 @@ function process(array, callback){
           var teacher = lookupNarrator(chain[n+1]); //get teacher details
           if(student.length == 2) {
             // student is missing from the dataset
-            console.log("narrator is missing", chain[n]);
+            //console.log("narrator is missing", chain[n]);
           } else if (teacher.length == 2) {
             // teacher is missing from the dataset
-            console.log("narrator is missing", chain[n+1]);
+            //console.log("narrator is missing", chain[n+1]);
           }
           else{
             //confirm the chain of narration
@@ -442,16 +441,28 @@ function afterProcess(temp){
   document.getElementById("btnMessage").innerHTML = "Total of Narrators: " + graph.length;
   var ready_data = [];
   graph = graph.slice(0, numNarrators);
-  console.log(graph);
 
   for (var i = 0; i < graph.length; i++){
     for (var j = 1; j < graph[i].length; j++){
       if (getIndex(graph[i][j][0], graph) >= 0) {
-        var tooltip = '<div class="hadithTooltip" ><table><thead><tr><th>'+graph[i][0][0]+"<br>---"+graph[i][j][2].length+"---><br>"+graph[i][j][0]+'</th></tr></thead><tbody>';
+        var tooltip = '<div class="hadithTooltip" ><table><thead><tr>';
+        tooltip += '<th>'+graph[i][0][0]+"---"+graph[i][j][2].length+"--->"+graph[i][j][0]+'</th>';
+        tooltip += '<th>Id</th>';
+        tooltip += '<th>Book</th>';
+        tooltip += '</tr></thead><tbody>';
         for(var h = 0; h < graph[i][j][2].length; h++){
           tooltip += "<tr><td>";
           tooltip += graph[i][j][2][h][7];
+          tooltip += "</td>";
+
+          tooltip += "<td>";
+          tooltip += graph[i][j][2][h][4];
+          tooltip += "</td>";
+
+          tooltip += "<td>";
+          tooltip += graph[i][j][2][h][2];
           tooltip += "</td></tr>";
+
         }
         tooltip += "</tbody></table></div>";
         ready_data.push([graph[i][0][0], graph[i][j][0], graph[i][j][1],tooltip]);
