@@ -25,7 +25,7 @@ Data Challenges:
 - chain dows not show if this is a Prophet Hadith or a Companion
 - Grades are missing
 - Grade are inconsistant
-- chain data is incorrect
+- chain data is incorrect (Test ran found 19348 mistaken chain out of 34409!) - Bukhari had 2475 faulty chains.
 
 Out of scope:
 - Get more resource data/books.
