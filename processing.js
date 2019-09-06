@@ -16,6 +16,7 @@ var maxUnparseLength = 10000;
 
 var isParsingDone = false;
 var parsedData;
+var HadithArr = [];
 
 $(function()
   {
@@ -167,12 +168,12 @@ function lookupNarrator(scholar_index){
 }
 
 function updateCount(data, source, target, hadith){
-  // updates the count for [source, target, count] in data
+  // updates the count for [source, target, count,[h1,h2...]] in data
   var found = false;
   var i = 0; 
   //TODO: Optimize this
   while(!found && i < data.length){
-    if(data[i][0][0] == source[0] && data[i][1][0] == target[0]){
+    if(data[i][0] == source && data[i][1] == target){
       // narrators index matches
       found = true;
       data[i][2]++; //increment count of the link
@@ -242,14 +243,14 @@ function cycleFilter (edges){
     var target = edges[e][1];
     var weight = edges[e][2];
     var hadiths = edges[e][3];
-    var sourceIndex = getIndex(source[0] + " " + source[1].slice(0,20), graph);
-    var targetIndex = getIndex(target[0] + " " + target[1].slice(0,20), graph);
+    var sourceIndex = getIndex(source, graph);
+    var targetIndex = getIndex(target, graph);
     if (sourceIndex >= 0) {
-      graph[sourceIndex].push([target[0] + " " + target[1].slice(0,20), weight, hadiths]);
+      graph[sourceIndex].push([target, weight, hadiths]);
     }
     else {
       sourceIndex = graph.length;
-      graph.push([[source[0] + " " + source[1].slice(0,20),0],[target[0] + " " + target[1].slice(0,20), weight, hadiths]]);
+      graph.push([[source,0],[target, weight, hadiths]]);
     }
 
     if (isCyclic(graph)) {
@@ -259,7 +260,7 @@ function cycleFilter (edges){
     else {
       if (targetIndex < 0) {
         targetIndex = graph.length;
-        graph.push([[target[0] + " " + target[1].slice(0,20),0]]);
+        graph.push([[target,0]]);
       }
       graph[targetIndex][0][1] += weight;
       graph[sourceIndex][0][1] += weight;
@@ -298,14 +299,16 @@ function process(array, callback){
   var tempData = []; //to be passed to after process
   var chunk = 300;
   var i = 1;
+  var counter = 0;
   function loop() {
     var cnt = chunk;
     while (cnt-- && i < array.length-1) {
-      var hadith = array[i];
-      var chain = hadith[6].split(", "); // list of chain of narrators in the sanad(index 6)
+      var hadithId = i;
+      var markedHadith = false;
+      var chain = array[i][6].split(", "); // list of chain of narrators in the sanad(index 6)
       if(rawiQuery(chain)){
         //add source book
-        updateCount(tempData, [array[i][2],""], lookupNarrator(chain[0]), hadith);
+        updateCount(tempData, array[i][2], chain[0], hadithId);
 
         for(var n = 0; n < chain.length -1;n++) {
           var student = lookupNarrator(chain[n]); //get student details
@@ -327,8 +330,17 @@ function process(array, callback){
             var students = getStudents(teacher); // get list of teacher students
             if (teachers.includes(chain[n+1]) || students.includes(chain[n]) || teachers.length == 0 || students.length == 0) { 
               // if one of them is in the data
-              updateCount(tempData, student, teacher, hadith);
+              updateCount(tempData, chain[n], chain[n+1], hadithId);
             }
+            else
+            {
+              if (!markedHadith) {
+                counter++;
+                markedHadith = true;
+                console.log(counter);
+              }
+            }
+            
           }
         }
       }
@@ -337,8 +349,9 @@ function process(array, callback){
     if ( i < array.length-1) {                      //the condition
       setTimeout(loop, 1); //rerun when condition is true
     } else { 
+      document.getElementById("btnMessage").innerHTML = "Done Processing in ..."+ (now() - startTime);
+
       callback(tempData);
-      console.log("Done Processing in ...", now() - startTime);
     }
   }
   loop();                                         //start with 0
@@ -357,39 +370,52 @@ function afterProcess(temp){
     return b[0][1] - a[0][1];
     });
 
-  document.getElementById("btnMessage").innerHTML = "Total of Narrators: " + graph.length;
+  document.getElementById("btnMessage").innerHTML += "    Total of Narrators: " + graph.length;
   var ready_data = [];
   graph = graph.slice(0, numNarrators);
 
+
+  var names = [];
   for (var i = 0; i < graph.length; i++){
-    for (var j = 1; j < graph[i].length; j++){
-      if (getIndex(graph[i][j][0], graph) >= 0) {
+    var node = graph[i];
+    var narrator = lookupNarrator(node[0][0]);
+    var name = narrator = narrator[0]+" "+narrator[1].slice(0,20);
+    names.push(name);
+  }
+
+  for (var i = 0; i < graph.length; i++){
+    var node = graph[i];
+    var nodeInd = getIndex(node[0][0], graph);
+    for (var j = 1; j < node.length; j++){
+      var index = getIndex(node[j][0], graph);
+      if (index >= 0) {
         var tooltip = '<div class="hadithTooltip" ><table><thead><tr>';
-        tooltip += '<th>'+graph[i][0][0]+"---"+graph[i][j][2].length+"--->"+graph[i][j][0]+'</th>';
+        tooltip += '<th>'+names[nodeInd]+"---"+node[j][2].length+"--->"+names[index]+'</th>';
         tooltip += '<th>Id</th>';
         tooltip += '<th>Chain</th>';
         tooltip += '<th>Book</th>';
         tooltip += '</tr></thead><tbody>';
-        for(var h = 0; h < graph[i][j][2].length; h++){
+        for(var h = 0; h < node[j][2].length; h++){
+          var hadith = HadithArr[(node[j][2][h])];
           tooltip += "<tr><td>";
-          tooltip += graph[i][j][2][h][7];
+          tooltip += hadith[7];
           tooltip += "</td>";
 
           tooltip += "<td>";
-          tooltip += graph[i][j][2][h][4];
+          tooltip += hadith[4];
           tooltip += "</td>";
 
           tooltip += "<td>";
-          tooltip += graph[i][j][2][h][6];
+          tooltip += hadith[6];
           tooltip += "</td>";
 
           tooltip += "<td>";
-          tooltip += graph[i][j][2][h][2];
+          tooltip += hadith[2];
           tooltip += "</td></tr>";
 
         }
         tooltip += "</tbody></table></div>";
-        ready_data.push([graph[i][0][0], graph[i][j][0], graph[i][j][1],tooltip]);
+        ready_data.push([names[nodeInd], names[index], node[j][1],tooltip]);
       }
     }
   }
@@ -404,8 +430,9 @@ function afterProcess(temp){
   google.charts.setOnLoadCallback(drawChart(data));
   enableButton();
 }
+
 function main(hadithData){
-  var arr = [];
+  HadithArr = [];
   var num_books = 6;
   var books = {
     0: [1    , 7371],
@@ -418,10 +445,10 @@ function main(hadithData){
   
   for (var i = 0; i < num_books; i++) {
     if(document.getElementById(i).checked){
-      arr = arr.concat(hadithData.slice(books[i][0], books[i][1]));
+      HadithArr = HadithArr.concat(hadithData.slice(books[i][0], books[i][1]));
     }
   }
-  process(arr, afterProcess);
+  process(HadithArr, afterProcess);
 }
 
 window.onload = function (){ document.getElementById("submit").click();}
