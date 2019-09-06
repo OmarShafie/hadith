@@ -25,6 +25,7 @@ Data Challenges:
 - chain dows not show if this is a Prophet Hadith or a Companion
 - Grades are missing
 - Grade are inconsistant
+- chain data is incorrect
 
 Out of scope:
 - Get more resource data/books.
