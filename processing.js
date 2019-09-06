@@ -98,7 +98,6 @@ function saveNarrators(results)
 {
 
   document.getElementById("btnMessage").innerHTML = "Parsed Narrators...";
-  end = now();
 
   if (results && results.errors)
   {
@@ -132,7 +131,6 @@ function completeFn(results)
   isParsingDone = true;
   parsedData = results.data;
   enableButton()
-  //main(parsedData, narratorsData);
 }
 
 function errorFn(err, file)
@@ -155,99 +153,15 @@ function now()
   : 0;
 }
 /*-------------- Main Code -------------*/
-function getNarratorGrade(tag){
-  var narrator_index = tag.split(" ")[0];
-  var narrator = lookupNarrator(narrator_index);
-  if (narrator.length === 25) {
-    return narrator[12];
-  }
-  return "NA";
-}
 
-function gradeToColor(grade){
-  var mapping = {
-    1 : "darkgreen",
-    2 : "seagreen",
-    3 : "mediumseagreen",
-    4 : "mediumseagreen",
-    5 : "springgreen",
-    6 : "lime",
-    7 : "greenyellow",
-    8 : "yellow",
-    9 : "gold",
-    10: "coral",
-    11: "lightcoral",
-    12: "salmon",
-    13: "red",
-    14: "crimson",
-    15: "maroon",
-    16: "silver",
-    17: "lightslategray",
-    18: "darkslategray",
-  };
-  if (grade.includes("صحابي") || grade.includes("صحابة") || grade.includes("صحبة")){
-    return mapping[1];
-  }
-  else if (grade.includes("أوثق")){
-    return mapping[2];
-  }
-  else if (grade.includes("Narrator[Grade:Thiqah Thiqah]") || grade.includes("ثبت")  || grade.includes("حافظ") || grade.includes("ثقة ثقة")){
-    return mapping[3];
-  }
-  else if (grade.includes("Narrator[Grade:No Doubt]")  || grade.includes("البخاري")  || grade.includes("مسلم")){
-    return mapping[4];
-  }
-  else if (grade.includes("Narrator[Grade:Thiqah]") || grade.includes("ثقة")){
-    return mapping[5];
-  }
-  else if (grade.includes("Narrator[4") || grade.includes("الأربعة") || grade.includes("الستة")){
-    return mapping[6];
-  }
-  else if (grade.includes("Narrator[Grade:Sadooq]") || grade.includes("صدوق")  ){
-    return mapping[7];
-  }
-  else if (grade.includes("Narrator[Grade:Sadooq/Delusion]")){
-    return mapping[8];
-  }
-  else if (grade.includes("Narrator[Grade:Maqbool]")  || grade.includes("مقبول")){
-    return mapping[9];
-  }
-  else if (grade.includes("لين")){
-    return mapping[10];
-  }
-  else if (grade.includes("Narrator[Grade:Not Thiqah]") || grade.includes("Narrator[Grade:Unknown-Majhool]") || grade.includes("مجهول") || grade.includes("مستور")){
-    return mapping[11];
-  }
-  else if (grade.includes("Narrator[Grade:Undefined]")){
-    return mapping[12];
-  }
-  else if (grade.includes("Narrator[Grade:Abandoned]") || grade.includes("متروك") || grade.includes("منكر")){
-    return mapping[13];
-  }
-  else if (grade.includes("Narrator[Grade:Weak]") || grade.includes("ضعيف")){
-    return mapping[14];
-  }
-  else if (grade.includes("Narrator[Grade:Liar]") || grade.includes("كذب")){
-    return mapping[15];
-  }
-  else if (grade.includes("Narrator")){
-    return mapping[16];
-  }
-  else if (grade.includes("NA")){
-    return mapping[17];
-  }
-  else{
-    return mapping[18];
-  }
-}
-function lookupNarrator(index){
+function lookupNarrator(scholar_index){
   //returns data of the narrator with index from the narratorsData
   var found = narratorsData.find(function(element) {
-    return element[0] == index;
+    return element[0] == scholar_index;
   });
   if (!found){
     // else create a narrator data
-    found = [index,index]
+    found = [scholar_index, scholar_index];
   }
   return found
 }
@@ -373,10 +287,15 @@ function now() {
         return new Date().getTime();
     }
 
+function rawiQuery(chain){
+   // hadith has the Rawi(input)
+  return chain.includes(input);
+}
+
 function process(array, callback){
   document.getElementById("btnMessage").innerHTML = "Start Processing...";
   var startTime = now();
-  var tempData = [];
+  var tempData = []; //to be passed to after process
   var chunk = 300;
   var i = 1;
   function loop() {
@@ -384,10 +303,10 @@ function process(array, callback){
     while (cnt-- && i < array.length-1) {
       var hadith = array[i];
       var chain = hadith[6].split(", "); // list of chain of narrators in the sanad(index 6)
-      if(chain.includes(input)){ // hadith has the Rawi(input)
-        if (lookupNarrator(chain[0])) {
-          updateCount(tempData, [array[i][2],""], lookupNarrator(chain[0]), hadith);
-        }
+      if(rawiQuery(chain)){
+        //add source book
+        updateCount(tempData, [array[i][2],""], lookupNarrator(chain[0]), hadith);
+
         for(var n = 0; n < chain.length -1;n++) {
           var student = lookupNarrator(chain[n]); //get student details
           // TODO: optimize perfomance
@@ -448,6 +367,7 @@ function afterProcess(temp){
         var tooltip = '<div class="hadithTooltip" ><table><thead><tr>';
         tooltip += '<th>'+graph[i][0][0]+"---"+graph[i][j][2].length+"--->"+graph[i][j][0]+'</th>';
         tooltip += '<th>Id</th>';
+        tooltip += '<th>Chain</th>';
         tooltip += '<th>Book</th>';
         tooltip += '</tr></thead><tbody>';
         for(var h = 0; h < graph[i][j][2].length; h++){
@@ -457,6 +377,10 @@ function afterProcess(temp){
 
           tooltip += "<td>";
           tooltip += graph[i][j][2][h][4];
+          tooltip += "</td>";
+
+          tooltip += "<td>";
+          tooltip += graph[i][j][2][h][6];
           tooltip += "</td>";
 
           tooltip += "<td>";
