@@ -19,11 +19,11 @@ Challenges:
 - Cycle detection
 
 Data Challenges:
-- It misses the narration term between the links
+- It misses the narration term between the links (صيغ الأداء)
 - student-teacher relation is not complete list
 - some narrators are missing from the data
-- chain dows not show if this is a Prophet Hadith or a Companion
-- Grades are missing
+- chain does not show if this is a Prophet Hadith or a Companion (منتهى الإسناد)
+- Grades are missing (درجة الراوي)
 - Grade are inconsistant
 - chain data is incorrect (Test ran found 19348 mistaken chain out of 34409!) - Bukhari had 2475 faulty chains.
 
