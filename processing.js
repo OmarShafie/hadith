@@ -290,7 +290,7 @@ function now() {
 
 function rawiQuery(chain){
    // hadith has the Rawi(input)
-  return chain.includes(input);
+  return true;//chain.includes(input);
 }
 
 function process(array, callback){
@@ -336,8 +336,8 @@ function process(array, callback){
             {
               if (!markedHadith) {
                 counter++;
-                markedHadith = true;
-                console.log(counter);
+                //markedHadith = true;
+                console.log(counter, "....", "Hadith, Rawi: ",i,student[0]);
               }
             }
             
