@@ -1,218 +1,138 @@
 <html>
   <head>
-    <title>Viz Hadith</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.0.2/papaparse.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.0.2/papaparse.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script type="text/javascript">
-      function getNarratorGrade(tag){
-      var narrator_index = tag.split(" ")[0];
-      var narrator = lookupNarrator(narrator_index);
-      if (narrator.length === 25) {
-        return narrator[12];
-      }
-      return "NA";
-    }
-
-    function gradeToColor(grade){
-      var mapping = {
-        1 : "darkgreen",
-        2 : "seagreen",
-        3 : "mediumseagreen",
-        4 : "mediumseagreen",
-        5 : "springgreen",
-        6 : "lime",
-        7 : "greenyellow",
-        8 : "yellow",
-        9 : "gold",
-        10: "coral",
-        11: "lightcoral",
-        12: "salmon",
-        13: "red",
-        14: "crimson",
-        15: "maroon",
-        16: "silver",
-        17: "lightslategray",
-        18: "darkslategray",
-      };
-      if (grade.includes("صحابي") || grade.includes("صحابة") || grade.includes("صحبة")){
-        return mapping[1];
-      }
-      else if (grade.includes("أوثق")){
-        return mapping[2];
-      }
-      else if (grade.includes("Narrator[Grade:Thiqah Thiqah]") || grade.includes("ثبت")  || grade.includes("حافظ") || grade.includes("ثقة ثقة")){
-        return mapping[3];
-      }
-      else if (grade.includes("Narrator[Grade:No Doubt]")  || grade.includes("البخاري")  || grade.includes("مسلم")){
-        return mapping[4];
-      }
-      else if (grade.includes("Narrator[Grade:Thiqah]") || grade.includes("ثقة")){
-        return mapping[5];
-      }
-      else if (grade.includes("Narrator[4") || grade.includes("الأربعة") || grade.includes("الستة")){
-        return mapping[6];
-      }
-      else if (grade.includes("Narrator[Grade:Sadooq]") || grade.includes("صدوق")  ){
-        return mapping[7];
-      }
-      else if (grade.includes("Narrator[Grade:Sadooq/Delusion]")){
-        return mapping[8];
-      }
-      else if (grade.includes("Narrator[Grade:Maqbool]")  || grade.includes("مقبول")){
-        return mapping[9];
-      }
-      else if (grade.includes("لين")){
-        return mapping[10];
-      }
-      else if (grade.includes("Narrator[Grade:Not Thiqah]") || grade.includes("Narrator[Grade:Unknown-Majhool]") || grade.includes("مجهول") || grade.includes("مستور")){
-        return mapping[11];
-      }
-      else if (grade.includes("Narrator[Grade:Undefined]")){
-        return mapping[12];
-      }
-      else if (grade.includes("Narrator[Grade:Abandoned]") || grade.includes("متروك") || grade.includes("منكر")){
-        return mapping[13];
-      }
-      else if (grade.includes("Narrator[Grade:Weak]") || grade.includes("ضعيف")){
-        return mapping[14];
-      }
-      else if (grade.includes("Narrator[Grade:Liar]") || grade.includes("كذب")){
-        return mapping[15];
-      }
-      else if (grade.includes("Narrator")){
-        return mapping[16];
-      }
-      else if (grade.includes("NA")){
-        return mapping[17];
-      }
-      else{
-        return mapping[18];
-      }
-    }
-
       google.charts.load('current', {'packages':['sankey']});
-      function drawChart(data) {
-        
+      google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'From');
+        data.addColumn('string', 'To');
+        data.addColumn('number', 'Weight');
+        data.addRows([
+          ['البخاري','الحميدي عبد الله بن الزبير',1],
+['الحميدي عبد الله بن الزبير','سفيان بن عيينة',1],
+['سفيان بن عيينة',' يحيى بن سعيد الأنصاري',1],
+[' يحيى بن سعيد الأنصاري','محمد بن إبراهيم التيمي',1],
+['محمد بن إبراهيم التيمي','علقمة بن وقاص الليثي',1],
+['علقمة بن وقاص الليثي','عمر بن الخطاب',1],
+['عمر بن الخطاب','رسول الله صلى الله عليه وسلم',1],
+['البخاري','عبد الله بن مسلمة',1],
+['عبد الله بن مسلمة','مالك بن أنس',1],
+['مالك بن أنس',' يحيى بن سعيد الأنصاري',1],
+[' يحيى بن سعيد الأنصاري','محمد بن إبراهيم التيمي',1],
+['محمد بن إبراهيم التيمي','علقمة بن وقاص الليثي',1],
+['علقمة بن وقاص الليثي','عمر بن الخطاب',1],
+['عمر بن الخطاب','رسول الله صلى الله عليه وسلم',1],
+['البخاري','محمد بن كثير',1],
+['محمد بن كثير','سفيان الثوري',1],
+['سفيان الثوري',' يحيى بن سعيد الأنصاري',1],
+[' يحيى بن سعيد الأنصاري','محمد بن إبراهيم التيمي',1],
+['محمد بن إبراهيم التيمي','علقمة بن وقاص الليثي',1],
+['علقمة بن وقاص الليثي','عمر بن الخطاب',1],
+['عمر بن الخطاب','رسول الله صلى الله عليه وسلم',1],
+['البخاري','مسدد بن مسرهد',1],
+['مسدد بن مسرهد','حماد بن زيد',1],
+['حماد بن زيد',' يحيى بن سعيد الأنصاري',1],
+[' يحيى بن سعيد الأنصاري','محمد بن إبراهيم التيمي',1],
+['محمد بن إبراهيم التيمي','علقمة بن وقاص الليثي',1],
+['علقمة بن وقاص الليثي','عمر بن الخطاب',1],
+['عمر بن الخطاب','رسول الله صلى الله عليه وسلم',1],
+['البخاري','يحيى بن قزعة القرشي',1],
+['يحيى بن قزعة القرشي','مالك بن أنس',1],
+['مالك بن أنس',' يحيى بن سعيد الأنصاري',1],
+[' يحيى بن سعيد الأنصاري','محمد بن إبراهيم التيمي',1],
+['محمد بن إبراهيم التيمي','علقمة بن وقاص الليثي',1],
+['علقمة بن وقاص الليثي','عمر بن الخطاب',1],
+['عمر بن الخطاب','رسول الله صلى الله عليه وسلم',1],
+['البخاري','قتيبة بن سعيد',1],
+['قتيبة بن سعيد','عبد الوهاب بن عبد المجيد',1],
+['عبد الوهاب بن عبد المجيد',' يحيى بن سعيد الأنصاري',1],
+[' يحيى بن سعيد الأنصاري','محمد بن إبراهيم التيمي',1],
+['محمد بن إبراهيم التيمي','علقمة بن وقاص الليثي',1],
+['علقمة بن وقاص الليثي','عمر بن الخطاب',1],
+['عمر بن الخطاب','رسول الله صلى الله عليه وسلم',1],
+['البخاري','محمد بن الفضل السدوسي',1],
+['محمد بن الفضل السدوسي','حماد بن زيد',1],
+['حماد بن زيد',' يحيى بن سعيد الأنصاري',1],
+[' يحيى بن سعيد الأنصاري','محمد بن إبراهيم التيمي',1],
+['محمد بن إبراهيم التيمي','علقمة بن وقاص الليثي',1],
+['علقمة بن وقاص الليثي','عمر بن الخطاب',1],
+['عمر بن الخطاب','رسول الله صلى الله عليه وسلم',1],
+['مسلم','عبد الله بن مسلمة بن قعنب',1],
+['عبد الله بن مسلمة بن قعنب','مالك بن أنس',1],
+['مالك بن أنس',' يحيى بن سعيد الأنصاري',1],
+[' يحيى بن سعيد الأنصاري','محمد بن إبراهيم التيمي',1],
+['محمد بن إبراهيم التيمي','علقمة بن وقاص الليثي',1],
+['علقمة بن وقاص الليثي','عمر بن الخطاب',1],
+['عمر بن الخطاب','رسول الله صلى الله عليه وسلم',1],
+['النسائي','يحيى بن حبيب الحارثي',1],
+['يحيى بن حبيب الحارثي','حماد بن زيد',1],
+['حماد بن زيد',' يحيى بن سعيد الأنصاري',1],
+['النسائي','الحارث بن مسكين',1],
+['الحارث بن مسكين','عبدالرحمن بن القاسم العتقي',1],
+['عبدالرحمن بن القاسم العتقي','مالك بن أنس',1],
+['مالك بن أنس',' يحيى بن سعيد الأنصاري',1],
+['النسائي','سليمان بن منصور البلخي',1],
+['سليمان بن منصور البلخي','عبدالله بن المبارك',1],
+['عبدالله بن المبارك',' يحيى بن سعيد الأنصاري',1],
+[' يحيى بن سعيد الأنصاري','محمد بن إبراهيم التيمي',3],
+['محمد بن إبراهيم التيمي','علقمة بن وقاص الليثي',3],
+['علقمة بن وقاص الليثي','عمر بن الخطاب',3],
+['عمر بن الخطاب','رسول الله صلى الله عليه وسلم',3],
+['النسائي','عمرو بن منصور',1],
+['عمرو بن منصور','عبد الله بن مسلمة بن قعنب',1],
+['عبد الله بن مسلمة بن قعنب','مالك بن أنس',1],
+['النسائي','الحارث بن مسكين',1],
+['الحارث بن مسكين','عبدالرحمن بن القاسم العتقي',1],
+['عبدالرحمن بن القاسم العتقي','مالك بن أنس',1],
+['مالك بن أنس',' يحيى بن سعيد الأنصاري',2],
+[' يحيى بن سعيد الأنصاري','محمد بن إبراهيم التيمي',2],
+['محمد بن إبراهيم التيمي','علقمة بن وقاص الليثي',2],
+['علقمة بن وقاص الليثي','عمر بن الخطاب',2],
+['عمر بن الخطاب','رسول الله صلى الله عليه وسلم',2],
+['النسائي','إسحاق بن راهويه',1],
+['إسحاق بن راهويه','سليمان بن حيان الأحمر',1],
+['سليمان بن حيان الأحمر',' يحيى بن سعيد الأنصاري',1],
+[' يحيى بن سعيد الأنصاري','محمد بن إبراهيم التيمي',1],
+['محمد بن إبراهيم التيمي','علقمة بن وقاص الليثي',1],
+['علقمة بن وقاص الليثي','عمر بن الخطاب',1],
+['عمر بن الخطاب','رسول الله صلى الله عليه وسلم',1],
+['أبو داوود','محمد بن كثير',1],
+['محمد بن كثير','سفيان الثوري',1],
+['سفيان الثوري',' يحيى بن سعيد الأنصاري',1],
+[' يحيى بن سعيد الأنصاري','محمد بن إبراهيم التيمي',1],
+['محمد بن إبراهيم التيمي','علقمة بن وقاص الليثي',1],
+['علقمة بن وقاص الليثي','عمر بن الخطاب',1],
+['عمر بن الخطاب','رسول الله صلى الله عليه وسلم',1],
+['الترمذى','محمد بن المثنى',1],
+['محمد بن المثنى','عبد الوهاب بن عبد المجيد',1],
+['عبد الوهاب بن عبد المجيد',' يحيى بن سعيد الأنصاري',1],
+[' يحيى بن سعيد الأنصاري','محمد بن إبراهيم التيمي',1],
+['محمد بن إبراهيم التيمي','علقمة بن وقاص الليثي',1],
+['علقمة بن وقاص الليثي','عمر بن الخطاب',1],
+['عمر بن الخطاب','رسول الله صلى الله عليه وسلم',1],
+['ابن ماجه','أبو بكر بن أبي شيبة',1],
+['أبو بكر بن أبي شيبة','يزيد بن هارون',1],
+['يزيد بن هارون',' يحيى بن سعيد الأنصاري',1],
+[' يحيى بن سعيد الأنصاري','محمد بن إبراهيم التيمي',2],
+['محمد بن إبراهيم التيمي','علقمة بن وقاص الليثي',2],
+['علقمة بن وقاص الليثي','عمر بن الخطاب',2],
+['عمر بن الخطاب','رسول الله صلى الله عليه وسلم',2],
+['ابن ماجه','محمد بن رمح',1],
+['محمد بن رمح','الليث بن سعد',1],
+['الليث بن سعد',' يحيى بن سعيد الأنصاري',1],
+        ]);
         // Sets chart options.
         var options = {
-          width: 1366,
-          height: 700,
-          tooltip: {isHtml: true},
-          sankey: {
-            allowHtml: 'true',
-            tooltip: {
-                isHtml: 'true'
-            },
-            iterations: 100,
-            link: { color: { fill: 'paleturquoise', fillOpacity: 0.6 } },
-            node: {
-              interactivity:true,
-              //nodePadding: 50,
-              label: {
-                //fontName: 'Times-Roman',
-                fontSize: 10,
-                //italic: true,
-              }
-            },
-          }
         };
-
-        var chartDiv = document.getElementById('sankey_basic');
-        var chart = new google.visualization.Sankey(chartDiv);
-              
-              var colorMap = {};
-              var textIndex = 0;
-              var rectIndex = 0;
-              var pathIndex = 0;
-        var observer = new MutationObserver(function (mutations) {
-          mutations.forEach(function (mutation) {
-            mutation.addedNodes.forEach(function (node) {
-              if (node.tagName === 'text') {
-                colorMap[textIndex] = gradeToColor(getNarratorGrade(node.innerHTML));
-                textIndex++;
-              }
-              if (node.tagName === 'rect') {
-                node.setAttribute('fill', colorMap[rectIndex]);
-                rectIndex++;
-              }
-            });
-          });
-        });
-              
-        observer.observe(chartDiv, {
-          childList: true,
-          subtree: true
-        });
-
-        google.visualization.events.addListener(chart, 'select', function() {
-        var sel = chart.getSelection();
-        if (sel.length) {
-          console.log(sel[0].name)
-        }
-      });
-
+        // Instantiates and draws our chart, passing in some options.
+        var chart = new google.visualization.Sankey(document.getElementById('sankey_basic'));
         chart.draw(data, options);
       }
     </script>
-    <link rel="stylesheet" type="text/css" href="main.css">
   </head>
   <body>
-    <h1 class="text-center">Hadith Visualizer</h1>
-    <h2 class="text-center small">Visual Analysis of hadith narration chains.</h2>
-    
-  <div class="container">
-    <div class="row justify-content-center mx-3 form-inline">
-        <div class="col-2">
-          <input type="checkbox" id="0" value=1 checked> Bukhari <br>
-          <input type="checkbox" id="2" value=1 checked> Abu Daw'ud  <br>
-          <input type="checkbox" id="4" value=1 checked> Nasa'i <br>
-        </div>
-        <div class="col-2">
-          <input type="checkbox" id="1" value=1 checked> Muslim <br>
-          <input type="checkbox" id="3" value=1 checked> Al Termithi <br>
-          <input type="checkbox" id="5" value=1 checked> Ibn Majah <br>
-        </div>
-        <div class="col-3 align-self-end px-3">
-        <label for="rawi">Rawi Id:</label>
-        <input type="text" class="form-control " id="rawi" required placeholder=11013>
-      </div>
-      <div class="col-3 align-self-end px-3">
-        <label for="numNarrators">Number of Narrators:</label>
-        <input type="number" class="form-control" id="numNarrators" placeholder=50>
-        </div>
-
-      <div class="col-2 px-3 align-self-end">
-        <button type="button" id="submit" class="btn btn-primary"> Submit</button>
-      </div>
-    </div>
-  <div class="row justify-content-center">
-      <label id="btnMessage"></label>
-  </div>
-      <div class="row justify-content-center">
-        <div id="sankey_basic"></div>
-      </div>
-    </div> 
-    <script src="processing.js"></script>
-    <script type="text/javascript">
-      const el = document.querySelector("#sankey_basic");
-      el.addEventListener("click", (e) => {
-        el.style.setProperty('--x', e.offsetX -300 + "px");
-        el.style.setProperty('--y', e.offsetY -150 + "px");
-        el.style.setProperty('--v', "visible");
-      }, true);
-
-      el.addEventListener("mousemove", (e) => {
-        if (e.offsetX > 600 || e.offsetX < 10 || e.offsetY > 250 || e.offsetY < -100) {
-          el.style.setProperty('--v', "hidden");
-        }
-      });
-    </script>
+    <div id="sankey_basic" style="width: 1800px; height: 600px;"></div>
   </body>
 </html>
