@@ -20,21 +20,21 @@ Challenges:
 
 Data Challenges:
 - It misses the narration term between the links (صيغ الأداء)
-- student-teacher relation is not complete list
+- student-teacher relation is not complete list [Needed for the Isnad]
 - some narrators are missing from the data
 - chain does not show if this is a Prophet Hadith or a Companion (منتهى الإسناد)
-- Grades are missing (درجة الراوي)
+- Some grades are missing (درجة الراوي)
 - Grade are inconsistant
 - chain data is incorrect (Test ran found 19348 mistaken chain out of 34409!) - Bukhari had 2475 faulty chains.
 
 Out of scope:
-- Get more resource data/books.
+- Get more resource data/books. Scale to all avaible Sunnah Books.
 - Classification of Hadith (Saheeh/ hasan/ Dha'eef)
   - Possible crowd sourced
   - Percentage of score for each rawi of accuracy
-  -filter by classification
-- Hover + color code link based on the connection level?
-  - add rawi notes and comments: weak in arabic - israeliyat - marfoo3 7ukmn - 
+  - filter by classification
+- Color code links based on the connection level?
+  - add rawi notes and tags: weak in arabic - israeliyat - marfoo3 7ukmn - 
   - Tadlees
   - No connection
     -who could be missing?
