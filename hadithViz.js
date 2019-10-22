@@ -17,6 +17,8 @@ var isParsingDone = false;
 var parsedData;
 var HadithArr = [];
 
+var sankey_height = 700;
+var sankey_nodePadding = 50;
 $(function()
   {
   // Demo invoked
@@ -37,7 +39,7 @@ $(function()
       document.getElementById("submit").innerHTML = '<span class="spinner-border spinner-border-sm"></span> Loading..';
       input = document.getElementById("input").value;
       if (input == ""){
-        input = "إنما الأعمال بالنيات";
+        input = "الأعمال بالني";
       }
       
     if (!firstRun){
@@ -247,7 +249,7 @@ function cycleFilter (edges){
     }
 
     if (isCyclic(graph)) {
-      //console.log("removing link as it creates a cycle", [source[0],target[0]])
+      console.log("removing link as it creates a cycle", [source[0],target[0]])
       graph[sourceIndex].pop(); //remove point as it creates a cycle
     }
     else {
@@ -281,9 +283,9 @@ function now() {
         return new Date().getTime();
     }
 
-function query(text){
-   // hadith has the Rawi(input)
-  return text.includes(input);
+function query(hadith){
+   // hadith contains the input
+  return hadith[7].includes(input);
 }
 
 function process(array, callback){
@@ -299,7 +301,7 @@ function process(array, callback){
       var hadithId = i;
       var markedHadith = false;
       var chain = array[i][6].split(", "); // list of chain of narrators in the sanad(index 6)
-      if(query(array[i][7])){
+      if(query(array[i])){
         //add source book
         updateCount(tempData, array[i][2], chain[0], hadithId);
 
@@ -309,19 +311,27 @@ function process(array, callback){
           var teacher = lookupNarrator(chain[n+1]); //get teacher details
           if(student.length == 2) {
             // student is missing from the dataset
-            //console.log("narrator is missing", chain[n]);
+            console.log("narrator is missing", chain[n]);
           } else if (teacher.length == 2) {
             // teacher is missing from the dataset
-            //console.log("narrator is missing", chain[n+1]);
+            console.log("narrator is missing", chain[n+1]);
           }
-          else{
-            //confirm the chain of narration
-            // this solves the case of a narration that has multiple shifts
-            // example: A -> B -> C, B -> D, C ->E, D ->E
-            // issue rises when processing C,B as C -> B
+        
+          //confirm the chain of narration
+          // this solves the case of a narration that has multiple shifts
+          // example: A -> B -> C, B -> D, C ->E, D ->E
+          // issue rises when processing C,B as C -> B
+            
+          
+          var next_narr_index = chain.slice(n+1,chain.length-1).indexOf(chain[n]);
+          if (next_narr_index > 0){
+            updateCount(tempData, array[i][2], chain[n+1], hadithId);// new route
+            //updateCount(tempData, chain[n], chain[next_narr_index+1], hadithId);
+          }
+          else {
             var teachers = getTeachers(student); // get list of student teachers
             var students = getStudents(teacher); // get list of teacher students
-            if (teachers.includes(chain[n+1]) || students.includes(chain[n]) || teachers.length == 0 || students.length == 0) { 
+            if (true || teachers.includes(chain[n+1]) || students.includes(chain[n]) || teachers.length == 0 || students.length == 0) { 
               // if one of them is in the data
               updateCount(tempData, chain[n], chain[n+1], hadithId);
             }
@@ -332,8 +342,8 @@ function process(array, callback){
                 markedHadith = true;
                 console.log(counter, "....", "Hadith, Rawi: ",i,student[0]);
               }
-            }
-            
+
+            } 
           }
         }
       }
@@ -369,11 +379,19 @@ function afterProcess(temp){
 
 
   var names = [];
+  var first_layer_count = 0;
   for (var i = 0; i < graph.length; i++){
     var node = graph[i];
     var narrator = lookupNarrator(node[0][0]);
-    var name = narrator = narrator[0]+" "+narrator[1].slice(0,20);
-    names.push(name);
+    console.log(node);
+    if(narrator[0] != ""){
+      var name = narrator[0]+" "+narrator[1].slice(0,20);
+      names.push(name);
+
+      if (name.substr(1,1) > '9') {
+        first_layer_count += node[0][1];
+      }
+    }
   }
 
   for (var i = 0; i < graph.length; i++){
@@ -420,7 +438,7 @@ function afterProcess(temp){
   data.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
   data.addRows(ready_data);
 
-  google.charts.setOnLoadCallback(drawChart(data));
+  google.charts.setOnLoadCallback(drawChart(data,first_layer_count*sankey_nodePadding));
   enableButton();
 }
 
