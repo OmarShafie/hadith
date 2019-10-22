@@ -33,7 +33,7 @@ Out of scope:
   - Possible crowd sourced
   - Percentage of score for each rawi of accuracy
   - filter by classification
-- Color code links based on the connection level?
+
   - add rawi notes and tags: weak in arabic - israeliyat - marfoo3 7ukmn - 
   - Tadlees
   - *Predict Missing
@@ -43,6 +43,11 @@ Out of scope:
 - *Named Entity Recognition
   - Identifying Entity
 - *Knowledge Extraction: Extract tags/grades from Narrator Discription
+- tooltip rawi details
+- prefix and suffix + ignore punctuations?
+- color code each route/chain as visual analysis
+- combine the "Zeyadat" narrations into one steched narration color coded by its route
+- custom range nodePadding
   
 
 Ready Features:
@@ -54,15 +59,14 @@ Ready Features:
 - Populate Hadiths in Link in a table
 
 Next Steps:
-- tooltip rawi details
 - search for rawi by name
 - Sanad Search (squence of rawi's)
   - Regex Search/ Bool Search
 - Optimize performance
 - *Information Retrieval: search for hadith (content) and view its sankey
-  - Search by أطراف , تخريج, or exact match+similarity => then select list of wanted ahadith
   - find similar hadiths (mutaba'at & shuhood)
-  - prefix and suffix + ignore punctuations?
-  - color code each route/chain as visual analysis
-  - combine the "Zeyadat" narrations into one steched narration color coded by its route
-- custom range nodePadding
+  - Search by أطراف , تخريج, or exact match+similarity => then select list of wanted ahadith
+- case of shifting isnad using ح
+- case of using عطف
+- Color code links based on the connection level?
+- Review and test code blocks
