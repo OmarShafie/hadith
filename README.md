@@ -28,37 +28,41 @@ Data Challenges:
 - chain data is incorrect (Test ran found 19348 mistaken chain out of 34409!) - Bukhari had 2475 faulty chains.
 
 Out of scope:
-- Get more resource data/books. Scale to all avaible Sunnah Books.
-- Classification of Hadith (Saheeh/ hasan/ Dha'eef)
+- *Encoding: Get more resource data/books. Scale to all avaible Sunnah Books.
+- *Classification of Hadith (Saheeh/ hasan/ Dha'eef)
   - Possible crowd sourced
   - Percentage of score for each rawi of accuracy
   - filter by classification
 - Color code links based on the connection level?
   - add rawi notes and tags: weak in arabic - israeliyat - marfoo3 7ukmn - 
   - Tadlees
-  - No connection
-    -who could be missing?
+  - *Predict Missing
+    -who could be missing between any 2 rawi?
   - different places
   - narration term (صيغ التخمل)
+- *Named Entity Recognition
+  - Identifying Entity
+- *Knowledge Extraction: Extract tags/grades from Narrator Discription
   
 
 Ready Features:
-- Visulaize Sankey diagram of Hadiths of any rawi in the 6 books
+- *Visulaize Sankey diagram of Hadiths of any rawi in the 6 books
 - filter by top K number of narrators
 - Filter Hadiths by book
-- Narrators are color coded to highlight grade of narration
+- Narrators are color coded to highlight grade of narration with grade legend
 - Sankey Diagram weights represent number of hadiths between any 2 rawis'
 - Populate Hadiths in Link in a table
 
 Next Steps:
-- show grade legend
 - tooltip rawi details
 - search for rawi by name
 - Sanad Search (squence of rawi's)
   - Regex Search/ Bool Search
 - Optimize performance
-- search for hadith (content) and view its sankey
-  - prefix and suffix + ignore punctuations
+- *Information Retrieval: search for hadith (content) and view its sankey
+  - Search by أطراف , تخريج, or exact match+similarity => then select list of wanted ahadith
   - find similar hadiths (mutaba'at & shuhood)
+  - prefix and suffix + ignore punctuations?
   - color code each route/chain as visual analysis
   - combine the "Zeyadat" narrations into one steched narration color coded by its route
+- custom range nodePadding
