@@ -37,7 +37,7 @@ $(function()
       document.getElementById("submit").innerHTML = '<span class="spinner-border spinner-border-sm"></span> Loading..';
       input = document.getElementById("input").value;
       if (input == ""){
-        input = "إنما الأعمال بالنيات";
+        input = "الأعمال بالني";
       }
       
     if (!firstRun){
