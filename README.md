@@ -59,14 +59,15 @@ Ready Features:
 - Populate Hadiths in Link in a table
 
 Next Steps:
-- search for rawi by name
-- Sanad Search (squence of rawi's)
-  - Regex Search/ Bool Search
-- Optimize performance
-- *Information Retrieval: search for hadith (content) and view its sankey
-  - find similar hadiths (mutaba'at & shuhood)
-  - Search by أطراف , تخريج, or exact match+similarity => then select list of wanted ahadith
 - case of shifting isnad using ح
 - case of using عطف
 - Color code links based on the connection level?
 - Review and test code blocks
+
+- Sanad Search (squence of rawi's)
+  - Regex Search/ Bool Search
+- search for rawi by name
+- *Information Retrieval: search for hadith (content) and view its sankey
+  - find similar hadiths (mutaba'at & shuhood)
+  - Search by أطراف , تخريج, or exact match+similarity => then select list of wanted ahadith
+- Optimize performance
