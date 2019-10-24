@@ -1,11 +1,31 @@
+//TODO: Take input from user
+var args = [
+  {
+    "key": "rawi", 
+    "default": "20001", 
+    "value": "20001"
+  },
+  {
+    "key": "numNarrators", 
+    "default": "50",
+    "value": "50"
+  },
+];
+
+var rawi_id = 0;
+var numNarrators = 1;
+
+function query(hadith){
+   // hadith contains the input
+  var chain = hadith[6].split(", "); // list of chain of narrators in the
+  return chain.includes(args[rawi_id]["value"]);
+}
+
+/****************** Library **********************/
 // Source: Kaggle Hadith Data Set  
 var URL = "https://raw.githubusercontent.com/OmarShafie/VizHadith/master/"
 var hadithURL = URL+"all_hadiths_clean.csv";
 var narratorsURL = URL+"all_rawis.csv";
-
-//TODO: Take input from user
-var input = "11013";
-var numNarrators = 50;
 
 //Parse Parameters
 var inputType = "remote";
@@ -16,11 +36,14 @@ var maxUnparseLength = 10000;
 
 var isParsingDone = false;
 var parsedData;
+
+var sankey_height = 700;
+var sankey_nodePadding = 1;
+
 var HadithArr = [];
 
 $(function()
   {
-  // Demo invoked
   $('#submit').click(
     function(){
     if ($(this).prop('disabled') == "true") { return; }
@@ -36,17 +59,14 @@ $(function()
     $(this).prop('disabled', true);
 
       document.getElementById("submit").innerHTML = '<span class="spinner-border spinner-border-sm"></span> Loading..';
-      input = document.getElementById("rawi").value;
-      numNarrators = document.getElementById("numNarrators").value;
-      if (input == ""){
-        input = "11013";
+      
+      for (var p = 0; p < args.length;p++){
+        args[p]["value"] = document.getElementById(args[p]["key"]).value;
+        if (args[p]["value"] == ""){
+          args[p]["value"] = args[p]["default"];
+        }
       }
-      if (numNarrators < 1){
-        numNarrators = 50;
-      }
-      else {
-        numNarrators = parseInt(numNarrators)
-      }
+      
     if (!firstRun){
       console.log("--------------------------------------------------");
     }
@@ -99,6 +119,7 @@ function saveNarrators(results)
 {
 
   document.getElementById("btnMessage").innerHTML = "Parsed Narrators...";
+  end = now();
 
   if (results && results.errors)
   {
@@ -132,6 +153,7 @@ function completeFn(results)
   isParsingDone = true;
   parsedData = results.data;
   enableButton()
+  //main(parsedData, narratorsData);
 }
 
 function errorFn(err, file)
@@ -153,20 +175,8 @@ function now()
     ? window.performance.now()
   : 0;
 }
-/*-------------- Main Code -------------*/
 
-function lookupNarrator(scholar_index){
-  //returns data of the narrator with index from the narratorsData
-  var found = narratorsData.find(function(element) {
-    return element[0] == scholar_index;
-  });
-  if (!found){
-    // else create a narrator data
-    found = [scholar_index, scholar_index];
-  }
-  return found
-}
-
+/*-------------- Graph bulild functions ------------*/
 function updateCount(data, source, target, hadith){
   // updates the count for [source, target, count,[h1,h2...]] in data
   var found = false;
@@ -199,7 +209,6 @@ function updateCount(data, source, target, hadith){
   }
 
 function isCyclicUtil(v, visited, recStack, graph){
-  //console.log("visiting", v, visited);
   //mark as visited
   visited[v] = true;
   recStack[v] = true;
@@ -254,7 +263,7 @@ function cycleFilter (edges){
     }
 
     if (isCyclic(graph)) {
-      //console.log("removing link as it creates a cycle", [source[0],target[0]])
+      console.log("removing link as it creates a cycle", [source, target])
       graph[sourceIndex].pop(); //remove point as it creates a cycle
     }
     else {
@@ -268,6 +277,21 @@ function cycleFilter (edges){
   }
 
   return graph;
+}
+
+
+/*-------------- Data functions -------------*/
+function lookupNarrator(index){
+  //returns data of the narrator with index from the narratorsData
+  var found = narratorsData.find(function(element) {
+    return element[0] == index;
+  });
+  if (!found){
+    // else create a narrator data
+    found = [index,index]
+    //console.log("narrator is missing", index);
+  }
+  return found
 }
 
 function getTeachers(narrator){
@@ -284,15 +308,12 @@ function getStudents(narrator){
   return [];
 } 
 
+/* ---------- Utility functions --------*/
 function now() {
-        return new Date().getTime();
-    }
-
-function rawiQuery(chain){
-   // hadith has the Rawi(input)
-  return chain.includes(input);
+  return new Date().getTime();
 }
 
+/*-------------- Main Code -------------*/
 function process(array, callback){
   document.getElementById("btnMessage").innerHTML = "Start Processing...";
   var startTime = now();
@@ -306,7 +327,7 @@ function process(array, callback){
       var hadithId = i;
       var markedHadith = false;
       var chain = array[i][6].split(", "); // list of chain of narrators in the sanad(index 6)
-      if(rawiQuery(chain)){
+      if(query(array[i])){
         //add source book
         updateCount(tempData, array[i][2], chain[0], hadithId);
 
@@ -316,19 +337,25 @@ function process(array, callback){
           var teacher = lookupNarrator(chain[n+1]); //get teacher details
           if(student.length == 2) {
             // student is missing from the dataset
-            //console.log("narrator is missing", chain[n]);
           } else if (teacher.length == 2) {
             // teacher is missing from the dataset
-            //console.log("narrator is missing", chain[n+1]);
           }
-          else{
-            //confirm the chain of narration
-            // this solves the case of a narration that has multiple shifts
-            // example: A -> B -> C, B -> D, C ->E, D ->E
-            // issue rises when processing C,B as C -> B
+        
+          //confirm the chain of narration
+          // this solves the case of a narration that has multiple shifts
+          // example: A -> B -> C, B -> D, C ->E, D ->E
+          // issue rises when processing C,B as C -> B
+            
+          
+          var next_narr_index = chain.slice(n+1,chain.length-1).indexOf(chain[n]);
+          if (next_narr_index > 0){
+            updateCount(tempData, array[i][2], chain[n+1], hadithId);// new route
+            //updateCount(tempData, chain[n], chain[next_narr_index+1], hadithId);
+          }
+          else {
             var teachers = getTeachers(student); // get list of student teachers
             var students = getStudents(teacher); // get list of teacher students
-            if (teachers.includes(chain[n+1]) || students.includes(chain[n]) || teachers.length == 0 || students.length == 0) { 
+            if (true || teachers.includes(chain[n+1]) || students.includes(chain[n]) || teachers.length == 0 || students.length == 0) { 
               // if one of them is in the data
               updateCount(tempData, chain[n], chain[n+1], hadithId);
             }
@@ -339,8 +366,8 @@ function process(array, callback){
                 markedHadith = true;
                 //console.log(counter, "....", "Hadith, Rawi: ",i,student[0]);
               }
-            }
-            
+
+            } 
           }
         }
       }
@@ -357,6 +384,7 @@ function process(array, callback){
   loop();                                         //start with 0
 }
 
+
 function afterProcess(temp){
 
   // sort data in decending order of importance
@@ -372,17 +400,24 @@ function afterProcess(temp){
 
   document.getElementById("btnMessage").innerHTML += "    Total of Narrators: " + graph.length;
   var ready_data = [];
-  graph = graph.slice(0, numNarrators);
+  graph = graph.slice(0, parseInt(args[numNarrators]["value"]));
 
 
   var names = [];
+  var first_layer_count = 0;
   for (var i = 0; i < graph.length; i++){
     var node = graph[i];
     var narrator = lookupNarrator(node[0][0]);
-    var name = narrator = narrator[0]+" "+narrator[1].slice(0,20);
-    names.push(name);
-  }
+    if(narrator[0] != ""){
+      var name = narrator[0]+" "+narrator[1].slice(0,20);
+      names.push(name);
 
+      if (name.substr(1,1) > '9') {
+        first_layer_count += node[0][1];
+      }
+    }
+  }
+  
   for (var i = 0; i < graph.length; i++){
     var node = graph[i];
     var nodeInd = getIndex(node[0][0], graph);
@@ -426,8 +461,8 @@ function afterProcess(temp){
   data.addColumn('number', 'Weight');
   data.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
   data.addRows(ready_data);
-
-  google.charts.setOnLoadCallback(drawChart(data));
+  var sankey_height = first_layer_count*sankey_nodePadding;
+  google.charts.setOnLoadCallback(drawChart(data,sankey_height));
   enableButton();
 }
 

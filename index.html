@@ -12,7 +12,72 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     <script src="hadithViz.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+  </head>
+  <body>
+    <h1 class="text-center">Hadith Visualizer</h1>
+    <h2 class="text-center small">Visual Analysis of hadith narration chains.</h2>
+    
+  <div class="container">
+    <div class="row justify-content-center mx-3 form-inline">
+      <div class="col-2">
+          <input type="checkbox" id="0" value=1 checked> Bukhari <br>
+          <input type="checkbox" id="2" value=1 > Abu Daw'ud  <br>
+          <input type="checkbox" id="4" value=1 > Nasa'i <br>
+        </div>
+        <div class="col-2">
+          <input type="checkbox" id="1" value=1 > Muslim <br>
+          <input type="checkbox" id="3" value=1 > Al Termithi <br>
+          <input type="checkbox" id="5" value=1 > Ibn Majah <br>
+        </div>
+      <div class="slidecontainer">
+        <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+        <p>Value: <span id="demo"></span></p>
+      </div>
+      <div class="col-3 align-self-end px-3">
+        <label for="input">Hadith contains:</label>
+        <input type="text" class="form-control " id="input" required placeholder="إنما الأعمال بالنيات">
+      </div>
+      <div class="col-3 align-self-end px-3">
+        <label for="numNarrators">Number of Narrators:</label>
+        <input type="number" class="form-control" id="numNarrators" placeholder=50>
+        </div>
+      <div class="col-2 px-3 align-self-end">
+        <button type="button" id="submit" class="btn btn-primary"> Submit</button>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+        <label id="btnMessage"></label>
+    </div>
+     <div class='row justify-content-center my-legend'>
+      <div class='legend-title'>Narrator Grade Legend:</div>
+        <div class='legend-scale'>
+          <ul class='legend-labels'>
+            <li><span style='background:darkgreen;'></span>صحابي</li>
+            <li><span style='background:seagreen;'></span>أوثق الناس</li>
+            <li><span style='background:mediumseagreen;'></span>ثقة ثقة</li>
+            <li><span style='background:springgreen;'></span>ثقة</li>
+            <li><span style='background:greenyellow;'></span>صدوق</li>
+            <li><span style='background:yellow;'></span>له أوهام</li>
+            <li><span style='background:gold;'></span>مقبول</li>
+            <li><span style='background:coral;'></span>لين</li>
+            <li><span style='background:lightcoral;'></span>مجهول \ مستور</li>
+            <li><span style='background:red;'></span>ضعيف</li>
+            <li><span style='background:crimson;'></span>منكر \ متروك</li>
+            <li><span style='background:maroon;'></span>كذاب</li>
+            <li><span style='background:silver;'></span>Narrator</li>
+            <li><span style='background:lightslategray;'></span>NA</li>
+            <li><span style='background:darkslategray;'></span>No Data</li>
+          </ul>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div id="sankey_basic"></div>
+      </div>
+    </div>
     <script type="text/javascript">
+
       function getNarratorGrade(tag){
       var narrator_index = tag.split(" ")[0];
       var narrator = lookupNarrator(narrator_index);
@@ -100,6 +165,14 @@
     }
 
       google.charts.load('current', {'packages':['sankey']});
+      var slider = document.getElementById("myRange");
+      var output = document.getElementById("demo");
+      output.innerHTML = slider.value;
+
+      slider.oninput = function() {
+        output.innerHTML = this.value;
+      }
+
       function drawChart(data,height) {
         
         // Sets chart options.
@@ -116,7 +189,7 @@
             link: { color: { fill: 'paleturquoise', fillOpacity: 0.6 } },
             node: {
               interactivity:true,
-              nodePadding: 50,
+              nodePadding: parseInt(slider.value),
               label: {
                 //fontName: 'Times-Roman',
                 fontSize: 10,
@@ -162,52 +235,7 @@
 
         chart.draw(data, options);
       }
-    </script>
-    <link rel="stylesheet" type="text/css" href="main.css">
-  </head>
-  <body>
-    <h1 class="text-center">Hadith Visualizer</h1>
-    <h2 class="text-center small">Visual Analysis of hadith narration chains.</h2>
-    
-  <div class="container">
-    <div class="row justify-content-center mx-3 form-inline">
-        <div class="col-3 align-self-end px-3">
-        <label for="input">Hadith contains:</label>
-        <input type="text" class="form-control " id="input" required placeholder="إنما الأعمال بالنيات">
-      </div>
-      <div class="col-2 px-3 align-self-end">
-        <button type="button" id="submit" class="btn btn-primary"> Submit</button>
-      </div>
-    </div>
-  <div class="row justify-content-center">
-      <label id="btnMessage"></label>
-  </div>
-   <div class='row justify-content-center my-legend'>
-        <div class='legend-title'>Narrator Grade Legend:</div>
-        <div class='legend-scale'>
-          <ul class='legend-labels'>
-            <li><span style='background:darkgreen;'></span>صحابي</li>
-            <li><span style='background:seagreen;'></span>أوثق الناس</li>
-            <li><span style='background:mediumseagreen;'></span>ثقة ثقة</li>
-            <li><span style='background:springgreen;'></span>ثقة</li>
-            <li><span style='background:greenyellow;'></span>صدوق</li>
-            <li><span style='background:yellow;'></span>له أوهام</li>
-            <li><span style='background:gold;'></span>مقبول</li>
-            <li><span style='background:coral;'></span>لين</li>
-            <li><span style='background:lightcoral;'></span>مجهول \ مستور</li>
-            <li><span style='background:red;'></span>ضعيف</li>
-            <li><span style='background:crimson;'></span>منكر \ متروك</li>
-            <li><span style='background:maroon;'></span>كذاب</li>
-            <li><span style='background:silver;'></span>Narrator</li>
-            <li><span style='background:lightslategray;'></span>NA</li>
-            <li><span style='background:darkslategray;'></span>No Data</li>
-          </ul>
-        </div>
-    </div>
-      <div class="row justify-content-center">
-        <div id="sankey_basic"></div>
-      </div>
-    </div> 
+    </script> 
     <script type="text/javascript">
       const el = document.querySelector("#sankey_basic");
       el.addEventListener("click", (e) => {
