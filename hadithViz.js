@@ -7,8 +7,8 @@ var args = [
   },
   {
     "key": "numNarrators", 
-    "default": "50",
-    "value": "50"
+    "default": "158",
+    "value": "158"
   },
 ];
 
@@ -37,6 +37,7 @@ var isParsingDone = false;
 var parsedData;
 
 var HadithArr = [];
+var result_graph = [];
 
 $(function()
   {
@@ -344,6 +345,7 @@ function process(array, callback){
             
           // has this narration came up again?
           var next_narr_index = chain.slice(n+1).indexOf(chain[n]);
+          console.log("found", chain[n], "at", next_narr_index);
           if (next_narr_index > 0){
             // isnad shifts
             updateCount(tempData, array[i][2], chain[n+1], hadithId);// new route
@@ -384,45 +386,44 @@ function process(array, callback){
 
 function afterProcess(temp){
 
-  // sort data in decending order of importance
+  // sort data in decending order of importance, i.e number of ahadith
   temp.sort(function(a, b) {
     return b[2] - a[2];
     });
   
   //filter cycles and add lables
-  var graph = cycleFilter(temp); // graph = [..., [[key, Sum(w[1],w[2] ...w[m])], [n1,w[1]], [n2,w[2]], ..., [nm,w[m]] [h1,h2...] ], ...]
-  graph.sort(function(a, b) {
+  result_graph = cycleFilter(temp); // graph = [..., [[key, Sum(w[1],w[2] ...w[m])], [n1,w[1]], [n2,w[2]], ..., [nm,w[m]] [h1,h2...] ], ...]
+  result_graph.sort(function(a, b) {
     return b[0][1] - a[0][1];
     });
 
-  document.getElementById("btnMessage").innerHTML += "    Total of Narrators: " + graph.length;
+  document.getElementById("btnMessage").innerHTML += "    Total of Narrators: " + result_graph.length;
   var ready_data = [];
-  graph = graph.slice(0, parseInt(args[numNarrators]["value"]));
+  result_graph = result_graph.slice(0, parseInt(args[numNarrators]["value"]));
 
 
   var names = [];
-  var first_layer_count = 0;
-  for (var i = 0; i < graph.length; i++){
-    var node = graph[i];
+  for (var i = 0; i < result_graph.length; i++){
+    var node = result_graph[i];
     var narrator = lookupNarrator(node[0][0]);
     if(narrator[0] != ""){
       var name = narrator[0]+" "+narrator[1].slice(0,20);
       names.push(name);
-
-      if (name.substr(1,1) > '9') {
-        first_layer_count += node[0][1];
-      }
+    }
+    else{
+      console.log ("graph is not proper");
     }
   }
   
-  for (var i = 0; i < graph.length; i++){
-    var node = graph[i];
-    var nodeInd = getIndex(node[0][0], graph);
+  var first_layer_count = 0;
+  for (var i = 0; i < result_graph.length; i++){
+    var node = result_graph[i];
+    var nodeInd = getIndex(node[0][0], result_graph);
     for (var j = 1; j < node.length; j++){
-      var index = getIndex(node[j][0], graph);
+      var index = getIndex(node[j][0], result_graph);
       if (index >= 0) {
         var tooltip = '<div class="hadithTooltip" ><table><thead><tr>';
-        tooltip += '<th>'+names[nodeInd]+"---"+node[j][2].length+"--->"+names[index]+'</th>';
+        tooltip += '<th>'+names[nodeInd]+"---("+node[j][2].length+")--->"+names[index]+'</th>';
         tooltip += '<th>Id</th>';
         tooltip += '<th>Chain</th>';
         tooltip += '<th>Book</th>';
@@ -448,6 +449,10 @@ function afterProcess(temp){
         }
         tooltip += "</tbody></table></div>";
         ready_data.push([names[nodeInd], names[index], node[j][1],tooltip]);
+
+        if (names[nodeInd].substr(1,1) > '9') {
+          first_layer_count += node[j][1];
+        }
       }
     }
   }

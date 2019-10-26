@@ -21,28 +21,38 @@
     
   <div class="container">
     <div class="row justify-content-center mx-3 form-inline">
+      
+      <div class="col-6 form-inline px-3">
+        <label for="numNarrators">No. of Narrators: </label>
+        <input type="number" class="form-control" id="numNarrators" placeholder=50>
+      </div>
+      <div class="col-4 form-inline slidecontainer">
+        <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+        <p>Value: <span id="demo"></span></p>
+      </div>
+
+    </div>
+
+    <div class="row justify-content-center mx-3 form-inline">
+      
+      
+      <div class="col-6 form-inline px-3">
+        <label for="input">Hadith contains:</label>
+        <input type="text" class="form-control " id="input" required placeholder="إنما الأعمال بالنيات">
+      </div>
       <div class="col-2">
           <input type="checkbox" id="0" value=1 checked> Bukhari <br>
           <input type="checkbox" id="2" value=1 > Abu Daw'ud  <br>
           <input type="checkbox" id="4" value=1 > Nasa'i <br>
-        </div>
-        <div class="col-2">
-          <input type="checkbox" id="1" value=1 > Muslim <br>
-          <input type="checkbox" id="3" value=1 > Al Termithi <br>
-          <input type="checkbox" id="5" value=1 > Ibn Majah <br>
-        </div>
-      <div class="slidecontainer">
-        <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-        <p>Value: <span id="demo"></span></p>
       </div>
-      <div class="col-3 align-self-end px-3">
-        <label for="input">Hadith contains:</label>
-        <input type="text" class="form-control " id="input" required placeholder="إنما الأعمال بالنيات">
+      <div class="col-2">
+        <input type="checkbox" id="1" value=1 > Muslim <br>
+        <input type="checkbox" id="3" value=1 > Al Termithi <br>
+        <input type="checkbox" id="5" value=1 > Ibn Majah <br>
       </div>
-      <div class="col-3 align-self-end px-3">
-        <label for="numNarrators">Number of Narrators:</label>
-        <input type="number" class="form-control" id="numNarrators" placeholder=50>
-        </div>
+    </div>
+    
+    <div class="row justify-content-center mx-3 form-inline">
       <div class="col-2 px-3 align-self-end">
         <button type="button" id="submit" class="btn btn-primary"> Submit</button>
       </div>
@@ -177,7 +187,7 @@
         
         // Sets chart options.
         var options = {
-          width: 1366,
+          width: screen.width,
           height: height,
           tooltip: {isHtml: true},
           sankey: {
@@ -185,7 +195,7 @@
             tooltip: {
                 isHtml: 'true'
             },
-            iterations: 100,
+            iterations: 60,
             link: { color: { fill: 'paleturquoise', fillOpacity: 0.6 } },
             node: {
               interactivity:true,
@@ -238,15 +248,21 @@
     </script> 
     <script type="text/javascript">
       const el = document.querySelector("#sankey_basic");
+      el.style.setProperty('--v', "none");
       el.addEventListener("click", (e) => {
-        el.style.setProperty('--x', e.offsetX -300 + "px");
-        el.style.setProperty('--y', e.offsetY -150 + "px");
-        el.style.setProperty('--v', "visible");
+        if (el.style.getPropertyValue('--v') != "block"){
+          el.style.setProperty('--x', e.offsetX -300 + "px");
+          el.style.setProperty('--y', e.offsetY -150 + "px");
+          el.style.setProperty('--v', "block");
+        }
       }, true);
 
       el.addEventListener("mousemove", (e) => {
-        if (e.offsetX > 600 || e.offsetX < 10 || e.offsetY > 250 || e.offsetY < -100) {
-          el.style.setProperty('--v', "hidden");
+        var Ydiff = Math.max(e.y - el.style.getPropertyValue('--y').split("p")[0], el.style.getPropertyValue('--y').split("p")[0] - e.y);
+        if (el.style.getPropertyValue('--v') == "block"){
+          if (e.layerX > 590 || e.layerX < 10 || e.offsetY > 250 || e.offsetY < -100) {
+            el.style.setProperty('--v', "none");
+          }
         }
       });
     </script>
