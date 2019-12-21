@@ -20,7 +20,9 @@ NEWSPIDER_MODULE = 'tutorial.spiders'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
-
+AUTOTHROTTLE_ENABLED = True
+USER_AGENT = 'OSMIUM (oasmemo@gmail.com)'
+HTTPCACHE_ENABLED = True
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
