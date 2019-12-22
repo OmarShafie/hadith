@@ -1,0 +1,835 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" dir="rtl">
+<head><link href="App_Themes/Brown.ar/ddlevelsmenu-base.css" type="text/css" rel="stylesheet" /><link href="App_Themes/Brown.ar/ddlevelsmenu-topbar.css" type="text/css" rel="stylesheet" /><link href="App_Themes/Brown.ar/ddlevelsrightmenu-topbar.css" type="text/css" rel="stylesheet" /><link href="App_Themes/Brown.ar/style.css" type="text/css" rel="stylesheet" /><title>
+	قائمة الرواة
+</title>
+    <script type="text/javascript" src="/Scripts/ddlevelsmenu.js">
+
+        /***********************************************
+        * All Levels Navigational Menu- (c) Dynamic Drive DHTML code library (http://www.dynamicdrive.com)
+        * This notice MUST stay intact for legal use
+        * Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+        ***********************************************/
+
+    </script>
+
+    <script type="text/javascript" src="/Scripts/ddlevelsrightmenu.js">
+
+        /***********************************************
+        * All Levels Navigational Menu- (c) Dynamic Drive DHTML code library (http://www.dynamicdrive.com)
+        * This notice MUST stay intact for legal use
+        * Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+        ***********************************************/
+
+    </script>
+    <script type="text/javascript">
+        function ScrollToSearchedText(itemID) {
+            document.getElementById(itemID).scrollIntoView();
+        }
+
+
+        function AddRemoveDiac(ContentID, hidContentFromServiceID, HidIsDiacID) {
+            if (document.getElementById(HidIsDiacID).value != '') {
+                RemoveDiac(ContentID);
+                document.getElementById(HidIsDiacID).value = '';
+            }
+            else {
+                document.getElementById(ContentID).innerHTML = document.getElementById(hidContentFromServiceID).value.replace("javascript:__doPostBacks", "javascript:__doPostBack");
+                document.getElementById(HidIsDiacID).value = "true";
+            }
+        }
+
+        function RemoveDiac(itemID) {
+            var Content = document.getElementById(itemID).innerHTML;
+            var straDiacs = new Array("ّ", "ٌ", "ُ", "ً", "َ", "ِ", "ٍ", "ْ");
+            for (var i = 0; i < straDiacs.length; i++) {
+                while (Content.indexOf(straDiacs[i]) >= 0) {
+                    Content = Content.replace(straDiacs[i], "");
+                }
+            }
+            document.getElementById(itemID).innerHTML = Content;
+        }
+
+
+        ///////////////////Font Part
+        function getexpirydate(nodays) {
+            var UTCstring;
+            Today = new Date();
+            nomilli = Date.parse(Today);
+            Today.setTime(nomilli + nodays * 24 * 60 * 60 * 1000);
+            UTCstring = Today.toUTCString();
+            return UTCstring;
+        }
+        ////////////////////////////////////////////////////
+        function setcookie(name, value, duration) {
+            cookiestring = name + "=" + escape(value) + ";EXPIRES=" + getexpirydate(duration) + ";path=/";
+            document.cookie = cookiestring;
+            if (!getcookie(name)) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        //////////////////////////////////////////////
+        function getcookie(cookiename) {
+            var cookiestring = "" + document.cookie;
+            var index1 = cookiestring.indexOf(cookiename);
+            if (index1 == -1 || cookiename == "") return "";
+            var index2 = cookiestring.indexOf(';', index1);
+            if (index2 == -1) index2 = cookiestring.length;
+            return unescape(cookiestring.substring(index1 + cookiename.length + 1, index2));
+        }
+        ////////////////////////////////////////
+        function SetFont(Selvalue, SelFontColor, SelBackColor) {
+            SetFontSize(Selvalue);
+            changeFontColor(SelFontColor);
+            changeBackGroundColor(SelBackColor);
+        }
+        //////////////////////////////////////
+        function SetFontSize(Selvalue) {
+            if (Selvalue == "0")
+                FontSizeCookies = getcookie("FontSizeCookie");
+            else
+                FontSizeCookies = Selvalue;
+
+            if (FontSizeCookies == null || FontSizeCookies == "" || FontSizeCookies == "0") {
+                FontSizeCookies = "12";
+            }
+
+            document.all('ddlFontSize').value = FontSizeCookies;
+
+            if (document.getElementById('ContentPlaceHolder1_ucViewHadith_lblContent')) {
+                document.getElementById('ContentPlaceHolder1_ucViewHadith_lblContent').style.fontSize = FontSizeCookies + "pt";
+            }
+
+            if (document.getElementById('ContentPlaceHolder1_lblContentFromService')) {
+                document.getElementById('ContentPlaceHolder1_lblContentFromService').style.fontSize = FontSizeCookies + "pt";
+            }
+
+            setcookie("FontSizeCookie", FontSizeCookies, 2);
+        }
+        ////////////////////////////////
+        function changeFontColor(Selvalue) {
+            if (Selvalue == "default")
+                FontColorCookies = getcookie("FontColorCookie");
+            else
+                FontColorCookies = Selvalue;
+
+            if (FontColorCookies == null || FontColorCookies == "" || FontColorCookies == "default") {
+                FontColorCookies = "#2F3178";
+            }
+
+            document.all('ddlFontColor').value = FontColorCookies;
+
+            if (document.getElementById('ContentPlaceHolder1_ucViewHadith_lblContent')) {
+                document.getElementById('ContentPlaceHolder1_ucViewHadith_lblContent').style.color = FontColorCookies;
+            }
+
+            if (document.getElementById('ContentPlaceHolder1_lblContentFromService')) {
+                document.getElementById('ContentPlaceHolder1_lblContentFromService').style.color = FontColorCookies;
+            }
+
+            setcookie("FontColorCookie", FontColorCookies, 2);
+        }
+        //////////////////////////////////////////////////////////
+        function changeBackGroundColor(Selvalue) {
+            if (Selvalue == "default")
+                BackColorCookies = getcookie("BackColorCookie");
+            else
+                BackColorCookies = Selvalue;
+
+            if (BackColorCookies == null || BackColorCookies == "" || BackColorCookies == "default") {
+                BackColorCookies = "#f1f1ff";
+            }
+
+            document.all('ddlBackGroundColor').value = BackColorCookies;
+
+            if (document.getElementById('tdContent')) {
+                document.getElementById('tdContent').style.background = BackColorCookies;
+            }
+
+            if (document.getElementById('tdContentFromService')) {
+                document.getElementById('tdContentFromService').style.background = BackColorCookies;
+            }
+
+            setcookie("BackColorCookie", BackColorCookies, 2);
+        }
+    </script>
+<link href="/WebResource.axd?d=bheV-TDi8oFfz-bSHF2DYigMFdZn4n_C6ysKaoDC1ks3a2kek9fQXb1k54HKfJnRtvgmTOFYig5bR3ld4iUKsqMYNX8axh2n9qWT6BUjUdx6o5fVTjpPtvsp-DhSWJV5bQLPPuzo9fIBlFaPdyPRgg2&amp;t=634648119640000000" type="text/css" rel="stylesheet" class="Telerik_stylesheet" /><link href="/WebResource.axd?d=TbDgnJ7k73V-qMdCcLdSm17yAgGNytULDcF2BBjsg7JGr1HmUYhiN3Oi5GW2e6pMAbiMcxDyqLZBLEbfnehXF60qUSTYbCfbp4j_RRO1lkag0mzcU9e1OC06jRpJGAP1-_gUv7nMGbRljwhXHoxfAphb1172JYY--JhO8feJUpA1&amp;t=634648119640000000" type="text/css" rel="stylesheet" class="Telerik_stylesheet" /></head>
+<body onload="javascript:SetFont('0','default','default');" topmargin="0" leftmargin="0" rightmargin="0" bottommargin="0" marginwidth="0" marginheight="0">
+    <form method="post" action="./ViewRwah.aspx" id="form1">
+<input type="hidden" name="ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_RadScriptManager1_TSM" id="ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_RadScriptManager1_TSM" value="" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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" />
+
+
+<script src="/Telerik.Web.UI.WebResource.axd?_TSM_HiddenField_=ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_RadScriptManager1_TSM&amp;compress=1&amp;_TSM_CombinedScripts_=%3b%3bSystem.Web.Extensions%2c+Version%3d4.0.0.0%2c+Culture%3dneutral%2c+PublicKeyToken%3d31bf3856ad364e35%3aen-US%3a8f95decb-d716-4257-bc42-c772df7173e5%3aea597d4b%3bTelerik.Web.UI%2c+Version%3d2012.1.215.35%2c+Culture%3dneutral%2c+PublicKeyToken%3d121fae78165ba3d4%3aen-US%3a3d78a983-ceee-4e0e-a7ef-b0fa8a4023a3%3a16e4e7cd%3af7645509%3a24ee1bba%3af46195d3%3a19620875%3a874f8ea2%3a490a9d4e" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="4BABB82F" />
+<input type="hidden" name="__VIEWSTATEENCRYPTED" id="__VIEWSTATEENCRYPTED" value="" />
+<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="YGZgDMcj8FkNdtmQvb0/5GMC52x0ohPwtD7pI5XNVT6FatiOiPU+veUyPr43Xvdy7z7sLxYZ78TvZCRcevoZ81gNrs1szr36lUQylukqeV+sIJ7vQ+AarXDAcK6ycgSwQ49W6EwDdgsVAGLchc4pSOG1w6gDadg3hJ9im06ulFh8ZPeTVGRNEL0H1jQ2RUi7+EQFsX2hVnTRl5DrjovVDeWfpeom4trNmT5iARU987rHTiw06NL04hCfD9Jun4CHRBwRlG3j3NKOAJOtyEzcSAvaDx5lK6Gx08xxYXxo1y4M45Uj+OEfsyiUKbO9FygejZWnApxMRXNxB80TU3LPvuKFTRCE3nD7a/XrnoGIYgw6h/+mPW4DpcqcuILhuRr/7O/rENNvaUplESmEl7QUtsCUujcZn86Mrl1OnE1sWDwZVyfNQ7uycL7EW6JQoL7O/jIvpfeFU5ttT0RR9Lt8anaWm9OoomUaILHZhg3UPwSlYa9RMDTjp2PWKHZgrKVK5aREDjf8MP72GRAR4FOXwqikuEdCAJ/ID/H4KOf9dxwV7fpv2vCnfO18YuD28eK2M5AypLHTj9O8xDj9GzDV+UshWjKzc9kiuWMtL2z2O4bLPkgnPkXBSEWdKlnUjzTbNaL8GGa/QG42CaKImCXjzgvfPsMIvBvb2Jfxg7AZjDFryM9IM3FUjZUDjEp+ipw4rzZoz0QWCOnmaEBSDcUAcyJhRQVSXnMIiF8pNsnNWWWnRkfCJnQhSA110SW5H/r5gzOx3VAuyrkXuhNTOtXi1Sl/bfnNs/BF0UHhUYWQ6X9cmUbpVy/7epJPPcJNYzZa7/P40s9eiqfdQKOtDxSzP/eqlrtCw1IZuED5TUjXs7pcTk1dEXkgJfVrqomhITHDmA3Pxb9TQEczcCDv+x0iDg2XVVMp9l5D43Xq2+QvpPI0QUezdztT8mzCoqPewvC0uoYkeOlHLdiNaYlVA5jFMTStMBU4tP2CvhMAbk6VzsI9elhS+Aa5QkYiy4ZjBLSegmzQiuXs9Y5SFpttpsW5fr+DXM/xfeJHzgfbWACmhTycoXkTq9Tf09xU+sRM667rIIQWq16Gpg3yNSDHujatUtRIBc9YzzfVs4vj+wXgv8B3umRQWr3uFxnH5VPe4xlIkKYLgVu2kjHSFnyIpajv0J0xBVAh6k8wEjNaN8/kLNCooqjzHAn6JLx+I0BdEBhz0agqmjR7oEeLViyTkEek4r5Irm5dyfZZlSCd8laZiR39Vl7RXHwhgBhJXxi/Qc81+rodCKs3+/xBd7jIfVOyulK+ax092q/s8mgaFHCkJt4=" />
+        <div align="center">
+            <table border="0" width="1018" cellspacing="0" cellpadding="0" height="100%">
+                <!-- width="1004px" align="center"-->
+                <tr>
+                    <td valign="top" class="gheader">
+                        <table border="0" width="100%" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td valign="top" align="left" class="baricon">
+                                    
+                                </td>
+                            </tr>
+                            <tr>
+                                <td valign="top" class="logo" height="85" align="right" width="100%">
+                                    <table width="100%" height="90" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td width="109" valign="top">
+                                                <a href="http://www.alifta.com">
+                                                    <img id="Image2" border="0" src="App_Themes/Brown.ar/Images/logo-1.png" border="0" height="90" width="109" />
+                                                </a>
+                                            </td>
+                                            <td width="657" valign="top">
+                                                <table width="100%" cellspacing="0" cellpadding="0">
+                                                    <tr>
+                                                        <td>
+                                                            <a href="/Default.aspx">
+                                                                <img id="Image12" border="0" src="App_Themes/Brown.ar/Images/logo-2.png" border="0" height="49" width="657" />
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <a href="http://www.mufti.af.org.sa/">
+                                                                <img id="Image13" border="0" src="App_Themes/Brown.ar/Images/logo-3.png" border="0" height="41" width="657" />
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                            
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height="59">
+                                    <div id="ddtopmenubar" class="mattblackmenu" align="center">
+                                        <table border="0" width="826" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td width="50" align="center" height="59">
+                                                    <ul>
+                                                        <li><a rel="ddsubmenu1">عرض</a></li>
+                                                    </ul>
+                                                </td>
+                                                <td width="58" align="center" height="59">
+                                                    <ul>
+                                                        <li><a rel="ddsubmenuRwah">رواة</a></li>
+                                                    </ul>
+                                                </td>
+                                                <td width="128" align="center" height="59">
+                                                    <ul>
+                                                        <li><a rel="ddsubmenuSubject">مكانز موضوعية</a></li>
+                                                    </ul>
+                                                </td>
+                                                <td width="75" align="center" height="59">
+                                                    <ul>
+                                                        <li><a rel="ddsubmenuMa3agm">معاجم</a></li>
+                                                    </ul>
+                                                </td>
+                                                <td width="168" align="center" height="59">
+                                                    <ul>
+                                                        <li><a rel="ddsubmenuApps">تطبيقات علوم الحديث</a></li>
+                                                    </ul>
+                                                </td>
+                                                <td width="83" align="center" height="59">
+                                                    <ul>
+                                                        <li><a rel="ddsubmenuIndex">فهارس</a></li>
+                                                    </ul>
+                                                </td>
+                                                <td width="92" align="center" height="59">
+                                                    <ul>
+                                                        <li><a href="Search.aspx">بحث نصي</a></li>
+                                                    </ul>
+                                                </td>
+                                                <td width="70" align="center" height="59">
+                                                    <ul>
+                                                        <li><a rel="ddsubmenuServices">إحصائيات</a></li>
+                                                    </ul>
+                                                </td>
+                                                <td align="center" height="59">
+                                                    <ul>
+                                                        <li><a rel="ddsubmenuNotes">مساعدة</a></li>
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td valign="top" id="ddrightmenubar" class="mattblackrightmenu" style="padding-right: 70px;" align="right">
+                                    <ul>
+                                        <li>
+                                            <a rel="rightmenu1">
+                                                <img id="Image1" border="0" src="App_Themes/Brown.ar/Images/setting.png" border="0" height="20" width="74" />
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" class="bgcontent">
+                        
+
+<script language="javascript" type="text/javascript">
+    function checkFieldSelection() {
+        var varAnyOneSelected = false;
+        if (document.getElementById('ContentPlaceHolder1_ViewRwahUC1_cbAllSelected').checked)
+            varAnyOneSelected = true;
+        else {
+            var checkBoxArray = document.getElementById('ContentPlaceHolder1_ViewRwahUC1_cblSearchField').getElementsByTagName('input');
+            for (var i = 0; i < checkBoxArray.length; i++) {
+                if (checkBoxArray[i].checked) {
+                    varAnyOneSelected = true;
+                    break;
+                }
+            }
+        } // end else
+        if (!varAnyOneSelected) {
+            alert('برجاء اختيار أحد عناصر البحث');
+            return false;
+        }
+    }
+
+    function cbSelectionChanged(SelectedElem) {
+        var varAllSelected = true;
+        if (!SelectedElem.checked)
+            varAllSelected = false;
+
+        var checkBoxArray = document.getElementById('ContentPlaceHolder1_ViewRwahUC1_cblSearchField').getElementsByTagName('input');
+        for (var i = 0; i < checkBoxArray.length; i++) {
+            checkBoxArray[i].checked = varAllSelected;
+        }
+    }// end function
+
+
+    function cblSelectionChanged(SelectedElem) {
+        var checkBoxArray = SelectedElem.getElementsByTagName('input');
+        var varAllSelected = true;
+        for (var i = 0; i < checkBoxArray.length; i++) {
+            if (!checkBoxArray[i].checked) {
+                varAllSelected = false;
+                break;
+            } // end if all   
+        } // end for
+        document.getElementById('ContentPlaceHolder1_ViewRwahUC1_cbAllSelected').checked = varAllSelected;
+    }
+</script>
+<table align="center" border="0" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td align="center" class="titlepage">قائمة الرواة</td>
+    </tr>  
+    <tr>
+        <td valign="top" width="100%" colspan="2">
+            <table class="tblsearch" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+					<td class="tdsearch" valign="middle" style="width:8%;">جملة البحث</td>
+                    <td valign="middle" style="width:20%;"><input name="ctl00$ContentPlaceHolder1$ViewRwahUC1$txtSearch" type="text" id="ContentPlaceHolder1_ViewRwahUC1_txtSearch" class="textboxsearch" /></td>
+                    <td valign="top">
+                        <div id="ContentPlaceHolder1_ViewRwahUC1_pnlSrchType" class="tdsearch">
+	
+                            <table cellpadding="0" cellspacing="0" width="100%">
+                                <tr><td style="width:20%"><input id="ContentPlaceHolder1_ViewRwahUC1_cbAllSelected" type="checkbox" name="ctl00$ContentPlaceHolder1$ViewRwahUC1$cbAllSelected" checked="checked" onclick="cbSelectionChanged(this);" /><label for="ContentPlaceHolder1_ViewRwahUC1_cbAllSelected">الكل</label></td>
+                                    <td ><span id="ContentPlaceHolder1_ViewRwahUC1_cblSearchField" class="tdtext" onclick="cblSelectionChanged(this);" style="display:inline-block;"><input id="ContentPlaceHolder1_ViewRwahUC1_cblSearchField_0" type="checkbox" name="ctl00$ContentPlaceHolder1$ViewRwahUC1$cblSearchField$0" checked="checked" value="Name" /><label for="ContentPlaceHolder1_ViewRwahUC1_cblSearchField_0">الاسم الكامل</label><input id="ContentPlaceHolder1_ViewRwahUC1_cblSearchField_1" type="checkbox" name="ctl00$ContentPlaceHolder1$ViewRwahUC1$cblSearchField$1" checked="checked" value="EsmShuhra" /><label for="ContentPlaceHolder1_ViewRwahUC1_cblSearchField_1">الشهرة</label><input id="ContentPlaceHolder1_ViewRwahUC1_cblSearchField_2" type="checkbox" name="ctl00$ContentPlaceHolder1$ViewRwahUC1$cblSearchField$2" checked="checked" value="Laqab" /><label for="ContentPlaceHolder1_ViewRwahUC1_cblSearchField_2">اللقب</label><input id="ContentPlaceHolder1_ViewRwahUC1_cblSearchField_3" type="checkbox" name="ctl00$ContentPlaceHolder1$ViewRwahUC1$cblSearchField$3" checked="checked" value="Kunia" /><label for="ContentPlaceHolder1_ViewRwahUC1_cblSearchField_3">الكنية</label><input id="ContentPlaceHolder1_ViewRwahUC1_cblSearchField_4" type="checkbox" name="ctl00$ContentPlaceHolder1$ViewRwahUC1$cblSearchField$4" checked="checked" value="Nasab" /><label for="ContentPlaceHolder1_ViewRwahUC1_cblSearchField_4">النسب</label></span>
+                                </td></tr>
+                            </table>
+                        
+</div>
+                    </td>
+                    <td  valign="middle">
+                        <span id="ContentPlaceHolder1_ViewRwahUC1_rblSearchType" class="tdsearch"><input id="ContentPlaceHolder1_ViewRwahUC1_rblSearchType_0" type="radio" name="ctl00$ContentPlaceHolder1$ViewRwahUC1$rblSearchType" value="AnyField" checked="checked" /><label for="ContentPlaceHolder1_ViewRwahUC1_rblSearchType_0">كل الكلمات - أي حقل</label><br /><input id="ContentPlaceHolder1_ViewRwahUC1_rblSearchType_1" type="radio" name="ctl00$ContentPlaceHolder1$ViewRwahUC1$rblSearchType" value="OneField" /><label for="ContentPlaceHolder1_ViewRwahUC1_rblSearchType_1">كل الكلمات - حقل</label></span>
+                    </td>
+                    <td valign="middle">
+                        <input type="submit" name="ctl00$ContentPlaceHolder1$ViewRwahUC1$btnSearch" value="بحث" onclick="javascript:return checkFieldSelection();" id="ContentPlaceHolder1_ViewRwahUC1_btnSearch" class="cssbutton" /> </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr><td colspan="2" style="height:5px;"></td></tr>
+    <tr>
+        <td align="right" style="width:88%">
+            <div>
+	<table cellspacing="1" cellpadding="5" id="ContentPlaceHolder1_ViewRwahUC1_gvRwah" bgcolor="#0A2371" width="100%">
+		<tr class="gridhead">
+			<th scope="col"><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Sort$ID&#39;)">م</a></th><th scope="col"><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Sort$Name&#39;)">اسم الراوي</a></th><th scope="col"><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Sort$EsmShuhra&#39;)">الشهرة</a></th><th scope="col"><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Sort$Laqab&#39;)">اللقب</a></th><th scope="col"><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Sort$Kunia&#39;)">الكنية</a></th><th scope="col"><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Sort$Nasab&#39;)">النسب</a></th><th scope="col"><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Sort$DeathYear&#39;)">تاريخ الوفاة</a></th><th scope="col"><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Sort$HadithsCount&#39;)">عدد المرويات</a></th>
+		</tr><tr class="raw01" align="right" onclick="__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Select$0&#39;)">
+			<td>
+                            4129
+                        </td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblName_0" title="عروة بن الجعد , ويقال : ابن أبي الجعد ,  ويقال : ابن عياض" style="display:inline-block;">عروة بن الجعد ,...</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblEsmShuhra_0" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblLaqab_0" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblKunia_0" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblNasab_0" title="البارقي , الأزدي ، ويقال : الأسدي ، القاضى" style="display:inline-block;">البارقي , الأزد...</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblDeathYear_0" title="61 هـ : 69 هـ" style="display:inline-block;">61 هـ : 69 هـ</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblHadithsCount_0" title="119" style="display:inline-block;">119</span></td>
+		</tr><tr class="select" align="right" onclick="__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Select$1&#39;)">
+			<td>
+                            4130
+                        </td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblName_1" title="عروة بن الحارث" style="display:inline-block;">عروة بن الحارث</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblEsmShuhra_1" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblLaqab_1" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblKunia_1" title="أبو فروة" style="display:inline-block;">أبو فروة</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblNasab_1" title="الهمداني , الكوفي ، الجهني" style="display:inline-block;">الهمداني , الكو...</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblDeathYear_1" title="بين 131 هـ و 140 هـ" style="display:inline-block;">بين 131 هـ و 14...</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblHadithsCount_1" title="61" style="display:inline-block;">61</span></td>
+		</tr><tr class="raw01" align="right" onclick="__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Select$2&#39;)">
+			<td>
+                            4131
+                        </td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblName_2" title="عروة بن رويم" style="display:inline-block;">عروة بن رويم</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblEsmShuhra_2" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblLaqab_2" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblKunia_2" title="أبو القاسم" style="display:inline-block;">أبو القاسم</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblNasab_2" title="اللخمي ، الشامي ، الأردني ، الدمشقي" style="display:inline-block;">اللخمي ، الشامي...</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblDeathYear_2" title="125 هـ ، أو 131  هـ ، أو 132 هـ ، أو 135 هـ ، أو 136 هـ ، أو 140 هـ ، أو 144 هـ" style="display:inline-block;">125 هـ ، أو 131...</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblHadithsCount_2" title="62" style="display:inline-block;">62</span></td>
+		</tr><tr class="raw02" align="right" onclick="__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Select$3&#39;)">
+			<td>
+                            4132
+                        </td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblName_3" title="عروة بن الزبير بن العوام بن خويلد بن أسد بن عبد العزي بن قصي" style="display:inline-block;">عروة بن الزبير ...</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblEsmShuhra_3" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblLaqab_3" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblKunia_3" title="أبو عبدالله" style="display:inline-block;">أبو عبدالله</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblNasab_3" title="الأسدي , المدني ، القرشي" style="display:inline-block;">الأسدي , المدني...</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblDeathYear_3" title="91 هـ ، أو 92، أو 93 هـ ، أو 94 هـ ، أو  95 هـ ، أو 99  هـ ، أو 100 هـ ، أو 101 هـ" style="display:inline-block;">91 هـ ، أو 92، ...</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblHadithsCount_3" title="9339" style="display:inline-block;">9339</span></td>
+		</tr><tr class="raw01" align="right" onclick="__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Select$4&#39;)">
+			<td>
+                            4133
+                        </td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblName_4" title="عروة بن سعيد" style="display:inline-block;">عروة بن سعيد</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblEsmShuhra_4" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblLaqab_4" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblKunia_4" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblNasab_4" title="البصري ، الأنصاري" style="display:inline-block;">البصري ، الأنصا...</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblDeathYear_4" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblHadithsCount_4" title="2" style="display:inline-block;">2</span></td>
+		</tr><tr class="raw02" align="right" onclick="__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Select$5&#39;)">
+			<td>
+                            4134
+                        </td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblName_5" title="عروة بن عامر" style="display:inline-block;">عروة بن عامر</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblEsmShuhra_5" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblLaqab_5" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblKunia_5" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblNasab_5" title="المكي ، القرشي ، وقيل : الجهني ، العامري" style="display:inline-block;">المكي ، القرشي ...</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblDeathYear_5" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblHadithsCount_5" title="16" style="display:inline-block;">16</span></td>
+		</tr><tr class="raw01" align="right" onclick="__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Select$6&#39;)">
+			<td>
+                            4135
+                        </td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblName_6" title="عروة بن عبد الله بن قشير" style="display:inline-block;">عروة بن عبد الل...</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblEsmShuhra_6" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblLaqab_6" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblKunia_6" title="أبو مهل" style="display:inline-block;">أبو مهل</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblNasab_6" title="الجعفي , الكوفي ، الأزدي" style="display:inline-block;">الجعفي , الكوفي...</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblDeathYear_6" title="بين 111 هـ  و 120 هـ" style="display:inline-block;">بين 111 هـ  و 1...</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblHadithsCount_6" title="21" style="display:inline-block;">21</span></td>
+		</tr><tr class="raw02" align="right" onclick="__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Select$7&#39;)">
+			<td>
+                            4136
+                        </td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblName_7" title="عروة بن عياض بن عمرو بن عبد القاري ، وقيل : عروة بن عياض بن عدي بن الخيار بن عدي بن نوفل بن عبد مناف بن قصي ، وقيل : عياض بن عروة" style="display:inline-block;">عروة بن عياض بن...</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblEsmShuhra_7" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblLaqab_7" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblKunia_7" style="display:inline-block;"></span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblNasab_7" title="النوفلي ، القرشي , المكي" style="display:inline-block;">النوفلي ، القرش...</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblDeathYear_7" title="101 هـ : 110 هـ" style="display:inline-block;">101 هـ : 110 هـ</span></td><td width="13%"><span id="ContentPlaceHolder1_ViewRwahUC1_gvRwah_lblHadithsCount_7" title="11" style="display:inline-block;">11</span></td>
+		</tr><tr class="gridpager" align="center">
+			<td colspan="8"><table>
+				<tr>
+					<td><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Page$First&#39;)">الأولى</a></td><td><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Page$510&#39;)">...</a></td><td><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Page$511&#39;)">511</a></td><td><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Page$512&#39;)">512</a></td><td><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Page$513&#39;)">513</a></td><td><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Page$514&#39;)">514</a></td><td><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Page$515&#39;)">515</a></td><td><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Page$516&#39;)">516</a></td><td><span>517</span></td><td><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Page$518&#39;)">518</a></td><td><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Page$519&#39;)">519</a></td><td><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Page$520&#39;)">520</a></td><td><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Page$521&#39;)">...</a></td><td><a href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$gvRwah&#39;,&#39;Page$Last&#39;)">الأخيرة</a></td>
+				</tr>
+			</table></td>
+		</tr>
+	</table>
+</div> 
+        </td>
+        <td valign="top" align="center">
+            <table width="95%">
+            
+            <tr>
+                <td>
+                    <input type="submit" name="ctl00$ContentPlaceHolder1$ViewRwahUC1$btnRawyAhadith" value="عرض أحاديث الراوي" id="ContentPlaceHolder1_ViewRwahUC1_btnRawyAhadith" class="cssbutton" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    
+<script type="text/javascript">
+    function GetFormulas() {
+        var RwayID = document.getElementById("ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_hidRawyId").value;
+        var ReturnedValues = window.showModalDialog('Formulas.aspx?RawyID=' + RwayID + '', null, 'status:no;dialogWidth:300px;dialogHeight:300px;dialogHide:false;help:no;scroll:yes;resizable:no');
+        var vRetValAttr = new Array();
+        vRetValAttr = ReturnedValues.split(';');
+        var varlbFormulas = document.getElementById("ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_lbFormulas");
+        varlbFormulas.options.length = 0;
+        var hidTahdithIds = '';
+        for (var i = 0; i < vRetValAttr.length; i++) {
+            var optn = document.createElement("option");
+            optn.text = vRetValAttr[i].split('_')[0];
+            optn.value = vRetValAttr[i].split('_')[1];
+            varlbFormulas.options.add(optn);
+            hidTahdithIds += optn.value;
+            hidTahdithIds += ',';
+        }
+        hidTahdithIds = hidTahdithIds.substring(0, hidTahdithIds.length - 1);
+        document.getElementById("ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_hidTahdithIds").value = hidTahdithIds;
+    }
+
+    function openWin() {
+        var RwayID = document.getElementById("ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_hidRawyId").value;
+        //var oWnd = radopen("Formulas.aspx?RawyID=" + RwayID, "RadWindow1");
+        var oWnd = $find("ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_RadWindow1");
+        oWnd.setUrl("Formulas.aspx?RawyID=" + RwayID);
+        oWnd.show();
+    }
+
+    function OnClientClose(oWnd, args) {
+        //get the transferred arguments
+        var arg = args.get_argument();
+        if (arg) {
+            var ReturnedValues = arg.returnValue;
+            var vRetValAttr = new Array();
+            vRetValAttr = ReturnedValues.split(';');
+            var varlbFormulas = document.getElementById("ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_lbFormulas");
+            varlbFormulas.options.length = 0;
+            var hidTahdithIds = '';
+            for (var i = 0; i < vRetValAttr.length; i++) {
+                var optn = document.createElement("option");
+                optn.text = vRetValAttr[i].split('_')[0];
+                optn.value = vRetValAttr[i].split('_')[1];
+                varlbFormulas.options.add(optn);
+                hidTahdithIds += optn.value;
+                hidTahdithIds += ',';
+            }
+            hidTahdithIds = hidTahdithIds.substring(0, hidTahdithIds.length - 1);
+            document.getElementById("ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_hidTahdithIds").value = hidTahdithIds;
+    }
+}
+</script>
+
+<div id="ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_RadWindow1" style="display:none;">
+	<!-- 2012.1.215.35 --><div id="ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_RadWindow1_C">
+
+	</div><input id="ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_RadWindow1_ClientState" name="ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_RadWindow1_ClientState" type="hidden" />
+</div>
+<table>
+    <tr>
+        <td class="tdsearch">
+            <span id="ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_Label1"><font size="3">مع صيغ تحمل</font></span>
+        </td>
+        <td>
+            <input type="button" id="btnGet" value="تحديد" class="cssbutton" onclick="openWin(); return false;" />
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" dir="rtl" align="right">
+            <select size="4" name="ctl00$ContentPlaceHolder1$ViewRwahUC1$TahdithFormulasUC1$lbFormulas" id="ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_lbFormulas">
+	<option selected="selected" value="-1">كل الصيغ</option>
+
+</select>
+        </td>
+    </tr>
+</table>
+<input name="ctl00$ContentPlaceHolder1$ViewRwahUC1$TahdithFormulasUC1$hidRawyId" type="hidden" id="ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_hidRawyId" value="4358" />
+<input name="ctl00$ContentPlaceHolder1$ViewRwahUC1$TahdithFormulasUC1$hidTahdithIds" type="hidden" id="ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_hidTahdithIds" value="-1" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="submit" name="ctl00$ContentPlaceHolder1$ViewRwahUC1$btnRawyAsaneed" value="عرض أسانيد الراوي" id="ContentPlaceHolder1_ViewRwahUC1_btnRawyAsaneed" disabled="disabled" class="aspNetDisabled cssbutton" style="cursor:default;color:Gray" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="submit" name="ctl00$ContentPlaceHolder1$ViewRwahUC1$btnBuildRaweSanad" value="بناء سند للراوي" id="ContentPlaceHolder1_ViewRwahUC1_btnBuildRaweSanad" class="cssbutton" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="submit" name="ctl00$ContentPlaceHolder1$ViewRwahUC1$btnRawyTasnefat" value="تصنيفات خاصة بالراوي" id="ContentPlaceHolder1_ViewRwahUC1_btnRawyTasnefat" class="cssbutton" />
+                </td>
+            </tr>
+            </table>
+        </td>
+    </tr>  
+    <tr><td colspan="2" style="height:10px;"></td></tr>
+    <tr>
+        <td colspan="2">
+            
+<script type="text/javascript">
+    function selectBook(selectedCheckBox) {
+        var GridVwHeaderChckbox = selectedCheckBox.parentNode.parentNode.parentNode;
+        var AllCheckedStatus = selectedCheckBox.checked;
+        for (i = 1; i < GridVwHeaderChckbox.rows.length; i++) {
+            GridVwHeaderChckbox.rows[i].cells[0].getElementsByTagName("INPUT")[0].checked = AllCheckedStatus;
+        } // end for
+    }
+
+    function selectsingleBook(selectedCheckBox) {
+        var GridVwHeaderChckbox = selectedCheckBox.parentNode.parentNode.parentNode;
+        var AllSelectedCount = 0;
+        for (i = 1; i < GridVwHeaderChckbox.rows.length; i++) {
+            if (GridVwHeaderChckbox.rows[i].cells[0].getElementsByTagName("INPUT")[0].checked) {
+                AllSelectedCount += 1;
+            }
+        } // end for
+        if (AllSelectedCount == GridVwHeaderChckbox.rows.length - 1)
+            GridVwHeaderChckbox.rows[0].cells[0].getElementsByTagName("INPUT")[0].checked = true;
+        else
+            GridVwHeaderChckbox.rows[0].cells[0].getElementsByTagName("INPUT")[0].checked = false;
+    }
+
+</script>
+
+
+<table align="center" width="100%" cellspacing="0" cellpadding="0">
+    <tr>
+        <td style="width:88%">
+            <table width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td style="width:100%">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_tdBetaka" class="hovertab" style="width:100px;" align="center">
+                                    <a id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_lnkBtnBetaka" class="aspNetDisabled" style="color:#2F3178;"><font color="#2F3178">البطاقة</font></a>
+                                </td>
+
+                                <td id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_tdRawaAn" class="curvetabs" style="width:100px;" align="center">
+                                    <a id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_lnkBtnRawaAn" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$UCViewRawyServices1$lnkBtnRawaAn&#39;,&#39;&#39;)" style="color:#FFFFFF;"><font color="White">روى عن</font></a>
+                                </td>
+
+                                <td id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_tdRawaAnho" class="curvetabs" style="width:100px;" align="center">
+                                    <a id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_lnkBtnRawaAnho" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$UCViewRawyServices1$lnkBtnRawaAnho&#39;,&#39;&#39;)" style="color:#FFFFFF;"><font color="White">روى عنه</font></a>
+                                </td>
+
+                                <td id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_tdGarh" class="curvetabs" style="width:100px;" align="center">
+                                    <a id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_lnkBtnGarh" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$UCViewRawyServices1$lnkBtnGarh&#39;,&#39;&#39;)" style="color:#FFFFFF;"><font color="White">جرح وتعديل</font></a>
+                                </td>
+
+                                <td id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_tdTasnefatWaFawaed" class="curvetabs" style="width:100px;" align="center">
+                                    <a id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_lnkBtnTasnefatWaFawaed" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$UCViewRawyServices1$lnkBtnTasnefatWaFawaed&#39;,&#39;&#39;)" style="color:#FFFFFF;"><font color="White">تصنيفات خاصة وفوائد</font></a>
+                                </td>
+
+                                <td id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_tdWorod" class="curvetabs" style="width:100px;" align="center">
+                                    <a id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_lnkBtnWorod" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$UCViewRawyServices1$lnkBtnWorod&#39;,&#39;&#39;)" style="color:#FFFFFF;"><font color="White">صور الورود</font></a>
+                                </td>
+
+                                <td id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_tdMarweat" class="curvetabs" style="width:100px;" align="center">
+                                    <a id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_lnkBtnMarweat" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$UCViewRawyServices1$lnkBtnMarweat&#39;,&#39;&#39;)" style="color:#FFFFFF;"><font color="White">مروياته في كتب المتون</font></a>
+                                </td>
+
+                                <td id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_tdMasaderTargama" class="curvetabs" style="width:100px;" align="center">
+                                    <a id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_lnkBtnMasaderTargama" href="javascript:__doPostBack(&#39;ctl00$ContentPlaceHolder1$ViewRwahUC1$UCViewRawyServices1$lnkBtnMasaderTargama&#39;,&#39;&#39;)" style="color:#FFFFFF;"><font color="White">مصادر الترجمة</font></a>
+                                </td>
+
+                            </tr>
+                        </table>                        
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top">
+                        <div id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_divBetaka" style="padding:3px; overflow:auto;text-align:center;" class="contenttabs">
+                            
+<table align="right" border="0" width="100%">
+    <tr>
+        <td align="right" style="width:100%">
+            <div>
+	<table cellspacing="0" rules="all" bordercolor="#C9CAE3" id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_ViewRawyInfoCardUC1_dlvRawyInfoCard" width="100%">
+		<tr class="raw02defaultPointer" align="right">
+			<td class="DataListViewhead" width="150">الاسم</td><td>
+                            <span id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_ViewRawyInfoCardUC1_dlvRawyInfoCard_lblName">عروة بن الحارث</span>
+                        </td>
+		</tr><tr class="raw02defaultPointer" align="right">
+			<td class="DataListViewhead" width="150">الكنية</td><td>
+                            <span id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_ViewRawyInfoCardUC1_dlvRawyInfoCard_lblKunia">أبو فروة</span>
+                        </td>
+		</tr><tr class="raw02defaultPointer" align="right">
+			<td class="DataListViewhead" width="150">النسب</td><td>
+                            <span id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_ViewRawyInfoCardUC1_dlvRawyInfoCard_lblNasab">الهمداني , الكوفي ، الجهني</span>
+                        </td>
+		</tr><tr class="raw02defaultPointer" align="right">
+			<td class="DataListViewhead" width="150">تاريخ الوفاة</td><td>
+                            <span id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_ViewRawyInfoCardUC1_dlvRawyInfoCard_lblDeathYear">بين 131 هـ و 140 هـ</span>
+                        </td>
+		</tr><tr class="raw02defaultPointer" align="right">
+			<td class="DataListViewhead" width="150">طبقة رواة التقريب</td><td>
+                            <span id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_ViewRawyInfoCardUC1_dlvRawyInfoCard_lblTabaqa">الخامسة</span>
+                        </td>
+		</tr><tr class="raw02defaultPointer" align="right">
+			<td class="DataListViewhead" width="150">الرتبة عند ابن حجر</td><td>
+                            <span id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_ViewRawyInfoCardUC1_dlvRawyInfoCard_lblMartabaIbnHajar">ثقة</span>
+                        </td>
+		</tr><tr class="raw02defaultPointer" align="right">
+			<td class="DataListViewhead" width="150">الرتبة عند الذهبي</td><td>
+                            <span id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_ViewRawyInfoCardUC1_dlvRawyInfoCard_lblMartabaZahabi">وثقه ابن معين</span>
+                        </td>
+		</tr>
+	</table>
+</div>
+        </td>
+    </tr>  
+</table>
+                        </div>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td valign="top" align="center" style="padding-top:30px;width:12%">
+            
+        </td>
+    </tr>
+</table>
+
+<input name="ctl00$ContentPlaceHolder1$ViewRwahUC1$UCViewRawyServices1$hidRawyID" type="hidden" id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_hidRawyID" value="4359" />
+<input name="ctl00$ContentPlaceHolder1$ViewRwahUC1$UCViewRawyServices1$hidServiceName" type="hidden" id="ContentPlaceHolder1_ViewRwahUC1_UCViewRawyServices1_hidServiceName" value="Betaka" />
+        </td>
+    </tr>
+</table>
+
+
+
+
+                    </td>
+                </tr>
+                <tr>
+                    <td id="tdFooter" class="footer" align="center">
+                        <br />
+                        جميع الحقوق محفوظة © 2016 - الرئاسة العامة للبحوث العلمية والإفتاء - تطوير شركة حرف لتقنية المعلومات
+                    </td>
+
+                </tr>
+            </table>
+        </div>
+
+
+    
+
+<script type="text/javascript">
+//<![CDATA[
+Sys.Application.add_init(function() {
+    $create(Telerik.Web.UI.RadWindow, {"_dockMode":false,"behaviors":37,"clientStateFieldID":"ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_RadWindow1_ClientState","enableShadow":true,"formID":"form1","height":"500px","iconUrl":"","minimizeIconUrl":"","modal":true,"name":"RadWindow1","skin":"Default","visibleStatusbar":false,"width":"600px"}, {"close":OnClientClose}, null, $get("ContentPlaceHolder1_ViewRwahUC1_TahdithFormulasUC1_RadWindow1"));
+});
+//]]>
+</script>
+</form>
+
+    <script type="text/javascript">
+        ddlevelsmenu.setup("ddtopmenubar", "topbar") //ddlevelsmenu.setup("mainmenuid", "topbar|sidebar")
+        ddlevelsrightmenu.setup("ddrightmenubar", "topbar")
+    </script>
+
+    <!--HTML for the Drop Down Menus associated with Top Menu Bar-->
+    <!--They should be inserted OUTSIDE any element other than the BODY tag itself-->
+    <!--A good location would be the end of the page (right above "</BODY>")-->
+
+    <!--Top Drop Down Menu 1 HTML-->
+
+    <ul id="ddsubmenu1" class="ddsubmenustyle">
+        <li><a>كتـب</a>
+            <ul>
+                <li><a href="/ViewMtnBooks.aspx">كتـب المتـون</a></li>
+                <li><a href="/ViewServingBooks.aspx">الكتـب الخدمـية</a></li>
+            </ul>
+        </li>
+        <li><a href="#">أطـراف</a>
+            <ul>
+                <li><a href="/ViewAtrafList.aspx">قائمة الأطراف</a></li>
+                <li><a href="/ViewAtrafAsaned.aspx">أطراف على الأسانيد</a></li>
+                <li><a href="/ViewAtrafExtra.aspx">متفق وزوائد المصنفات</a></li>
+                <li><a href="/ViewRwahExtra.aspx">زوائد الرواة عن المصنفين</a></li>
+            </ul>
+        </li>
+        <li><a href="/GroupedMtn.aspx">المتـون المجـمعة</a></li>
+        <li><a href="/Definitions.aspx">تعريفات</a></li>
+    </ul>
+
+    <ul id="ddsubmenuRwah" class="ddsubmenustyle">
+        <li><a href="/ViewRwah.aspx">قائمة الرواة</a></li>
+        <li><a href="/ViewRwahBooks.aspx">رواة كتاب / كتب</a></li>
+        <li><a href="/ViewRwahClassification.aspx">تصنيفات خاصة بالرواة</a></li>
+        <li><a href="/ViewRwahGarh.aspx">ألفاظ الجرح والتعديل</a></li>
+        <li><a href="/ViewScientistsSayingInRwah.aspx">أقوال أهل العلم في أحوال الرواة</a></li>
+    </ul>
+
+    <ul id="ddsubmenuIndex" class="ddsubmenustyle">
+        <li><a href="/ViewIndexItems.aspx?IndexID=2">فهرس الآيات</a></li>
+        <li><a href="/ViewIndexItems.aspx?IndexID=3">فهرس الأعلام</a></li>
+        <li><a href="/ViewIndexItems.aspx?IndexID=14">فهرس الشعر</a></li>
+    </ul>
+
+    <ul id="ddsubmenuSubject" class="ddsubmenustyle">
+        <li><a href="/ViewSubjectTree.aspx">شجرة الربط الموضوعي</a></li>
+        <li><a href="/ViewMokhalefTree.aspx">ربط بالمخالف</a></li>
+    </ul>
+
+    <ul id="ddsubmenuApps" class="ddsubmenustyle">
+        <li><a href="/ViewExpressionTree.aspx">تطبيقات المصطلح</a></li>
+        <li><a href="/ViewAmthal.aspx">أمثال الحديث النبوي</a></li>
+        <li><a href="/ViewMutonDates.aspx">تواريخ المتون</a></li>
+        <li><a>أقول أهل العلم</a>
+            <ul>
+                <li><a href="/ViewScSayHadith.aspx">في الحكم على الحديث</a></li>
+                <li><a href="/ViewScSayScience.aspx">في علوم الحديث</a></li>
+            </ul>
+        </li>
+    </ul>
+
+    <ul id="ddsubmenuMa3agm" class="ddsubmenustyle">
+        <li><a href="/ViewLexiconGhareeb.aspx">معجم غريب الحديث</a></li>
+        <li><a href="/ViewLexiconPlaces.aspx">معجم الأماكن والبلدان</a></li>
+    </ul>
+
+    <ul id="ddsubmenuNotes" class="ddsubmenustyle">
+        <li><a href="/ViewDocuments2.aspx?filename=Manual&Mode=2" target="_blank">دليل استخدام</a></li>
+        <li><a href="/ViewDocuments2.aspx?filename=Introduction&Mode=2" target="_blank">الكتيب التعريفي</a></li>
+        <li><a href="/ViewDocuments2.aspx?filename=Description&Mode=2" target="_blank">التوصيف العلمي</a></li>
+        <li><a href="/ViewDocuments2.aspx?filename=WorkingGroups&Mode=2" target="_blank">منهج العمل</a></li>
+        
+        <li><a href="/ViewDocuments2.aspx?filename=Hints&Mode=2" target="_blank">تنويهات</a></li>
+        <li><a href="/SendNotes.aspx">استدراكات المستخدم</a></li>
+    </ul>
+
+    <ul id="ddsubmenuServices" class="ddsubmenustyle">
+        <li><a>الرواة</a>
+            <ul>
+                <li><a href="/RwahStatistics.aspx">الرواة</a></li>
+                <li><a href="/RwahBooksStatistics.aspx">رواة كتاب / كتب</a></li>
+            </ul>
+        </li>
+        <li><a>الأحاديث</a>
+            <ul>
+                <li><a href="/AtrafStatistics.aspx">الأطراف</a></li>
+                <li><a href="/MosannafatStatistics.aspx">متفق وزوائد المصنفات</a></li>
+            </ul>
+        </li>
+    </ul>
+
+    <ul id="rightmenu1" class="ddsubrightmenustyle">
+        <li>
+            <table border="0" width="58" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td valign="top" class="gradient">
+                        <table border="0" width="100%" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td class="icon_seprator">
+                                    <a href="ViewMtnBooks.aspx">
+                                        <img id="Image6" title="كتب المتون" border="0" src="App_Themes/Brown.ar/Images/list_ico1.png" border="0" height="23" width="18" />
+                                    </a></td>
+                            </tr>
+                            <tr>
+                                <td class="icon_seprator">
+                                    <a href="GroupedMtn.aspx">
+                                        <img id="Image7" title="المتون المجمعة" border="0" src="App_Themes/Brown.ar/Images/list_ico2.png" border="0" height="24" width="23" />
+                                    </a></td>
+                            </tr>
+                            <tr>
+                                <td class="icon_seprator">
+                                    <a href="ViewRwah.aspx">
+                                        <img id="Image8" title="رواة" border="0" src="App_Themes/Brown.ar/Images/list_ico3.png" border="0" height="22" width="24" />
+                                    </a></td>
+                            </tr>
+                            <tr>
+                                <td class="icon_seprator">
+                                    <a href="ViewSubjectTree.aspx">
+                                        <img id="Image9" title="شجرة الربط الموضوعي" border="0" src="App_Themes/Brown.ar/Images/list_ico4.png" border="0" height="23" width="27" />
+                                    </a></td>
+                            </tr>
+                            <tr style="visibility: hidden; display: none">
+                                <td class="icon_seprator">
+                                    <a href="#1">
+                                        <img id="Image10" title="المجال" border="0" src="App_Themes/Brown.ar/Images/list_ico5.png" border="0" height="24" width="25" />
+                                    </a></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="Search.aspx">
+                                        <img id="Image11" title="بحث نصي" border="0" src="App_Themes/Brown.ar/Images/list_ico6.png" border="0" height="24" width="24" />
+                                    </a></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </li>
+    </ul>
+</body>
+</html>
