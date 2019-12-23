@@ -2,29 +2,35 @@
 var args = [
   {
     "key": "input", 
-    "default": "الأعمال بالني", 
-    "value": "الأعمال بالني"
+    "default": "الاعمال بالني", 
+    "value": "الاعمال بالني"
   },
   {
     "key": "numNarrators", 
-    "default": "158",
-    "value": "158"
+    "default": "50",
+    "value": "50"
   },
 ];
 
 var input = 0;
 var numNarrators = 1;
 
-function query(hadith){
-   // hadith contains the input
-  return hadith[7].includes(args[input]["value"]);
+function query(data, index){
+  // hadith contains the input
+  //retunrs a list of chains
+  var asaneed = [];
+  var txt = simplifyArabic(getHadithTxt(data,index));
+  if(txt.includes(simplifyArabic(args[input]["value"]))){
+    asaneed = getHadithAsaneed(data, index);
+  }
+  return asaneed;
 }
 
 /****************** Library **********************/
 // Source: Kaggle Hadith Data Set  
-var URL = "https://raw.githubusercontent.com/OmarShafie/VizHadith/master/"
-var hadithURL = URL+"all_hadiths_clean.csv";
-var narratorsURL = URL+"all_rawis.csv";
+var URL = "https://raw.githubusercontent.com/OmarShafie/hadith/master/"
+var hadithURL = URL+"data/tutorial/data%20-%20data.csv";
+var narratorsURL = URL+"data/tutorial/narrators.csv";
 
 //Parse Parameters
 var inputType = "remote";
@@ -149,8 +155,8 @@ function completeFn(results)
   }
   isParsingDone = true;
   parsedData = results.data;
-  enableButton()
-  //main(parsedData, narratorsData);
+  enableButton();
+  //console.log(parsedData);
 }
 
 function errorFn(err, file)
@@ -278,6 +284,26 @@ function cycleFilter (edges){
 
 
 /*-------------- Data functions -------------*/
+function getHadithNum(data, index){
+  return data[index][0];
+}
+function getTitle(data, index){
+  return data[index][1];
+}
+function getHadithTxt(data, index){
+  return data[index][2];
+}
+function getHadithXML(data, index){
+  return data[index][3];
+}
+function getHadithAsaneed(data, index){
+  var s = data[index][4].replace(/'/g, "").replace(/s/g, "").split(",");
+  for (var chain = 0; chain < s.length; chain++){
+    s[chain] = s[chain].split("%5C%5C");
+  }
+  return s
+}
+
 function lookupNarrator(index){
   //returns data of the narrator with index from the narratorsData
   var found = narratorsData.find(function(element) {
@@ -291,24 +317,24 @@ function lookupNarrator(index){
   return found
 }
 
-function getTeachers(narrator){
-  if (narrator.length == 25){
-    return narrator[16].split(", ");
-  }
-  return [];
-} 
-
-function getStudents(narrator){
-  if (narrator.length == 25){
-    return narrator[15].split(", ");
-  }
-  return [];
-} 
-
 /* ---------- Utility functions --------*/
 function now() {
   return new Date().getTime();
 }
+
+var arabicNormChar = {
+    'ك': 'ک', 'ﻷ': 'لا', 'ؤ': 'و', 'ى': 'ی', 'ي': 'ی', 'ئ': 'ی', 'أ': 'ا', 'إ': 'ا', 'آ': 'ا', 'ٱ': 'ا', 'ٳ': 'ا', 'ة': 'ه', 'ء': '', 'ِ': '', 'ْ': '', 'ُ': '', 'َ': '', 'ّ': '', 'ٍ': '', 'ً': '', 'ٌ': '', 'ٓ': '', 'ٰ': '', 'ٔ': '', '�': ''
+}
+
+var simplifyArabic  = function (str) {
+    return str.replace(/[^\u0000-\u007E]/g, function(a){ 
+        var retval = arabicNormChar[a]
+        if (retval == undefined) {retval = a}
+        return retval; 
+    }).normalize('NFKD').toLowerCase();
+}
+
+//now you can use simplifyArabic(str) on Arabic strings to remove the diacritics
 
 /*-------------- Main Code -------------*/
 function process(array, callback){
@@ -316,58 +342,18 @@ function process(array, callback){
   var startTime = now();
   var tempData = []; //to be passed to after process
   var chunk = 300;
-  var i = 1;
+  var i = 0;
   var counter = 0;
+  
   function loop() {
     var cnt = chunk;
     while (cnt-- && i < array.length-1) {
       var hadithId = i;
-      var markedHadith = false;
-      var chain = array[i][6].split(", "); // list of chain of narrators in the sanad(index 6)
-      if(query(array[i])){
-        //add source book
-        updateCount(tempData, array[i][2], chain[0], hadithId);
-
-        for(var n = 0; n < chain.length -1;n++) {
-          var student = lookupNarrator(chain[n]); //get student details
-          // TODO: optimize perfomance
-          var teacher = lookupNarrator(chain[n+1]); //get teacher details
-          if(student.length == 2) {
-            // student is missing from the dataset
-          } else if (teacher.length == 2) {
-            // teacher is missing from the dataset
-          }
-        
-          //confirm the chain of narration
-          // this solves the case of a narration that has multiple shifts
-          // example: A -> B -> C, B -> D, C ->E, D ->E
-          // issue rises when processing C,B as C -> B
-            
-          // has this narration came up again?
-          var next_narr_index = chain.slice(n+1).indexOf(chain[n]);
-          console.log("found", chain[n], "at", next_narr_index);
-          if (next_narr_index > 0){
-            // isnad shifts
-            updateCount(tempData, array[i][2], chain[n+1], hadithId);// new route
-            //updateCount(tempData, chain[n], chain[next_narr_index+1], hadithId);
-          }
-          else {
-            var teachers = getTeachers(student); // get list of student teachers
-            var students = getStudents(teacher); // get list of teacher students
-            if (true || teachers.includes(chain[n+1]) || students.includes(chain[n]) || teachers.length == 0 || students.length == 0) { 
-              // if one of them is in the data
-              updateCount(tempData, chain[n], chain[n+1], hadithId);
-            }
-            else
-            {
-              if (!markedHadith) {
-                counter++;
-                markedHadith = true;
-                //console.log(counter, "....", "Hadith, Rawi: ",i,student[0]);
-              }
-
-            } 
-          }
+      var chains = query(array,hadithId);
+      for(var c = 0; c < chains.length; c++){
+        var sanad = chains[c];
+        for(var n = 0; n < sanad.length -1;n++) {
+          updateCount(tempData, sanad[n+1], sanad[n], hadithId);
         }
       }
       ++i;
@@ -387,13 +373,16 @@ function process(array, callback){
 function afterProcess(temp){
 
   // sort data in decending order of importance, i.e number of ahadith
+  // this is used so that only least important cyclic edges are removed 
+  console.log(temp);
   temp.sort(function(a, b) {
     return b[2] - a[2];
     });
   
   //filter cycles and add lables
   result_graph = cycleFilter(temp); // graph = [..., [[key, Sum(w[1],w[2] ...w[m])], [n1,w[1]], [n2,w[2]], ..., [nm,w[m]] [h1,h2...] ], ...]
-  result_graph.sort(function(a, b) {
+  
+  result_graph.sort(function(a, b) { //Sort by total sum of out weights
     return b[0][1] - a[0][1];
     });
 
@@ -406,20 +395,16 @@ function afterProcess(temp){
   for (var i = 0; i < result_graph.length; i++){
     var node = result_graph[i];
     var narrator = lookupNarrator(node[0][0]);
-    if(narrator[0] != ""){
-      var name = narrator[0]+" "+narrator[1].slice(0,20);
-      names.push(name);
-    }
-    else{
-      console.log ("graph is not proper");
-    }
+  var name = narrator[0]+" "+narrator[1].slice(0,20);
+  names.push(name);
   }
   
-  var first_layer_count = 0;
+  var first_layer_count = 0; // used as indication of height of sankey
+  var first_layer_total = 0;
   for (var i = 0; i < result_graph.length; i++){
     var node = result_graph[i];
     var nodeInd = getIndex(node[0][0], result_graph);
-    for (var j = 1; j < node.length; j++){
+    for (var j = 1; j < node.length; j++){ //Out neighbors
       var index = getIndex(node[j][0], result_graph);
       if (index >= 0) {
         var tooltip = '<div class="hadithTooltip" ><table><thead><tr>';
@@ -429,29 +414,29 @@ function afterProcess(temp){
         tooltip += '<th>Book</th>';
         tooltip += '</tr></thead><tbody>';
         for(var h = 0; h < node[j][2].length; h++){
-          var hadith = HadithArr[(node[j][2][h])];
+          var hadith = node[j][2][h];
           tooltip += "<tr><td>";
-          tooltip += hadith[7];
+          tooltip += getHadithTxt(HadithArr, hadith);
           tooltip += "</td>";
 
           tooltip += "<td>";
-          tooltip += hadith[4];
+          tooltip += getHadithNum(HadithArr, hadith);
           tooltip += "</td>";
 
           tooltip += "<td>";
-          tooltip += hadith[6];
+          tooltip += getHadithAsaneed(HadithArr, hadith);
           tooltip += "</td>";
 
           tooltip += "<td>";
-          tooltip += hadith[2];
+          tooltip += getTitle(HadithArr, hadith);
           tooltip += "</td></tr>";
-
         }
         tooltip += "</tbody></table></div>";
         ready_data.push([names[nodeInd], names[index], node[j][1],tooltip]);
 
-        if (names[nodeInd].substr(1,1) > '9') {
-          first_layer_count += node[j][1];
+        if (names[nodeInd].includes('5495 ')) {
+          first_layer_count += 1;
+		  first_layer_total += node[j][1];
         }
       }
     }
@@ -463,14 +448,14 @@ function afterProcess(temp){
   data.addColumn('number', 'Weight');
   data.addColumn({type: 'string', role: 'tooltip', 'p': {'html': true}});
   data.addRows(ready_data);
-  var sankey_height = first_layer_count*parseInt(document.getElementById("myRange").value);
-  google.charts.setOnLoadCallback(drawChart(data,sankey_height));
+  console.log(first_layer_count, first_layer_total);
+  google.charts.setOnLoadCallback(drawChart(data, first_layer_count, first_layer_total));
   enableButton();
 }
-
 function main(hadithData){
   HadithArr = [];
-  var num_books = 6;
+  var num_books = 1;
+  // TODO: Check book Indices
   var books = {
     0: [1    , 7371],
     1: [7371 , 14967],

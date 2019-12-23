@@ -27,8 +27,8 @@
         <input type="number" class="form-control" id="numNarrators" placeholder=50>
       </div>
       <div class="col-4 form-inline slidecontainer">
-        <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-        <p>Value: <span id="demo"></span></p>
+        <input type="range" min="1" max="5" value="3" class="slider" id="myRange">
+        <p>Spread: <span id="demo"></span></p>
       </div>
 
     </div>
@@ -91,8 +91,8 @@
       function getNarratorGrade(tag){
       var narrator_index = tag.split(" ")[0];
       var narrator = lookupNarrator(narrator_index);
-      if (narrator.length === 25) {
-        return narrator[12];
+      if (narrator.length === 3) {
+        return narrator[2];
       }
       return "NA";
     }
@@ -183,23 +183,27 @@
         output.innerHTML = this.value;
       }
 
-      function drawChart(data,height) {
+      function drawChart(data,first_layer_count, first_layer_total) {
         
         // Sets chart options.
+		var screen_h = Math.min(screen.width,screen.height - 170);
+		var node_height = Math.min(100,10*(first_layer_total/first_layer_count));
+		var padding = 20*parseInt(slider.value);
+		console.log(first_layer_count, first_layer_total,node_height);
         var options = {
-          width: screen.width,
-          height: height,
+          width: Math.max(screen.width,screen.height),
+          height: first_layer_count*node_height + (first_layer_count-1)*padding,
           tooltip: {isHtml: true},
           sankey: {
             allowHtml: 'true',
             tooltip: {
                 isHtml: 'true'
             },
-            iterations: 60,
+            iterations: 100,
             link: { color: { fill: 'paleturquoise', fillOpacity: 0.6 } },
             node: {
               interactivity:true,
-              nodePadding: parseInt(slider.value),
+              nodePadding: padding,
               label: {
                 //fontName: 'Times-Roman',
                 fontSize: 10,
