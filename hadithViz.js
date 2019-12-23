@@ -2,8 +2,8 @@
 var args = [
   {
     "key": "input", 
-    "default": "الاعمال بالني", 
-    "value": "الاعمال بالني"
+    "default": "الاعمال بالنية", 
+    "value": "الاعمال بالنية"
   },
   {
     "key": "numNarrators", 
@@ -395,8 +395,8 @@ function afterProcess(temp){
   for (var i = 0; i < result_graph.length; i++){
     var node = result_graph[i];
     var narrator = lookupNarrator(node[0][0]);
-  var name = narrator[0]+" "+narrator[1].slice(0,20);
-  names.push(name);
+  var name = narrator[1].split(" ").slice(0,3).join(' ');
+  names.push(narrator[0]+".."+name+" ");
   }
   
   var first_layer_count = 0; // used as indication of height of sankey
@@ -434,7 +434,7 @@ function afterProcess(temp){
         tooltip += "</tbody></table></div>";
         ready_data.push([names[nodeInd], names[index], node[j][1],tooltip]);
 
-        if (names[nodeInd].includes('5495 ')) {
+        if (names[nodeInd].includes('5495..')) {
           first_layer_count += 1;
 		  first_layer_total += node[j][1];
         }
