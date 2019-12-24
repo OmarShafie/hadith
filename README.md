@@ -66,6 +66,7 @@ Next Steps (I know how to do):
 
 Possible feature (possible, but not now):
 -transliterate names
+- Dark theme
 - *Scraping: Get more resource data/books. Scale to all avaible Sunnah Books.
   - Collapse nodes
   - view top down rather than left right
@@ -74,7 +75,7 @@ Possible feature (possible, but not now):
   - All controllers on a drawer
   - font sizes controller
   - find similar hadiths (mutaba'at & shuhood)
-  - Search by أطراف , تخريج, or exact match+similarity => 
+  - Search by أطراف , تخريج, or exact match+similarity 
 
 سائل واللطائف والفوائد واستخدامات البرنامج:
 * ثم إضافة هذه الفوائد في وصف الحديث/الراوي
