@@ -4,6 +4,8 @@
     <title>Viz Hadith</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel='dns-prefetch' href='//fonts.googleapis.com' />
+  <link href="https://fonts.googleapis.com/css?family=El+Messiri|Tajawal&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     
@@ -66,19 +68,19 @@
         <div class='legend-scale'>
           <ul class='legend-labels'>
             <li><span style='background:darkgreen;'></span>صحابي</li>
-            <li><span style='background:seagreen;'></span>أوثق الناس</li>
-            <li><span style='background:mediumseagreen;'></span>ثقة ثقة</li>
+            <li><span style='background:seagreen;'></span>ثقة ثقة</li>
+            <li><span style='background:mediumseagreen;'></span>مخضرم</li>
             <li><span style='background:springgreen;'></span>ثقة</li>
             <li><span style='background:greenyellow;'></span>صدوق</li>
-            <li><span style='background:yellow;'></span>له أوهام</li>
-            <li><span style='background:gold;'></span>مقبول</li>
-            <li><span style='background:coral;'></span>لين</li>
-            <li><span style='background:lightcoral;'></span>مجهول \ مستور</li>
+            <li><span style='background:yellow;'></span>مقبول</li>
+            <li><span style='background:gold;'></span>تغير \ اختلط</li>
+            <li><span style='background:coral;'></span>مدلس</li>
+            <li><span style='background:lightcoral;'></span>لين</li>
             <li><span style='background:red;'></span>ضعيف</li>
             <li><span style='background:crimson;'></span>منكر \ متروك</li>
             <li><span style='background:maroon;'></span>كذاب</li>
-            <li><span style='background:silver;'></span>Narrator</li>
-            <li><span style='background:lightslategray;'></span>NA</li>
+            <li><span style='background:silver;'></span>مجهول \ مستور</li>
+            <li><span style='background:lightslategray;'></span>أخرى</li>
             <li><span style='background:darkslategray;'></span>No Data</li>
           </ul>
         </div>
@@ -88,93 +90,6 @@
       </div>
     </div>
     <script>
-
-      function getNarratorGrade(tag){
-      var narrator_index = tag.split("..")[0];
-      var narrator = lookupNarrator(narrator_index);
-      if (narrator.length === 3) {
-        return narrator[2];
-      }
-      return "NA";
-    }
-
-    function gradeToColor(grade){
-      var mapping = {
-        1 : "darkgreen",
-        2 : "seagreen",
-        3 : "mediumseagreen",
-        4 : "mediumseagreen",
-        5 : "springgreen",
-        6 : "lime",
-        7 : "greenyellow",
-        8 : "yellow",
-        9 : "gold",
-        10: "coral",
-        11: "lightcoral",
-        12: "lightcoral",
-        13: "red",
-        14: "crimson",
-        15: "maroon",
-        16: "silver",
-        17: "lightslategray",
-        18: "darkslategray",
-      };
-      if (grade.includes("صحابي") || grade.includes("صحابة") || grade.includes("صحبة")){
-        return mapping[1];
-      }
-      else if (grade.includes("أوثق")){
-        return mapping[2];
-      }
-      else if (grade.includes("Narrator[Grade:Thiqah Thiqah]") || grade.includes("ثبت")  || grade.includes("حافظ") || grade.includes("ثقة ثقة")){
-        return mapping[3];
-      }
-      else if (grade.includes("Narrator[Grade:No Doubt]")  || grade.includes("البخاري")  || grade.includes("مسلم")){
-        return mapping[4];
-      }
-      else if (grade.includes("Narrator[Grade:Thiqah]") || grade.includes("ثقة")){
-        return mapping[5];
-      }
-      else if (grade.includes("Narrator[4") || grade.includes("الأربعة") || grade.includes("الستة")){
-        return mapping[6];
-      }
-      else if (grade.includes("Narrator[Grade:Sadooq]") || grade.includes("صدوق")  ){
-        return mapping[7];
-      }
-      else if (grade.includes("Narrator[Grade:Sadooq/Delusion]")){
-        return mapping[8];
-      }
-      else if (grade.includes("Narrator[Grade:Maqbool]")  || grade.includes("مقبول")){
-        return mapping[9];
-      }
-      else if (grade.includes("لين")){
-        return mapping[10];
-      }
-      else if (grade.includes("Narrator[Grade:Not Thiqah]") || grade.includes("Narrator[Grade:Unknown-Majhool]") || grade.includes("مجهول") || grade.includes("مستور")){
-        return mapping[11];
-      }
-      else if (grade.includes("Narrator[Grade:Undefined]")){
-        return mapping[12];
-      }
-      else if (grade.includes("Narrator[Grade:Abandoned]") || grade.includes("متروك") || grade.includes("منكر")){
-        return mapping[13];
-      }
-      else if (grade.includes("Narrator[Grade:Weak]") || grade.includes("ضعيف")){
-        return mapping[14];
-      }
-      else if (grade.includes("Narrator[Grade:Liar]") || grade.includes("كذب")){
-        return mapping[15];
-      }
-      else if (grade.includes("Narrator")){
-        return mapping[16];
-      }
-      else if (grade.includes("NA")){
-        return mapping[17];
-      }
-      else{
-        return mapping[18];
-      }
-    }
-
       google.charts.load('current', {'packages':['sankey']});
       var slider = document.getElementById("myRange");
       var output = document.getElementById("demo");
@@ -190,7 +105,6 @@
 		var screen_h = Math.min(screen.width,screen.height - 170);
 		var node_height = Math.min(100,10*(first_layer_total/first_layer_count));
 		var padding = 20*parseInt(slider.value);
-		console.log(first_layer_count, first_layer_total,node_height);
         var options = {
           width: Math.max(screen.width,screen.height),
           height: first_layer_count*node_height + (first_layer_count-1)*padding,
@@ -201,7 +115,7 @@
                 isHtml: 'true'
             },
             iterations: 100,
-            link: { color: { fill: 'paleturquoise', fillOpacity: 0.6 } },
+            link: { color: { fill: "lightslategray", fillOpacity: 0.5 } },
             node: {
               interactivity:true,
               nodePadding: padding,
@@ -209,7 +123,7 @@
 			  width: 10,
               label: {
                 fontName: 'sans-serif',
-                fontSize: 9,
+                fontSize: 12,
                 italic: true,
               }
             },
@@ -227,7 +141,7 @@
           mutations.forEach(function (mutation) {
             mutation.addedNodes.forEach(function (node) {
               if (node.tagName === 'text') {
-                colorMap[textIndex] = gradeToColor(getNarratorGrade(node.innerHTML));
+                colorMap[textIndex] = gradeToColor(getNarratorGrade(getNarratorFromName(node.innerHTML)));
                 textIndex++;
               }
               if (node.tagName === 'rect') {
