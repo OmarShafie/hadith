@@ -5,72 +5,76 @@ Web-based using pure HTML, Bootstrap and JavaScript.
 
 Sankey Diagram is built using Google Chart's Sankey.
 
-Data Sets are:
-https://www.kaggle.com/fahd09/hadith-dataset/
-and
-https://www.kaggle.com/fahd09/hadith-narrators
+Data Sets are scraped from: ...
+18,800 Narrators [ID, Name, Grade(source: Ibn Hajar)]
+7,200  Ahadeeth [ID, Title, Hadith Span, Asaneed (Comma separated),Hadith XML]:Bukhari (other 34 books to be scraped later)
 
 Libraies:
 - Google Chart - Sankey Diagram
 - Papa Parse - JS cvs Parsing Library
+- Scrapy - Python for scraping the data (Narrators and Hadith)
 
 Challenges:
+- Scrape
 - Parse
 - Cycle detection
 
 Data Challenges:
-- It misses the narration term between the links (صيغ الأداء)
-- student-teacher relation is not complete list [Needed for the Isnad]
-- some narrators are missing from the data
-- chain does not show if this is a Prophet Hadith or a Companion (منتهى الإسناد)
-- Some grades are missing (درجة الراوي)
-- Grade are inconsistant
-- chain data is incorrect (Test ran found 19348 mistaken chain out of 34409!) - Bukhari had 2475 faulty chains.
+XML needs to be extracted:
+  - Narration term between the links (صيغ الأداء) to show connection
+  - chain does not show if this is a Prophet Hadith or a Companion (منتهى الإسناد)
+- 56.8% grades are missing (10,680 / 18,800 ) (درجة الراوي)
+- Grade are not uniformed (1363 unique terms)
+- Other sources of grades are missing
+- Main known name is missing
+- Narrators Special comments
+- Narrators time/places - useful to verify connection
 
-Out of scope:
-- *Encoding: Get more resource data/books. Scale to all avaible Sunnah Books.
-- *Classification of Hadith (Saheeh/ hasan/ Dha'eef)
+Out of scope (Research Topics):
+- *Classification of Hadith (Saheeh/ hasan/ Dha'eef) or (Prophet-like-speech "textual finger print")
   - Possible crowd sourced
   - Percentage of score for each rawi of accuracy
   - filter by classification
-
-  - add rawi notes and tags: weak in arabic - israeliyat - marfoo3 7ukmn - 
-  - Tadlees
-  - *Predict Missing
-    -who could be missing between any 2 rawi?
-  - different places
-  - narration term (صيغ التخمل)
+  - add rawi/hadith notes and tags: weak in arabic-evidency- israeliyat - marfoo3 7ukmn - 
 - *Named Entity Recognition
   - Identifying Entity
+  - case of shifting isnad using ح
+  - case of using عطف
+- *Predict Missing / Missing check
+  - Connectivity who could be missing between any 2 rawi?
 - *Knowledge Extraction: Extract tags/grades from Narrator Discription
-- tooltip rawi details
 - prefix and suffix + ignore punctuations?
 - color code each route/chain as visual analysis
-- combine the "Zeyadat" narrations into one steched narration color coded by its route
-- custom range nodePadding
-  
+- combine the "Zeyadat" narrations into one steched narration and color code links to highlight sources
 
 Ready Features:
-- *Visulaize Sankey diagram of Hadiths of any rawi in the 6 books
-- filter by top K number of narrators
+- *Visulaize Sankey diagram of Hadiths of any rawi in bukhari
+- filter by top K number of narrators (reduce size)
 - Filter Hadiths by book
 - Narrators are color coded to highlight grade of narration with grade legend
 - Sankey Diagram weights represent number of hadiths between any 2 rawis'
 - Populate Hadiths in Link in a table
 
-Next Steps:
-- case of shifting isnad using ح
-- case of using عطف
-- Color code links based on the connection level?
-- Review and test code blocks
-
-- Sanad Search (squence of rawi's)
-  - Regex Search/ Bool Search
+Next Steps (I know how to do):
+- *uniform grades
+  - tool tips!!
+- Color links based on narration term (صيغ التخمل)
+- highlight Tadlees
+- Sanad Search (squence of rawi's) - Regex Search/ Bool Search
 - search for rawi by name
-- *Information Retrieval: search for hadith (content) and view its sankey
+- *Information Retrieval: search for hadith (content)then select list of wanted ahadith
+
+Possible feature (possible, but not now):
+-transliterate names
+- *Scraping: Get more resource data/books. Scale to all avaible Sunnah Books.
+  - Collapse nodes
+  - view top down rather than left right
+  - responsivness
+  - On node click: retrive rawi details from website
+  - All controllers on a drawer
+  - font sizes controller
   - find similar hadiths (mutaba'at & shuhood)
-  - Search by أطراف , تخريج, or exact match+similarity => then select list of wanted ahadith
-- Optimize performance
+  - Search by أطراف , تخريج, or exact match+similarity => 
 
 سائل واللطائف والفوائد واستخدامات البرنامج:
 * ثم إضافة هذه الفوائد في وصف الحديث/الراوي
