@@ -80,6 +80,7 @@ Possible feature (possible, but not now):
 Visualization Library Limitations:
 - Highlight full route on node click => Documentation: "For this chart, only one entity can be selected at a time."
 - To add a text on links
+- Order of the nodes
 
 سائل واللطائف والفوائد واستخدامات البرنامج:
 * ثم إضافة هذه الفوائد في وصف الحديث/الراوي
