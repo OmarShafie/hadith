@@ -24,7 +24,7 @@ XML needs to be extracted:
   - Narration term between the links (صيغ الأداء) to show connection
   - chain does not show if this is a Prophet Hadith or a Companion (منتهى الإسناد)
 - 56.8% grades are missing (10,680 / 18,800 ) (درجة الراوي)
-- Grade are not uniformed (1363 unique terms)
+- Grade are not uniformed (1363 unique terms) run gradeAnalysis from console to see distribution.
 - Other sources of grades are missing
 - Main known name is missing
 - Narrators Special comments
@@ -56,17 +56,21 @@ Ready Features:
 - Populate Hadiths in Link in a table
 
 Next Steps (I know how to do):
-- *uniform grades
   - tool tips!!
 - Color links based on narration term (صيغ التخمل)
 - highlight Tadlees
+-footer
+- encoding utf8 unicode standard ح
+- adjusted min node size
+Form is drawer
 - Sanad Search (squence of rawi's) - Regex Search/ Bool Search
 - search for rawi by name
 - *Information Retrieval: search for hadith (content)then select list of wanted ahadith
 
 Possible feature (possible, but not now):
 -transliterate names
-- Dark theme
+- light - Dark theme
+- responsivness
 - *Scraping: Get more resource data/books. Scale to all avaible Sunnah Books.
   - Collapse nodes
   - view top down rather than left right
