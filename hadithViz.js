@@ -44,6 +44,7 @@ var parsedData;
 
 var HadithArr = [];
 var result_graph = [];
+var ready_data = [];
 
 $(function()
   {
@@ -396,7 +397,7 @@ function gradeToColor(grade){
 		return mapping[13];
 	}
 	
-	else if (grade.includes("لین")){
+	else if (grade.includes("لین") && !grade.includes("اولین")){
 		return mapping[9];
 	}
 	
@@ -409,7 +410,7 @@ function gradeToColor(grade){
 	else if (grade.includes("مقبول" ) || grade.includes("شیخ ") || grade.includes(" باس") ){
 		return mapping[6];
 	}
-	else if (grade.includes("صحابی") || grade.includes("صحابه") || grade.includes("صحبه") || grade.includes("صحابیه ") || grade.includes("أم المؤمنين")){//for order preference
+	else if (grade.includes("صحابی") || grade.includes("صحابه") || grade.includes("صحبه") || grade.includes("صحابیه ") || grade.includes("ام المومنین")){//for order preference
 		return mapping[1];
 	}
 	else if (grade === ""){
@@ -463,7 +464,7 @@ function process(array, callback){
     if ( i < array.length-1) {                      //the condition
       setTimeout(loop, 1); //rerun when condition is true
     } else { 
-      document.getElementById("btnMessage").innerHTML = "Done Processing in ..."+ (now() - startTime);
+      document.getElementById("btnMessage").innerHTML = "Done in ..."+ ((now() - startTime)/1000 + " seconds");
 
       callback(tempData);
     }
@@ -473,7 +474,8 @@ function process(array, callback){
 
 
 function afterProcess(temp){
-
+	
+	ready_data = [];
   // sort data in decending order of importance, i.e number of ahadith
   // this is used so that only least important cyclic edges are removed 
   temp.sort(function(a, b) {
@@ -487,8 +489,7 @@ function afterProcess(temp){
     return b[0][1] - a[0][1];
     });
 
-  document.getElementById("btnMessage").innerHTML += "    Total of Narrators: " + result_graph.length;
-  var ready_data = [];
+  document.getElementById("btnMessage").innerHTML += "<br>    Total of Narrators: " + result_graph.length;
   result_graph = result_graph.slice(0, parseInt(args[numNarrators]["value"]));
 
 
@@ -508,7 +509,7 @@ function afterProcess(temp){
     for (var j = 1; j < node.length; j++){ //Out neighbors
       var index = getIndex(node[j][0], result_graph);
       if (index >= 0) {
-        var tooltip = '<div class="hadithTooltip" ><table><thead><tr>';
+        var tooltip = '<table><thead><tr>';
         tooltip += '<th>'+names[nodeInd]+"---("+node[j][2].length+")--->"+names[index]+'</th>';
         tooltip += '<th>Id</th>';
         tooltip += '<th>Chain</th>';
@@ -532,7 +533,7 @@ function afterProcess(temp){
           tooltip += getTitle(HadithArr, hadith);
           tooltip += "</td></tr>";
         }
-        tooltip += "</tbody></table></div>";
+        tooltip += "</tbody></table>";
         ready_data.push([names[nodeInd].split(" ").slice(0,4).join(' '), names[index].split(" ").slice(0,4).join(' '), node[j][1],tooltip]);
 
         if (names[nodeInd].includes('5495..')) {
@@ -609,7 +610,7 @@ function gradeAnalysis(){
 	grades[13][0]++;
 	grades[13][1].push(grade);
 	}
-	else if (grade.includes("لین")){
+	else if (grade.includes("لین") && !grade.includes("اولین")){
 	grades[9][0]++;
 	grades[9][1].push(grade);
 	}
@@ -632,7 +633,7 @@ function gradeAnalysis(){
 	grades[15][0]++;
 	grades[15][1].push(grade);
 	}
-	else if (grade.includes("صحابی") || grade.includes("صحابه") || grade.includes("صحبه") || grade.includes("صحابیه ") ){//for order preference
+	else if (grade.includes("صحابی") || grade.includes("صحابه") || grade.includes("صحبه") || grade.includes("صحابیه ") || grade.includes("ام المومنین")){//for order preference
 	grades[1][0]++;
 	grades[1][1].push(grade);
 	}

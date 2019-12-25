@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <link rel='dns-prefetch' href='//fonts.googleapis.com' />
-  <link href="https://fonts.googleapis.com/css?family=El+Messiri|Tajawal&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Almarai:300,700|El+Messiri&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     
@@ -19,14 +19,15 @@
     <link rel="stylesheet" type="text/css" href="main.css">
   </head>
   <body>
+  <br>
     <h1 class="text-center">Hadith Visualizer</h1>
     <h2 class="text-center small">Visual Analysis of hadith narration chains.</h2>
     
-  <div class="container">
+  <div class="container" id="form">
     <div class="row justify-content-center mx-3 form-inline">
       
       <div class="col-6 form-inline px-3">
-        <label for="numNarrators">No. of Narrators: </label>
+        <label for="numNarrators">Max Narrators: </label>
         <input type="number" class="form-control" id="numNarrators" placeholder=50>
       </div>
       <div class="col-4 form-inline slidecontainer">
@@ -56,15 +57,15 @@
     </div>
     
     <div class="row justify-content-center mx-3 form-inline">
-      <div class="col-2 px-3 align-self-end">
+      <div>
         <button type="button" id="submit" class="btn btn-primary"> Submit</button>
       </div>
     </div>
     <div class="row justify-content-center">
         <label id="btnMessage"></label>
     </div>
-     <div class='row justify-content-center my-legend'>
-      <div class='legend-title'>Narrator Grade Legend:</div>
+     <div class='row justify-content-center my-legend' style="position: sticky; top: 0; z-index: 1000;">
+      <div class='legend-title'><!--Narrator Grade Legend:--></div>
         <div class='legend-scale'>
           <ul class='legend-labels'>
             <li><span style='background:darkgreen;'></span>صحابي</li>
@@ -84,21 +85,30 @@
             <li><span style='background:darkslategray;'></span>No Data</li>
           </ul>
         </div>
-      </div>
+		<span class="tooltiptext" id="gradeTooltip">Tooltip text</span>
+	  </div>
       <div class="row justify-content-center">
         <div id="sankey_basic"></div>
       </div>
     </div>
     <script>
+		var inputFeild = document.getElementById("form");
+		inputFeild.addEventListener("keyup", function(event) {
+		  if (event.keyCode === 13) {
+		   event.preventDefault();
+		   document.getElementById("submit").click();
+		  }
+		});
       google.charts.load('current', {'packages':['sankey']});
       var slider = document.getElementById("myRange");
       var output = document.getElementById("demo");
       output.innerHTML = slider.value;
-
       slider.oninput = function() {
         output.innerHTML = this.value;
       }
 
+	  var selection_array = [];
+	  var clickDisabled = true;
       function drawChart(data,first_layer_count, first_layer_total) {
         
         // Sets chart options.
@@ -106,15 +116,13 @@
 		var node_height = Math.min(100,10*(first_layer_total/first_layer_count));
 		var padding = 20*parseInt(slider.value);
         var options = {
-          width: Math.max(screen.width,screen.height),
+          width: 1900,//Math.max(screen.width,screen.height) - 20,
           height: first_layer_count*node_height + (first_layer_count-1)*padding,
           tooltip: {isHtml: true},
           sankey: {
-            allowHtml: 'true',
-            tooltip: {
-                isHtml: 'true'
-            },
-            iterations: 100,
+            allowHtml: true,
+            tooltip: { isHtml: true,},
+            iterations: 64,
             link: { color: { fill: "lightslategray", fillOpacity: 0.5 } },
             node: {
               interactivity:true,
@@ -122,8 +130,8 @@
 			  labelPadding: 5,
 			  width: 10,
               label: {
-                fontName: 'sans-serif',
-                fontSize: 12,
+                fontName: 'Almarai',
+                fontSize: 11,
                 italic: true,
               }
             },
@@ -132,11 +140,11 @@
 
         var chartDiv = document.getElementById('sankey_basic');
         var chart = new google.visualization.Sankey(chartDiv);
-              
-              var colorMap = {};
-              var textIndex = 0;
-              var rectIndex = 0;
-              var pathIndex = 0;
+        
+		  var colorMap = {};
+		  var textIndex = 0;
+		  var rectIndex = 0;
+		  var pathIndex = 0;
         var observer = new MutationObserver(function (mutations) {
           mutations.forEach(function (mutation) {
             mutation.addedNodes.forEach(function (node) {
@@ -160,18 +168,40 @@
         google.visualization.events.addListener(chart, 'select', function() {
         var sel = chart.getSelection();
         if (sel.length) {
-          console.log(sel[0].name)
+          console.log(sel);
+		  //window.open('http://www.bing.com');
         }
       });
-
+	  
+        google.visualization.events.addListener(chart, 'onmouseover', function(e) {
+		if(e.name){
+			var gradeTooltip = document.querySelector("#gradeTooltip");
+			gradeTooltip.style.setProperty('visibility', "visible");
+			gradeTooltip.innerHTML = lookupNarrator(getNarratorFromName(e.name))[1] + " : <span style = 'color :" + gradeToColor(getNarratorGrade(getNarratorFromName(e.name))) + ";'>" +getNarratorGrade(getNarratorFromName(e.name))+ "</span>";
+		}
+		if(!e.name){
+			clickDisabled = false;
+		}
+      });
+	  
+	  google.visualization.events.addListener(chart, 'onmouseout', function(e) {
+	  
+		if (e.name){
+		  var gradeTooltip = document.querySelector("#gradeTooltip");
+		  gradeTooltip.style.setProperty('visibility', "hidden");
+		}
+		if(!e.name){
+			clickDisabled = true;
+		}
+      });
         chart.draw(data, options);
       }
     </script> 
     <script>
-      const el = document.querySelector("#sankey_basic");
+      const el = document.querySelector("#sankey_basic");//tooltip
       el.style.setProperty('--v', "none");
       el.addEventListener("click", (e) => {
-        if (el.style.getPropertyValue('--v') != "block"){
+        if (el.style.getPropertyValue('--v') != "block" && !clickDisabled){
           el.style.setProperty('--x', e.offsetX -300 + "px");
           el.style.setProperty('--y', e.offsetY -150 + "px");
           el.style.setProperty('--v', "block");
@@ -183,6 +213,7 @@
         if (el.style.getPropertyValue('--v') == "block"){
           if (e.layerX > 590 || e.layerX < 10 || e.offsetY > 250 || e.offsetY < -100) {
             el.style.setProperty('--v', "none");
+			clickDisabled = true;
           }
         }
       });
