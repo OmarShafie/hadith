@@ -77,6 +77,10 @@ Possible feature (possible, but not now):
   - find similar hadiths (mutaba'at & shuhood)
   - Search by أطراف , تخريج, or exact match+similarity 
 
+Visualization Library Limitations:
+- Highlight full route on node click => Documentation: "For this chart, only one entity can be selected at a time."
+- To add a text on links
+
 سائل واللطائف والفوائد واستخدامات البرنامج:
 * ثم إضافة هذه الفوائد في وصف الحديث/الراوي
 
