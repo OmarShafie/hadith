@@ -59,8 +59,8 @@ Ready Features:
 Next Steps (I know how to do):
   - tool tips!!
 - Color links based on narration term (صيغ التخمل) + highlight Tadlees
-- adjusted min node size
-Form is drawer
+
+Form in drawer
 - Sanad Search (squence of rawi's) - Regex Search/ Bool Search
 - search for rawi by name
 - *Information Retrieval: search for hadith (content)then select list of wanted ahadith
