@@ -30,7 +30,7 @@ function query(data, index){
 // Source: Kaggle Hadith Data Set  
 var URL = "https://raw.githubusercontent.com/OmarShafie/hadith/master/"
 var hadithURL = URL+"data/tutorial/data%20-%20data.csv";
-var narratorsURL = URL+"data/tutorial/narrators.csv";
+var narratorsURL = URL+"data/tutorial/narrators-utf8.csv";
 
 //Parse Parameters
 var inputType = "remote";
@@ -326,15 +326,26 @@ function recursiveSearch(arr, x, start, end, cmpFn) {
 		return recursiveSearch(arr, x, mid+1, end, cmpFn); 
 }
 
-function lookupNarrator(index){
+function lookupNarrator(id){
 	//returns data of the narrator with index from the narratorsData, Binary Search Algorithm
-	var found = recursiveSearch(narratorsData, index, 0, narratorsData.length-1, function(x,y) { return parseInt(x[0]) - parseInt(y);});
+	var found = recursiveSearch(narratorsData, id, 0, narratorsData.length-1, function(x,y) { return parseInt(x[0]) - parseInt(y);});
 	if (found == -1){
 		// else create a narrator data
-		return [index,index]
+		return [id,id]
 		//console.log("narrator is missing", index);
 	}
   return narratorsData[found];
+}
+
+function lookupHadith(id){
+	//returns data of the narrator with index from the narratorsData, Binary Search Algorithm
+	var found = recursiveSearch(HadithArr, id, 0, HadithArr.length-1, function(x,y) { return parseInt(x[0]) - parseInt(y);});
+	if (found == -1){
+		// else create a narrator data
+		return []
+		//console.log("narrator is missing", index);
+	}
+  return HadithArr[found];
 }
 
 
@@ -369,19 +380,19 @@ function gradeToColor(grade){
 		15: "darkslategray",
 	  };
 	grade = simplifyArabic(grade);
-	if (grade.includes("کذب")){
+	if (grade.includes("كذب")){
 		return mapping[12];
 	}
 	
-	else if (grade.includes("متروک") || grade.includes("منکر")){
+	else if (grade.includes("متروك") || grade.includes("منكر")){
 		return mapping[11];
 	}
 	
-	else if (grade.includes("تغیر ") || grade.includes("اختلط") || grade.includes("وخلط ")){
+	else if (grade.includes("تغير ") || grade.includes("اختلط") || grade.includes("وخلط ")){
 		return mapping[7];
 	}
 	
-	else if (grade.includes("دلس") || grade.includes("تدلیس")){
+	else if (grade.includes("دلس") || grade.includes("تدليس")){
 		return mapping[8];
 	}
 	else if (grade.includes("ثقه ثبت")  || grade.includes("حافظ") || grade.includes("ثقه ثقه") || grade.includes("ثقه ضابط") || grade.includes("امام")){
@@ -390,14 +401,14 @@ function gradeToColor(grade){
 	else if (grade.includes("ثقه")){
 		return mapping[4];
 	}
-	else if (grade.includes("ضعیف") || grade.includes("ضعف ")){
+	else if (grade.includes("ضعيف") || grade.includes(" ضعف")){
 		return mapping[10];
 	}
-	else if (grade.includes("مجهول") || grade.includes("مستور") || grade.includes("لا یعرف")|| grade.includes("لا تعرف") || grade.includes("مختلف فی صحبته") ){
+	else if (grade.includes("مجهول") || grade.includes("مستور") || grade.includes("لا يعرف")|| grade.includes("لا تعرف") || grade.includes("مختلف في صحبته") ){
 		return mapping[13];
 	}
 	
-	else if (grade.includes("لین") && !grade.includes("اولین")){
+	else if (grade.includes("لين") && !grade.includes("اولين")){
 		return mapping[9];
 	}
 	
@@ -407,10 +418,10 @@ function gradeToColor(grade){
 	else if (grade.includes("مخضرم")){
 		return mapping[3];
 	}
-	else if (grade.includes("مقبول" ) || grade.includes("شیخ ") || grade.includes(" باس") ){
+	else if (grade.includes("مقبول" ) || grade.includes("شيخ ") || grade.includes(" باس") ){
 		return mapping[6];
 	}
-	else if (grade.includes("صحابی") || grade.includes("صحابه") || grade.includes("صحبه") || grade.includes("صحابیه ") || grade.includes("ام المومنین")){//for order preference
+	else if (grade.includes("صحابي") || grade.includes("صحابه") || grade.includes("صحبه") || grade.includes("صحابيه ") || grade.includes("ام المومنين")){//for order preference
 		return mapping[1];
 	}
 	else if (grade === ""){
@@ -426,15 +437,52 @@ function now() {
 }
 
 var arabicNormChar = {
-    'ك': 'ک', 'ﻷ': 'لا', 'ؤ': 'و', 'ى': 'ی', 'ي': 'ی', 'ئ': 'ی', 'أ': 'ا', 'إ': 'ا', 'آ': 'ا', 'ٱ': 'ا', 'ٳ': 'ا', 'ة': 'ه', 'ء': '', 'ِ': '', 'ْ': '', 'ُ': '', 'َ': '', 'ّ': '', 'ٍ': '', 'ً': '', 'ٌ': '', 'ٓ': '', 'ٰ': '', 'ٔ': '', '�': ''
+    'ك': 'ك',
+	'ﻷ': 'لا',
+	'ؤ': 'و',
+	'ی': 'ي',
+	'ي': 'ي',
+	'ئ': 'ي',
+	'ى': 'ى',
+	'أ': 'ا',
+	'إ': 'ا',
+	'آ': 'ا',
+	'ٱ': 'ا',
+	'ٳ': 'ا',
+	'ة': 'ه',
+	'ص': 'ص',
+	'ح': 'ح',
+	'ض': 'ض',
+	'ع': 'ع',
+	'ف': 'ف',
+	'ح': 'ح',
+	'ء': '',
+	'ِ': '',
+	'ْ': '', 
+	'ُ': '',
+	'َ': '',
+	'ّ': '',
+	'ٍ': '',
+	'ً': '',
+	'ٌ': '',
+	'ٓ': '',
+	'ٰ': '',
+	'ٔ': '',
+	'�': ''
+}
+function stripHtml(html)
+{
+   var tmp = document.createElement("DIV");
+   tmp.innerHTML = html;
+   return tmp.textContent || tmp.innerText || "";
 }
 
 var simplifyArabic  = function (str) {
-    return str.replace(/[^\u0000-\u007E]/g, function(a){ 
-        var retval = arabicNormChar[a]
+    return stripHtml(str.replace(/[^\u0000-\u007E]/g, function(a){
+        var retval = arabicNormChar[a];
         if (retval == undefined) {retval = a}
         return retval; 
-    }).normalize('NFKD').toLowerCase();
+    }).normalize('NFKD').toLowerCase());
 }
 
 //now you can use simplifyArabic(str) on Arabic strings to remove the diacritics
@@ -497,7 +545,7 @@ function afterProcess(temp){
   for (var i = 0; i < result_graph.length; i++){
     var node = result_graph[i];
     var narrator = lookupNarrator(node[0][0]);
-  var name = narrator[1].split(" ").slice(0,7).join(' ');
+  var name = narrator[1].split(" ").slice(0,4).join(' ');
   names.push(narrator[0]+".."+name+" ");
   }
   
@@ -509,29 +557,27 @@ function afterProcess(temp){
     for (var j = 1; j < node.length; j++){ //Out neighbors
       var index = getIndex(node[j][0], result_graph);
       if (index >= 0) {
-        var tooltip = '<table><thead><tr>';
-        tooltip += '<th>'+names[nodeInd]+"---("+node[j][2].length+")--->"+names[index]+'</th>';
-        tooltip += '<th>Id</th>';
-        tooltip += '<th>Chain</th>';
-        tooltip += '<th>Book</th>';
+        var tooltip = '<table dir="rtl"><thead><tr>';
+        tooltip += '<th dir="rtl">'+names[index]+"<---("+node[j][2].length+")---"+names[nodeInd]+'</th>';
+        //tooltip += '<th dir="ltr">Chain</th>';
+        //tooltip += '<th dir="ltr">Id</th>';
         tooltip += '</tr></thead><tbody>';
         for(var h = 0; h < node[j][2].length; h++){
           var hadith = node[j][2][h];
-          tooltip += "<tr><td>";
+          tooltip += "<tr><td dir='rtl'>";
+		  
+          tooltip += "<h6>"+getTitle(HadithArr, hadith)+"</h6>";
           tooltip += getHadithTxt(HadithArr, hadith);
+          tooltip += "</td>";
+
+          /*tooltip += "<td>";
+          tooltip += getHadithAsaneed(HadithArr, hadith).join().replace(/,/g, "<br>");
           tooltip += "</td>";
 
           tooltip += "<td>";
           tooltip += getHadithNum(HadithArr, hadith);
-          tooltip += "</td>";
+          tooltip += "</td>";*/
 
-          tooltip += "<td>";
-          tooltip += getHadithAsaneed(HadithArr, hadith);
-          tooltip += "</td>";
-
-          tooltip += "<td>";
-          tooltip += getTitle(HadithArr, hadith);
-          tooltip += "</td></tr>";
         }
         tooltip += "</tbody></table>";
         ready_data.push([names[nodeInd].split(" ").slice(0,4).join(' '), names[index].split(" ").slice(0,4).join(' '), node[j][1],tooltip]);
@@ -574,72 +620,73 @@ function gradeAnalysis(){
 		15: [0, []],
 	  };
   for (var narr = 0; narr < narratorsData.length; narr++){
-	  var grade = simplifyArabic(narratorsData[narr][2]);
+	  var origin_grade = narratorsData[narr][2];
+	  var grade = simplifyArabic(origin_grade);
 	
 	
-	if (grade.includes("کذب")){
+	if (grade.includes("كذب")){
 	grades[12][0]++;
-	grades[12][1].push(grade);
+	grades[12][1].push(origin_grade);
 	}
 	
-	else if (grade.includes("متروک") || grade.includes("منکر")){
+	else if (grade.includes("متروك") || grade.includes("منكر")){
 	grades[11][0]++;
-	grades[11][1].push(grade);
+	grades[11][1].push(origin_grade);
 	}
-	else if (grade.includes("تغیر ") || grade.includes("اختلط") || grade.includes("وخلط ")){
+	else if (grade.includes("تغير ") || grade.includes("اختلط") || grade.includes("وخلط ")){
 	grades[7][0]++;
-	grades[7][1].push(grade);
+	grades[7][1].push(origin_grade);
 	}
-	else if (grade.includes("دلس") || grade.includes("تدلیس")){
+	else if (grade.includes("دلس") || grade.includes("تدليس")){
 	grades[8][0]++;
-	grades[8][1].push(grade);
+	grades[8][1].push(origin_grade);
 	}
 	else if (grade.includes("ثقه ثبت")  || grade.includes("حافظ") || grade.includes("ثقه ثقه") || grade.includes("ثقه ضابط") || grade.includes("امام")){
 	grades[2][0]++;
-	grades[2][1].push(grade);
+	grades[2][1].push(origin_grade);
 	}
 	else if (grade.includes("ثقه")){
 	grades[4][0]++;
-	grades[4][1].push(grade);
+	grades[4][1].push(origin_grade);
 	}
-	else if (grade.includes("ضعیف") || grade.includes("ضعف")){
+	else if (grade.includes("ضعيف") || grade.includes(" ضعف")){
 	grades[10][0]++;
-	grades[10][1].push(grade);
+	grades[10][1].push(origin_grade);
 	}
-	else if (grade.includes("مجهول") || grade.includes("مستور") || grade.includes("لا یعرف")|| grade.includes("لا تعرف") || grade.includes("مختلف فی صحبته") ){
+	else if (grade.includes("مجهول") || grade.includes("مستور") || grade.includes("لا يعرف")|| grade.includes("لا تعرف") || grade.includes("مختلف في صحبته")){
 	grades[13][0]++;
-	grades[13][1].push(grade);
+	grades[13][1].push(origin_grade);
 	}
-	else if (grade.includes("لین") && !grade.includes("اولین")){
+	else if (grade.includes("لين") && !grade.includes("اولين")){
 	grades[9][0]++;
-	grades[9][1].push(grade);
+	grades[9][1].push(origin_grade);
 	}
 	
 	else if (grade.includes("صدوق")){
 	grades[5][0]++;
-	grades[5][1].push(grade);
+	grades[5][1].push(origin_grade);
 	}
 	
-	else if (grade.includes("مخضرم")){
+	else if (grade.includes("صدوق")){
 	grades[3][0]++;
-	grades[3][1].push(grade);
+	grades[3][1].push(origin_grade);
 	}
 	
 	else if (grade.includes("مقبول" ) || grade.includes("شیخ ") || grade.includes(" باس") ){
 	grades[6][0]++;
-	grades[6][1].push(grade);
+	grades[6][1].push(origin_grade);
 	}
 	else if (grade === ""){
 	grades[15][0]++;
-	grades[15][1].push(grade);
+	grades[15][1].push(origin_grade);
 	}
-	else if (grade.includes("صحابی") || grade.includes("صحابه") || grade.includes("صحبه") || grade.includes("صحابیه ") || grade.includes("ام المومنین")){//for order preference
+	else if (grade.includes("صحابي") || grade.includes("صحابه") || grade.includes("صحبه") || grade.includes("صحابيه ") || grade.includes("ام المومنين")){//for order preference
 	grades[1][0]++;
-	grades[1][1].push(grade);
+	grades[1][1].push(origin_grade);
 	}
 	else{ //Other
 	grades[14][0]++;
-	grades[14][1].push(grade);
+	grades[14][1].push(origin_grade);
 	}
   }
   console.log(grades);
