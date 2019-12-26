@@ -361,6 +361,98 @@ function getNarratorFromName(tag){
 	return tag.split("..")[0];
 }
 
+function gradeAnalysis(){
+  /* ANALYSIS OF GRADES */
+   var grades = {
+		1 : [0, []],
+		2 : [0, []],
+		3 : [0, []],
+		4 : [0, []],
+		5 : [0, []],
+		6 : [0, []],
+		7 : [0, []],
+		8 : [0, []],
+		9 : [0, []],
+		10: [0, []],
+		11: [0, []],
+		12: [0, []],
+		13: [0, []],
+		14: [0, []],
+		15: [0, []],
+	  };
+  for (var narr = 0; narr < narratorsData.length; narr++){
+	  var origin_grade = narratorsData[narr][2];
+	  var grade = simplifyArabic(origin_grade);
+	
+	
+	if (grade.includes("كذب")){
+	grades[12][0]++;
+	grades[12][1].push(origin_grade);
+	}
+	
+	else if (grade.includes("متروك") || grade.includes("منكر")){
+	grades[11][0]++;
+	grades[11][1].push(origin_grade);
+	}
+	else if (grade.includes("تغير ") || grade.includes("اختلط") || grade.includes("وخلط ")){
+	grades[7][0]++;
+	grades[7][1].push(origin_grade);
+	}
+	else if (grade.includes("دلس") || grade.includes("تدليس")){
+	grades[8][0]++;
+	grades[8][1].push(origin_grade);
+	}
+	else if (grade.includes("ثقه ثبت")  || grade.includes("حافظ") || grade.includes("ثقه ثقه") || grade.includes("ثقه ضابط") || grade.includes("امام")){
+	grades[2][0]++;
+	grades[2][1].push(origin_grade);
+	}
+	else if (grade.includes("ثقه")){
+	grades[4][0]++;
+	grades[4][1].push(origin_grade);
+	}
+	else if (grade.includes("ضعيف") || grade.includes(" ضعف")){
+	grades[10][0]++;
+	grades[10][1].push(origin_grade);
+	}
+	else if (grade.includes("مجهول") || grade.includes("مستور") || grade.includes("لا يعرف")|| grade.includes("لا تعرف") || grade.includes("مختلف في صحبته")){
+	grades[13][0]++;
+	grades[13][1].push(origin_grade);
+	}
+	else if (grade.includes("لين") && !grade.includes("اولين")){
+	grades[9][0]++;
+	grades[9][1].push(origin_grade);
+	}
+	
+	else if (grade.includes("صدوق")){
+	grades[5][0]++;
+	grades[5][1].push(origin_grade);
+	}
+	
+	else if (grade.includes("صدوق")){
+	grades[3][0]++;
+	grades[3][1].push(origin_grade);
+	}
+	
+	else if (grade.includes("مقبول" ) || grade.includes("شیخ ") || grade.includes(" باس") ){
+	grades[6][0]++;
+	grades[6][1].push(origin_grade);
+	}
+	else if (grade === ""){
+	grades[15][0]++;
+	grades[15][1].push(origin_grade);
+	}
+	else if (grade.includes("صحابي") || grade.includes("صحابه") || grade.includes("صحبه") || grade.includes("صحابيه ") || grade.includes("ام المومنين")){//for order preference
+	grades[1][0]++;
+	grades[1][1].push(origin_grade);
+	}
+	else{ //Other
+	grades[14][0]++;
+	grades[14][1].push(origin_grade);
+	}
+  }
+  console.log(grades);
+}
+
 function gradeToColor(grade){
 	var mapping = {
 		1 : "darkgreen",
@@ -407,7 +499,6 @@ function gradeToColor(grade){
 	else if (grade.includes("مجهول") || grade.includes("مستور") || grade.includes("لا يعرف")|| grade.includes("لا تعرف") || grade.includes("مختلف في صحبته") ){
 		return mapping[13];
 	}
-	
 	else if (grade.includes("لين") && !grade.includes("اولين")){
 		return mapping[9];
 	}
@@ -546,7 +637,10 @@ function afterProcess(temp){
     var node = result_graph[i];
     var narrator = lookupNarrator(node[0][0]);
   var name = narrator[1].split(" ").slice(0,4).join(' ');
-  names.push(narrator[0]+".."+name+" ");
+  var s = narrator[0];
+  s += "..";
+  s += name;
+  names.push(s);
   }
   
   var first_layer_count = 0; // used as indication of height of sankey
@@ -564,7 +658,7 @@ function afterProcess(temp){
         tooltip += '</tr></thead><tbody>';
         for(var h = 0; h < node[j][2].length; h++){
           var hadith = node[j][2][h];
-          tooltip += "<tr><td dir='rtl'>";
+          tooltip += "<tr><td dir='rtl' onClick='console.log(getHadithXML(HadithArr, "+hadith+"))'>";
 		  
           tooltip += "<h6>"+getTitle(HadithArr, hadith)+"</h6>";
           tooltip += getHadithTxt(HadithArr, hadith);
@@ -580,9 +674,9 @@ function afterProcess(temp){
 
         }
         tooltip += "</tbody></table>";
-        ready_data.push([names[nodeInd].split(" ").slice(0,4).join(' '), names[index].split(" ").slice(0,4).join(' '), node[j][1],tooltip]);
+        ready_data.push([names[nodeInd], names[index], node[j][1],tooltip]);
 
-        if (names[nodeInd].includes('5495..')) {
+        if (names[nodeInd].split('..')[0] == '5495') {
           first_layer_count += 1;
 		  first_layer_total += node[j][1];
         }
@@ -600,97 +694,6 @@ function afterProcess(temp){
   enableButton();
 }
 
-function gradeAnalysis(){
-  /* ANALYSIS OF GRADES */
-   var grades = {
-		1 : [0, []],
-		2 : [0, []],
-		3 : [0, []],
-		4 : [0, []],
-		5 : [0, []],
-		6 : [0, []],
-		7 : [0, []],
-		8 : [0, []],
-		9 : [0, []],
-		10: [0, []],
-		11: [0, []],
-		12: [0, []],
-		13: [0, []],
-		14: [0, []],
-		15: [0, []],
-	  };
-  for (var narr = 0; narr < narratorsData.length; narr++){
-	  var origin_grade = narratorsData[narr][2];
-	  var grade = simplifyArabic(origin_grade);
-	
-	
-	if (grade.includes("كذب")){
-	grades[12][0]++;
-	grades[12][1].push(origin_grade);
-	}
-	
-	else if (grade.includes("متروك") || grade.includes("منكر")){
-	grades[11][0]++;
-	grades[11][1].push(origin_grade);
-	}
-	else if (grade.includes("تغير ") || grade.includes("اختلط") || grade.includes("وخلط ")){
-	grades[7][0]++;
-	grades[7][1].push(origin_grade);
-	}
-	else if (grade.includes("دلس") || grade.includes("تدليس")){
-	grades[8][0]++;
-	grades[8][1].push(origin_grade);
-	}
-	else if (grade.includes("ثقه ثبت")  || grade.includes("حافظ") || grade.includes("ثقه ثقه") || grade.includes("ثقه ضابط") || grade.includes("امام")){
-	grades[2][0]++;
-	grades[2][1].push(origin_grade);
-	}
-	else if (grade.includes("ثقه")){
-	grades[4][0]++;
-	grades[4][1].push(origin_grade);
-	}
-	else if (grade.includes("ضعيف") || grade.includes(" ضعف")){
-	grades[10][0]++;
-	grades[10][1].push(origin_grade);
-	}
-	else if (grade.includes("مجهول") || grade.includes("مستور") || grade.includes("لا يعرف")|| grade.includes("لا تعرف") || grade.includes("مختلف في صحبته")){
-	grades[13][0]++;
-	grades[13][1].push(origin_grade);
-	}
-	else if (grade.includes("لين") && !grade.includes("اولين")){
-	grades[9][0]++;
-	grades[9][1].push(origin_grade);
-	}
-	
-	else if (grade.includes("صدوق")){
-	grades[5][0]++;
-	grades[5][1].push(origin_grade);
-	}
-	
-	else if (grade.includes("صدوق")){
-	grades[3][0]++;
-	grades[3][1].push(origin_grade);
-	}
-	
-	else if (grade.includes("مقبول" ) || grade.includes("شیخ ") || grade.includes(" باس") ){
-	grades[6][0]++;
-	grades[6][1].push(origin_grade);
-	}
-	else if (grade === ""){
-	grades[15][0]++;
-	grades[15][1].push(origin_grade);
-	}
-	else if (grade.includes("صحابي") || grade.includes("صحابه") || grade.includes("صحبه") || grade.includes("صحابيه ") || grade.includes("ام المومنين")){//for order preference
-	grades[1][0]++;
-	grades[1][1].push(origin_grade);
-	}
-	else{ //Other
-	grades[14][0]++;
-	grades[14][1].push(origin_grade);
-	}
-  }
-  console.log(grades);
-}
   
 function main(hadithData){
   HadithArr = [];
