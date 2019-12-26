@@ -1,5 +1,5 @@
 # VizHadith
-Search engine which provides Visual analysis of Hadith from the Six Books Data.
+Search engine which provides Visual analysis of Hadith from Hadith Books Data.
 
 Web-based using pure HTML, Bootstrap and JavaScript.
 
