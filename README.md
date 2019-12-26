@@ -52,15 +52,13 @@ Ready Features:
 - filter by top K number of narrators (reduce size)
 - Filter Hadiths by book
 - Narrators are color coded to highlight grade of narration with grade legend
+- On node hover: rawi details
 - Sankey Diagram weights represent number of hadiths between any 2 rawis'
 - Populate Hadiths in Link in a table
 
 Next Steps (I know how to do):
   - tool tips!!
-- Color links based on narration term (صيغ التخمل)
-- highlight Tadlees
--footer
-- encoding utf8 unicode standard ح
+- Color links based on narration term (صيغ التخمل) + highlight Tadlees
 - adjusted min node size
 Form is drawer
 - Sanad Search (squence of rawi's) - Regex Search/ Bool Search
@@ -75,7 +73,6 @@ Possible feature (possible, but not now):
   - Collapse nodes
   - view top down rather than left right
   - responsivness
-  - On node click: retrive rawi details from website
   - All controllers on a drawer
   - font sizes controller
   - find similar hadiths (mutaba'at & shuhood)
