@@ -294,7 +294,19 @@ function getHadithTxt(data, index){
   return data[index][2];
 }
 function getHadithXML(data, index){
-  return data[index][3];
+  var xml = data[index][3];
+  xml = xml.replace(/&gt;/g,">\n").replace(/&lt;/g,"\n<");
+  var parsed = {
+    'xml': xml,
+    'رقم_حديث نوع="حرف"': xml.match(/<رقم_حديث نوع="حرف"(.)*<\/رقم_حديث> /)[0],
+    'رقم_حديث نوع="مطبوع"': 1,
+    'تخصيص': 1,
+    'نوع': 1,
+    'اسناد': 1,
+    'متن': 1,
+    'طرف': 1,
+  }
+  return parsed;
 }
 function getHadithAsaneed(data, index){
   var s = data[index][4].replace(/'/g, "").replace(/s/g, "").split(",");
