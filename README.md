@@ -29,6 +29,8 @@ XML needs to be extracted:
 - Main known name is missing
 - Narrators Special comments
 - Narrators time/places - useful to verify connection
+- معلقات الليث 
+- حديث (عماي) له راويان ولم يحقق
 
 Out of scope (Research Topics):
 - *Classification of Hadith (Saheeh/ hasan/ Dha'eef) or (Prophet-like-speech "textual finger print")
