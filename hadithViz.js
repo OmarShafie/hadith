@@ -17,7 +17,7 @@ var numNarrators = 1;
 
 function query(data, index){
   // hadith contains the input
-  //retunrs a list of chains
+  //return a list of chains
   var asaneed = [];
   var txt = simplifyArabic(getHadithTxt(data,index));
   if(txt.includes(simplifyArabic(args[input]["value"]))){
@@ -293,18 +293,33 @@ function getTitle(data, index){
 function getHadithTxt(data, index){
   return data[index][2];
 }
+
+function parseNarrative(segments){
+	var term_index = 3;
+	var narrator_index = 8;
+	if (segments.length < 11){
+		term_index = 1;
+		narrator_index = 4;
+	}
+	var term = simplifyArabic(segments[term_index]);
+	var narrator = segments[narrator_index].match(/ربط="(.*)"/)[0].split('"')[1];
+	return [term, narrator]
+}
 function getHadithXML(data, index){
   var xml = data[index][3];
   xml = xml.replace(/&gt;/g,">\n").replace(/&lt;/g,"\n<");
+  console.log(xml);
+  console.log( getHadithAsaneed(data, index));
+  
   var parsed = {
     'xml': xml,
-    'رقم_حديث نوع="حرف"': xml.match(/<رقم_حديث نوع="حرف"(.)*<\/رقم_حديث> /)[0],
-    'رقم_حديث نوع="مطبوع"': 1,
-    'تخصيص': 1,
-    'نوع': 1,
-    'اسناد': 1,
-    'متن': 1,
-    'طرف': 1,
+    'رقم_حديث نوع="حرف"': xml.match(/<رقم_حديث نوع="حرف">\n(.)* \n<\/رقم_حديث>/)[0].split("\n")[1],
+    'رقم_حديث نوع="مطبوع"': xml.match(/<رقم_حديث نوع="مطبوع">\n(.)* \n<\/رقم_حديث>/)[0].split("\n")[1],
+    'تخصيص': xml.match(/<حديث تخصيص="(.*)" نوع="(.*)">/)[0].split('"')[1],
+    'نوع': xml.match(/<حديث تخصيص="(.*)" نوع="(.*)">/)[0].split('"')[3],
+    'اسناد': xml.match(/<مصطلح_صيغ ربط="(.*)">\n(.*)\n<صيغة_تحديث>\n(.*)\n<\/صيغة_تحديث>\n(.*)\n<\/مصطلح_صيغ>\n(.*)\n<راوي (.*)>\n(.*)\n<\/راوي>|<صيغة_تحديث>\n(.*)\n<\/صيغة_تحديث>\n(.*)\n<راوي (.*)>\n(.*)\n<\/راوي>/g).map(x => parseNarrative(x.split("\n"))),
+    //'متن': "",
+    'طرف': simplifyArabic(xml.match(/<طرف>\n(.*)\n<\/طرف>\n/)[0].split('\n')[1]),
   }
   return parsed;
 }
@@ -344,7 +359,6 @@ function lookupNarrator(id){
 	if (found == -1){
 		// else create a narrator data
 		return [id,id]
-		//console.log("narrator is missing", index);
 	}
   return narratorsData[found];
 }
@@ -355,7 +369,6 @@ function lookupHadith(id){
 	if (found == -1){
 		// else create a narrator data
 		return []
-		//console.log("narrator is missing", index);
 	}
   return HadithArr[found];
 }
@@ -571,6 +584,8 @@ var arabicNormChar = {
 	'ٓ': '',
 	'ٰ': '',
 	'ٔ': '',
+	'،': '',
+	'.': '',
 	'�': ''
 }
 function stripHtml(html)
@@ -585,7 +600,7 @@ var simplifyArabic  = function (str) {
         var retval = arabicNormChar[a];
         if (retval == undefined) {retval = a}
         return retval; 
-    }).normalize('NFKD').toLowerCase());
+    }).normalize('NFKD').toLowerCase()).replace(/ +(?= )/g,'');
 }
 
 //now you can use simplifyArabic(str) on Arabic strings to remove the diacritics
