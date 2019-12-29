@@ -29,7 +29,7 @@ XML needs to be extracted:
 - Main known name is missing
 - Narrators Special comments
 - Narrators time/places - useful to verify connection
-- معلقات الليث 
+- inconsistent narrator labeling i.e. معلقات الليث 
 - حديث (عماي) له راويان ولم يحقق
 
 Out of scope (Research Topics):
