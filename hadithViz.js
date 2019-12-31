@@ -14,7 +14,7 @@ var args = [
 
 var input = 0;
 var numNarrators = 1;
-
+var colorLinks = [];
 function query(data, index){
   // hadith contains the input
   //return a list of chains
@@ -704,6 +704,7 @@ function afterProcess(temp){
         }
         tooltip += "</tbody></table>";
         ready_data.push([names[nodeInd], names[index], node[j][1],tooltip]);
+        colorLinks.push(gradeToColor(getNarratorGrade(getNarratorFromName(names[nodeInd]))));
 
         if (names[nodeInd].split('..')[0] == '5495') {
           first_layer_count += 1;

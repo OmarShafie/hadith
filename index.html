@@ -66,6 +66,8 @@
 		<div class="row justify-content-center">
 			<label id="btnMessage"></label>
 		</div>
+
+		</div>
 		 <div class='row justify-content-center my-legend' style="position: sticky; top: 0; z-index: 1000;">
 		  <div class='legend-title'><!--Narrator Grade Legend:--></div>
 			<div class='legend-scale'>
@@ -88,7 +90,6 @@
 			  </ul>
 			</div>
 			<span class="tooltiptext" id="gradeTooltip">Tooltip text</span>
-		  </div>
 		  </div>
       <div class="row justify-content-center">
         <div id="sankey_basic" style="margin-bottom: 100px;"></div>
@@ -113,6 +114,13 @@
 
 	  var selection_array = [];
 	  var clickDisabled = true;
+
+	  function colorLinksbyNarration(){
+	  	if (true){
+	  		return true;
+	  	}
+	  	return false;
+	  }
       function drawChart(data,first_layer_count, first_layer_total) {
         
         // Sets chart options.
@@ -146,20 +154,27 @@
         var chartDiv = document.getElementById('sankey_basic');
         var chart = new google.visualization.Sankey(chartDiv);
         
-		  var colorMap = {};
+		  var colorNodes = {};
 		  var textIndex = 0;
 		  var rectIndex = 0;
-		  var pathIndex = 0;
+
         var observer = new MutationObserver(function (mutations) {
+
+		  	var pathIndex = 0;
           mutations.forEach(function (mutation) {
             mutation.addedNodes.forEach(function (node) {
               if (node.tagName === 'text') {
-                colorMap[textIndex] = gradeToColor(getNarratorGrade(getNarratorFromName(node.innerHTML)));
+                colorNodes[textIndex] = gradeToColor(getNarratorGrade(getNarratorFromName(node.innerHTML)));
                 textIndex++;
               }
               if (node.tagName === 'rect') {
-                node.setAttribute('fill', colorMap[rectIndex]);
+                node.setAttribute('fill', colorNodes[rectIndex]);
                 rectIndex++;
+              }
+              if (node.tagName === 'path' && colorLinksbyNarration()) {
+                node.setAttribute('fill', colorLinks[pathIndex]);
+                node.setAttribute('opacity', 0.3);
+                pathIndex++;
               }
             });
           });
@@ -203,7 +218,7 @@
       }
 	  
 	  var xOffset = xOffset = 300;
-	  var yOffset = 150 + document.querySelector("#header").offsetHeight;
+	  var yOffset = 250 + document.querySelector("#header").offsetHeight;
       const el = document.querySelector("#screen");//tooltip
       el.style.setProperty('--v', "none");
       el.addEventListener("click", (e) => {
