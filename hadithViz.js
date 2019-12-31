@@ -309,16 +309,18 @@ function getHadithXML(data, index){
   var xml = data[index][3];
   xml = xml.replace(/&gt;/g,">\n").replace(/&lt;/g,"\n<");
   console.log(xml);
-  console.log( getHadithAsaneed(data, index));
-  
+  console.log(getHadithAsaneed(data, index));
+  var isnad = xml.match(/<صيغة_تحديث>(.|\n)*<\/صيغة_تحديث>(.|\n)*<راوي(.|\n)*>(.|\n)*<\/راوي>/g).split(",");
+  console.log(isnad);
   var parsed = {
     'xml': xml,
     'رقم_حديث نوع="حرف"': xml.match(/<رقم_حديث نوع="حرف">\n(.)* \n<\/رقم_حديث>/)[0].split("\n")[1],
     'رقم_حديث نوع="مطبوع"': xml.match(/<رقم_حديث نوع="مطبوع">\n(.)* \n<\/رقم_حديث>/)[0].split("\n")[1],
     'تخصيص': xml.match(/<حديث تخصيص="(.*)" نوع="(.*)">/)[0].split('"')[1],
     'نوع': xml.match(/<حديث تخصيص="(.*)" نوع="(.*)">/)[0].split('"')[3],
-    'اسناد': xml.match(/<مصطلح_صيغ ربط="(.*)">\n(.*)\n<صيغة_تحديث>\n(.*)\n<\/صيغة_تحديث>\n(.*)\n<\/مصطلح_صيغ>\n(.*)\n<راوي (.*)>\n(.*)\n<\/راوي>|<صيغة_تحديث>\n(.*)\n<\/صيغة_تحديث>\n(.*)\n<راوي (.*)>\n(.*)\n<\/راوي>/g).map(x => parseNarrative(x.split("\n"))),
-    //'متن': "",
+    //'اسناد': xml.match(/<مصطلح_صيغ ربط="(.*)">\n(.*)\n<صيغة_تحديث>\n(.*)\n<\/صيغة_تحديث>\n(.*)\n<\/مصطلح_صيغ>\n(.*)\n<راوي (.*)>\n(.*)\n<\/راوي>|<صيغة_تحديث>\n(.*)\n<\/صيغة_تحديث>\n(.*)\n<راوي (.*)>\n(.*)\n<\/راوي>/g).map(x => parseNarrative(x.split("\n"))),
+    'اسناد': isnad,
+	//'متن': "",
     'طرف': simplifyArabic(xml.match(/<طرف>\n(.*)\n<\/طرف>\n/)[0].split('\n')[1]),
   }
   return parsed;
