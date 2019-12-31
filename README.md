@@ -56,10 +56,9 @@ Ready Features:
 - Narrators are color coded to highlight grade of narration with grade legend
 - On node hover: rawi details
 - Sankey Diagram weights represent number of hadiths between any 2 rawis'
-- Populate Hadiths in Link in a table
+- Populate Hadiths in Link in a table tooltip
 
 Next Steps (I know how to do):
-  - tool tips!!
 - Color links based on narration term (صيغ التخمل) + highlight Tadlees
 
 Form in drawer
@@ -78,7 +77,8 @@ Possible feature (possible, but not now):
   - All controllers on a drawer
   - font sizes controller
   - find similar hadiths (mutaba'at & shuhood)
-  - Search by أطراف , تخريج, or exact match+similarity 
+  - Search by أطراف , تخريج, or exact match+similarity
+  - Search by book title
 
 Visualization Library Limitations:
 - Highlight full route on node click => Documentation: "For this chart, only one entity can be selected at a time."
