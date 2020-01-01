@@ -1,3 +1,16 @@
+function findAllMatches(re, input){
+	var r = [], m;
+    // prevent infinite loops
+    if (!re.global) re = new RegExp(
+        re.source, (re+'').split('/').pop() + 'g'
+    );
+    while (m = re.exec(input)) {
+        re.lastIndex -= m[0].length - 1;
+        r.push(m[0]);
+    }
+    return r;
+}
+
 //TODO: Take input from user
 var args = [
   {
@@ -310,7 +323,9 @@ function getHadithXML(data, index){
   xml = xml.replace(/&gt;/g,">\n").replace(/&lt;/g,"\n<");
   console.log(xml);
   console.log(getHadithAsaneed(data, index));
-  var isnad = xml.match(/<صيغة_تحديث>(.|\n)*<\/صيغة_تحديث>(.|\n)*<راوي(.|\n)*>(.|\n)*<\/راوي>/g).split(",");
+  var narratorTerm = '(?=(<راوي(.*)>\n(.*)\n</راوي>\n(\n<مصطلح_صيغ(.*)">\n)?\n<صيغة_تحديث>\n(.*)\n</صيغة_تحديث>))';
+  var termNarrator = '(?=(<صيغة_تحديث>\n(.*)\n</صيغة_تحديث>\n(\n<\/مصطلح_صيغ>\n)?\n<راوي(.*)>\n(.*)\n<\/راوي>))';
+  var isnad = Array.from(xml.matchAll(termNarrator+"|"+narratorTerm,"g"), m => m[0].split("\n"));
   console.log(isnad);
   var parsed = {
     'xml': xml,
@@ -644,6 +659,7 @@ function process(array, callback){
 function afterProcess(temp){
 	
 	ready_data = [];
+	colorLinks = [];
   // sort data in decending order of importance, i.e number of ahadith
   // this is used so that only least important cyclic edges are removed 
   temp.sort(function(a, b) {
