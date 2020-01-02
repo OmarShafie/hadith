@@ -57,28 +57,29 @@ Ready Features:
 - On node hover: rawi details
 - Sankey Diagram weights represent number of hadiths between any 2 rawis'
 - Populate Hadiths in Link in a table tooltip
+- responsivness?
 
 Next Steps (I know how to do):
 - Color links based on narration term (صيغ التخمل) + highlight Tadlees
-
-Form in drawer
-- Sanad Search (squence of rawi's) - Regex Search/ Bool Search
-- search for rawi by name
+- Sanad Search (squence of rawi's)
+- Regex Search
+- UI regex search for rawi by name and tag it
 - *Information Retrieval: search for hadith (content)then select list of wanted ahadith
 
 Possible feature (possible, but not now):
--transliterate names
-- light - Dark theme
-- responsivness
-- *Scraping: Get more resource data/books. Scale to all avaible Sunnah Books.
-  - Collapse nodes
-  - view top down rather than left right
-  - responsivness
-  - All controllers on a drawer
-  - font sizes controller
-  - find similar hadiths (mutaba'at & shuhood)
-  - Search by أطراف , تخريج, or exact match+similarity
-  - Search by book title
+-Sankey Settings tab:
+  - transliterate names
+  - light - Dark theme
+- Collapse nodes
+- view top down rather than left right
+- font sizes controller
+  
+- Search Settings tab:
+- find similar hadiths (mutaba'at & shuhood)
+- Search by أطراف , تخريج, or exact match+similarity
+- Search by book title
+- *Scraping: Get more resource data/books. Scale to all avaible Sunnah Books+ 
+  - Grouped Matn
 
 Visualization Library Limitations:
 - Highlight full route on node click => Documentation: "For this chart, only one entity can be selected at a time."
