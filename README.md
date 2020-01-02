@@ -70,16 +70,16 @@ Possible feature (possible, but not now):
 -Sankey Settings tab:
   - transliterate names
   - light - Dark theme
-- Collapse nodes
-- view top down rather than left right
-- font sizes controller
+  - Collapse nodes
+  - view top down rather than left right
+  - font sizes controller
   
 - Search Settings tab:
-- find similar hadiths (mutaba'at & shuhood)
-- Search by أطراف , تخريج, or exact match+similarity
-- Search by book title
-- *Scraping: Get more resource data/books. Scale to all avaible Sunnah Books+ 
-  - Grouped Matn
+  - find similar hadiths (mutaba'at & shuhood)
+  - Search by أطراف , تخريج, or exact match+similarity
+  - Search by book title
+  - *Scraping: Get more resource data/books. Scale to all avaible Sunnah Books+ 
+    - Grouped Matn: color each group by a unique color + color each zyadah by a n-bit binary colors,  where nth bit is existance of zyadah. grouping by matn, grouping by sanad, grouping by both, none (default).
 
 Visualization Library Limitations:
 - Highlight full route on node click => Documentation: "For this chart, only one entity can be selected at a time."
