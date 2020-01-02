@@ -1,16 +1,3 @@
-function findAllMatches(re, input){
-	var r = [], m;
-    // prevent infinite loops
-    if (!re.global) re = new RegExp(
-        re.source, (re+'').split('/').pop() + 'g'
-    );
-    while (m = re.exec(input)) {
-        re.lastIndex -= m[0].length - 1;
-        r.push(m[0]);
-    }
-    return r;
-}
-
 //TODO: Take input from user
 var args = [
   {
@@ -318,13 +305,38 @@ function parseNarrative(segments){
 	var narrator = segments[narrator_index].match(/ربط="(.*)"/)[0].split('"')[1];
 	return [term, narrator]
 }
+function oneIndex(str, m, i){
+	return m.index + 1;
+}
+
+function overlapMatching(str, regexps, nextStartIndexFn){
+	var res = [];
+	var minStrIndex = str.length;
+	var minReIndex = -1;
+	var matching = [];
+	for(var i = 0;i < regexps.length;i++){
+		var m = regexps[i].exec(str);
+		var index = m.index;
+		matching.push(m);
+		if (index < minStrIndex) {
+			minStrIndex = index;
+			minReIndex = i;
+		}
+	}
+	if (minReIndex >= 0){
+		var m = matching[minReIndex]; 
+		res = res.concat(overlapMatching(str.slice(nextStartIndexFn(str, m, minReIndex)),regexps, nextStartIndexFn));
+	}
+	return res;
+}
+
 function getHadithXML(data, index){
   var xml = data[index][3];
   xml = xml.replace(/&gt;/g,">\n").replace(/&lt;/g,"\n<");
   console.log(xml);
   console.log(getHadithAsaneed(data, index));
-  var narratorTerm = '(?=(<راوي(.*)>\n(.*)\n</راوي>\n(\n<مصطلح_صيغ(.*)">\n)?\n<صيغة_تحديث>\n(.*)\n</صيغة_تحديث>))';
-  var termNarrator = '(?=(<صيغة_تحديث>\n(.*)\n</صيغة_تحديث>\n(\n<\/مصطلح_صيغ>\n)?\n<راوي(.*)>\n(.*)\n<\/راوي>))';
+  var narratorTerm = '(<راوي(.*)>\n(.*)\n</راوي>\n(\n<مصطلح_صيغ(.*)">\n)?\n<صيغة_تحديث>\n(.*)\n</صيغة_تحديث>)';
+  var termNarrator = '(<صيغة_تحديث>\n(.*)\n</صيغة_تحديث>\n(\n<\/مصطلح_صيغ>\n)?\n<راوي(.*)>\n(.*)\n<\/راوي>)';
   var isnad = Array.from(xml.matchAll(termNarrator+"|"+narratorTerm,"g"), m => m[0].split("\n"));
   console.log(isnad);
   var parsed = {
