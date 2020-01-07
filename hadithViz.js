@@ -45,6 +45,28 @@ var parsedData;
 var HadithArr = [];
 var result_graph = [];
 var ready_data = [];
+var data;
+var first_layer_count = 0; // used as indication of height of sankey
+var first_layer_total = 0;
+var longest_sanad = 0;
+$(function()
+  {
+	$('#rotate').click(
+		function(){
+			// flip
+			var sankey = document.querySelector("#sankey_basic");
+			if (isVertical){
+				sankey.setAttribute('class','horizontal-sankey');
+			}
+			else {
+				sankey.setAttribute('class','vertical-sankey');
+			}
+			isVertical = !isVertical;
+			google.charts.setOnLoadCallback(drawChart(data));
+		}
+	)
+  }
+);
 
 $(function()
   {
@@ -412,7 +434,7 @@ function getNarratorGrade(index){
 }
 
 function getNarratorFromName(tag){
-	return tag.split("..")[0];
+	return tag.split(" ")[0];
 }
 
 function gradeAnalysis(){
@@ -642,6 +664,7 @@ function process(array, callback){
   var chunk = 300;
   var i = 0;
   var counter = 0;
+  longest_sanad = 0;
   
   function loop() {
     var cnt = chunk;
@@ -650,6 +673,7 @@ function process(array, callback){
       var chains = query(array,hadithId);
       for(var c = 0; c < chains.length; c++){
         var sanad = chains[c];
+		longest_sanad = (sanad.length > longest_sanad)?sanad.length:longest_sanad;
         for(var n = 0; n < sanad.length -1;n++) {
           updateCount(tempData, sanad[n+1], sanad[n], hadithId);
         }
@@ -689,19 +713,18 @@ function afterProcess(temp){
   result_graph = result_graph.slice(0, parseInt(args[numNarrators]["value"]));
 
 
+  first_layer_count = 0; // used as indication of height of sankey
+  first_layer_total = 0;
+  
   var names = [];
   for (var i = 0; i < result_graph.length; i++){
-    var node = result_graph[i];
-    var narrator = lookupNarrator(node[0][0]);
-  var name = narrator[1].split(" ").slice(0,4).join(' ');
-  var s = narrator[0];
-  s += "..";
-  s += name;
-  names.push(s);
+	var node = result_graph[i];
+	var narrator = lookupNarrator(node[0][0]);
+	var name = narrator[1].split(" ").slice(0,4).join(' ');
+	var s = narrator[0] +" "+ name;
+	names.push(s);
   }
   
-  var first_layer_count = 0; // used as indication of height of sankey
-  var first_layer_total = 0;
   for (var i = 0; i < result_graph.length; i++){
     var node = result_graph[i];
     var nodeInd = getIndex(node[0][0], result_graph);
@@ -721,7 +744,7 @@ function afterProcess(temp){
           tooltip += getHadithTxt(HadithArr, hadith);
           tooltip += "</td>";
 
-          /*tooltip += "<td>";
+          /*Debugging tooltip += "<td>";
           tooltip += getHadithAsaneed(HadithArr, hadith).join().replace(/,/g, "<br>");
           tooltip += "</td>";
 
@@ -734,15 +757,14 @@ function afterProcess(temp){
         ready_data.push([names[nodeInd], names[index], node[j][1],tooltip]);
         colorLinks.push(gradeToColor(getNarratorGrade(getNarratorFromName(names[nodeInd]))));
 
-        if (names[nodeInd].split('..')[0] == '5495') {
+        if (names[nodeInd].split(' ')[0] == '5495') {
           first_layer_count += 1;
 		  first_layer_total += node[j][1];
         }
       }
     }
   }
-
-  var data = new google.visualization.DataTable();
+  data = data = new google.visualization.DataTable();
   data.addColumn('string', 'From');
   data.addColumn('string', 'To');
   data.addColumn('number', 'Weight');
@@ -775,4 +797,4 @@ function main(hadithData){
   
 }
 
-window.onload = function (){ document.getElementById("submit").click();}
+window.onload = function (){ document.getElementById("submit").click(); openSearch()}

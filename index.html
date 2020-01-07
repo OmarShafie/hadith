@@ -18,47 +18,77 @@
     <script src="hadithViz.js"></script>
 
     <link rel="stylesheet" type="text/css" href="main.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
+		<link href="https://fonts.googleapis.com/css?family=El+Messiri|Tajawal&display=swap" rel="stylesheet">
   </head>
+  
   <body id="screen">
-  <div class="container" id="form">
-	  <div id="header">
-		<br>
-		<h1 class="text-center">Hadith Visualizer</h1>
-		<h2 class="text-center small">Visual Analysis of hadith narration chains.</h2>
-		
+  <nav id="sidebar" class="active">
+		<ul class="list-unstyled components mb-5">
+			<li class="active fab icon">
+				<a onclick="openNav()">
+					<span class="fa fa-bars"></span>
+				</a>
+			</li>
+			<li class="active">
+				<a onclick="openSearch()"><span class="fa fa-search"></span>Search</a>
+			</li>
+			<li class="active">
+				<a onclick="openSearch()"><span class="fa fa-sliders-h"></span>Settings</a>
+			</li>
+			<li class="active">
+				<a onclick="openSearch()"><span class="fa fa-info-circle"></span>About</a>
+			</li>
+		</ul>
+
+		<div id="mySidenav" class="sidenav bg-dark text-center">
+			<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+			<ul style="align-items: center;">
+				<li class="active">
+					<a onclick="openSearch()"><span class="fa fa-search"></span>Search</a>
+				</li>
+				<li class="active">
+					<a onclick="openSearch()"><span class="fa fa-sliders-h"></span>Settings</a>
+				</li>
+				<li class="active">
+					<a onclick="openSearch()"><span class="fa fa-info-circle"></span>About</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+	<div id="mySidesearch" class="sidesearch bg-dark text-center">
+	<h2>Search Form</h2>
+		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 		<div class="row justify-content-center form-inline">
-			<div class="col-6 form-inline">
-				<label for="input">Hadith contains:</label>
-				<input type="text" class="form-control " id="input" dir="rtl" required placeholder="الأعمال بالنية">
-			</div>
-		  <div class="col-4 form-inline">
+			<label for="input">Hadith contains:</label>
+			<input type="text" class="form-control " id="input" dir="rtl" required placeholder="الأعمال بالنية">
+		</div><br>
+		<div class="row justify-content-center form-inline">
 			<label for="numNarrators">Max Narrators: </label>
 			<input type="number" class="form-control" id="numNarrators" placeholder=50>
-		  </div>
-		</div>
+		</div><br>
 
-		<div class="row justify-content-center form-inline">
-		  
-		  <div class="col-2">
+		<div class="row justify-content-center">
 			  <input type="checkbox" id="0" value=1 checked> Bukhari <br>
 			  <input type="checkbox" id="1" value=1 disabled> Muslim <br>
-		  </div>
-		  <div class="col-2">
+		</div><br>
+		<div class="row justify-content-center">
 			  <input type="checkbox" id="2" value=1 disabled> Abu Daw'ud  <br>
 			<input type="checkbox" id="3" value=1 disabled> Al Termithi <br>
-		  </div>
-		  <div class="col-2">
+		</div><br>
+		<div class="row justify-content-center">
 			  <input type="checkbox" id="4" value=1 disabled> Nasa'i <br>
 			<input type="checkbox" id="5" value=1 disabled> Ibn Majah <br>
-		  </div>
-		  <div class="col-2 form-inline ">
+		</div><br>
+		<div class="row justify-content-center">  Color Sankey:
 			<label class="switch">
 				<input id="colorLinksSwitch" type="checkbox" checked>
 				<span class="switchSlider round"></span>
 			</label>
-		  </div>
-		   <div class="col-2 form-inline slidecontainer">
-			<p>Spread: <span id="demo"></span>
+		  </div> <br>
+		<div class="row justify-content-center form-inline">
+		   <div class="col form-inline slidecontainer">
+			<p>Nodes Spread: <span id="demo"></span>
 			<input type="range" min="1" max="5" value="3" class="slider" id="myRange">
 		  </div>
 		</div>
@@ -66,14 +96,22 @@
 		<div class="row justify-content-center mx-3 form-inline">
 		  <div>
 			<button type="button" id="submit" class="btn btn-primary"> Submit</button>
+			<button type="button" id="rotate" class="btn btn-primary" disabled><i class="fa fa-sync-alt"></i></button>
 		  </div>
 		</div>
 		<div class="row justify-content-center">
 			<label id="btnMessage"></label>
 		</div>
+		</div>
+  <div class="container-fluid" id="form">
+	  <div id="header">
+		<br>
+		<br>
+		<h1 class="text-center">Hadith Visualizer</h1>
+		<h2 class="text-center small">Visual Analysis of hadith narration chains.</h2>
 
 		</div>
-		 <div class='row justify-content-center my-legend' style="position: sticky; top: 0; z-index: 1000;">
+		 <div class='row justify-content-center my-legend'>
 		  <div class='legend-title'><!--Narrator Grade Legend:--></div>
 			<div class='legend-scale'>
 			  <ul class='legend-labels'>
@@ -96,12 +134,25 @@
 			</div>
 			<span class="tooltiptext" id="gradeTooltip">Tooltip text</span>
 		  </div>
-      <div class="row justify-content-center">
-        <div id="sankey_basic" style="margin-bottom: 100px;"></div>
+      <div class="row justify-content-between">
+        <div id="sankey_basic" class='horizontal-sankey' style="margin-bottom:-100px; margin-left:100px;"></div>
       </div>
     </div>
     <script>
+		function openSearch() {
+			  document.getElementById("mySidesearch").style.width = "320px";
+		}
+		function closeNav() {
+		  document.getElementById("mySidenav").style.width = "0";
+		  document.getElementById("mySidesearch").style.width = "0";
+		}
+		function openNav() {
+			  document.getElementById("mySidenav").style.width = "320px";
+		}
+	var isVertical = false;//vertical
+	
 	var sankey_height = 0;
+	var sankey_w = 0
 		var inputFeild = document.getElementById("form");
 		inputFeild.addEventListener("keyup", function(event) {
 		  if (event.keyCode === 13) {
@@ -126,16 +177,19 @@
 	  	}
 	  	return false;
 	  }
-      function drawChart(data,first_layer_count, first_layer_total) {
+      function drawChart(data) {
         
         // Sets chart options.
-		var screen_h = Math.min(screen.width,screen.height - 170);
+		//var screen_h = Math.min(screen.width,screen.height - 170);
 		var node_height = Math.min(100,20*(first_layer_total/first_layer_count));
 		var padding = 15*parseInt(slider.value);
+		var layer_height = 100;
 		sankey_height = first_layer_count*node_height + (first_layer_count-1)*padding;
+		sankey_w = isVertical? longest_sanad*layer_height + 200*(parseInt(slider.value)/5): Math.max(longest_sanad*210,Math.max(screen.width,screen.height)-100);
+        document.querySelector("#screen").style.setProperty("width",sankey_w+100+"px");
         var options = {
-          width: 1900,//Math.max(screen.width,screen.height) - 20,
-          height: sankey_height,
+          width: sankey_w,
+          height: isVertical? Math.max(screen.width,screen.height)-20 : sankey_height,
           tooltip: {isHtml: true},
           sankey: {
             allowHtml: true,
@@ -155,7 +209,7 @@
             },
           }
         };
-
+		
         var chartDiv = document.getElementById('sankey_basic');
         var chart = new google.visualization.Sankey(chartDiv);
         
@@ -197,7 +251,7 @@
 		  //window.open('http://www.bing.com');
         }
       });
-	  
+		
         google.visualization.events.addListener(chart, 'onmouseover', function(e) {
 		if(e.name){
 			var gradeTooltip = document.querySelector("#gradeTooltip");
@@ -220,9 +274,10 @@
 		}
       });
         chart.draw(data, options);
+		closeNav();
       }
 	  
-	  var xOffset = xOffset = 300;
+	  var xOffset = 300;
 	  var yOffset = 250 + document.querySelector("#header").offsetHeight;
       const el = document.querySelector("#screen");//tooltip
       el.style.setProperty('--v', "none");
@@ -230,7 +285,7 @@
   
 		yOffset = sankey_height + 150 + document.querySelector("#header").offsetHeight;
         if (el.style.getPropertyValue('--v') != "block" && !clickDisabled){
-          el.style.setProperty('--x', Math.min(1900 -2*xOffset,Math.max(0,e.pageX - xOffset)) + "px");
+          el.style.setProperty('--x', Math.min(sankey_w -2*xOffset,Math.max(0,e.pageX - xOffset)) + "px");
           el.style.setProperty('--y', Math.max(-sankey_height-150,Math.min(-200,e.pageY - yOffset))+ "px");
           el.style.setProperty('--v', "block");
         }
@@ -247,9 +302,10 @@
           }
         }
       });
+	  
     </script>
   </body>
-<footer style="height: 50px; text-align: center;" class="justify-content-center">
+<!--footer style="height: 50px; text-align: center;" class="justify-content-between">
 	<i class="fa fa-copyright"></i> 2019 Omar Shafie in Doha, Qatar- All Rights Reserved - 
-  </footer>
+  </footer-->
 </html>
