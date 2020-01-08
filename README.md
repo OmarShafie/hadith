@@ -78,7 +78,7 @@ Possible feature (possible, but not now):
   - find similar hadiths (mutaba'at & shuhood)
   - Search by أطراف , تخريج, or exact match+similarity
   - Search by book title
-  - *Scraping: Get more resource data/books. Scale to all avaible Sunnah Books+ 
+  - *Scraping: Get more resource data/books. Scale to all avaible Sunnah Books+, show kunya and nasab and name of each rawi onHover
     - Grouped Matn: color each group by a unique color + color each zyadah by a n-bit binary colors,  where nth bit is existance of zyadah. grouping by matn, grouping by sanad, grouping by both, none (default).
 
 Visualization Library Limitations:
