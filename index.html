@@ -1,26 +1,32 @@
 <!DOCTYPE html>
 <html lang="ar" >
-  <head>
-    <title>Viz Hadith</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" >
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <link rel='dns-prefetch' href='//fonts.googleapis.com' />
-  <link href="https://fonts.googleapis.com/css?family=Almarai:300,700|El+Messiri&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    
-    <script src="https://www.gstatic.com/charts/loader.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.0.2/papaparse.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.0.2/papaparse.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<head>
+		<title>Viz Hadith</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" >
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
 
-    <script src="hadithViz.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+		<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+		<link href="https://fonts.googleapis.com/css?family=Almarai:300,700|El+Messiri&display=swap" rel="stylesheet">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="main.css">
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
+		<script src="https://www.gstatic.com/charts/loader.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.0.2/papaparse.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.0.2/papaparse.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+		<script src="hadithViz.js"></script>
+
+		<link rel="stylesheet" type="text/css" href="main.css">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
 		<link href="https://fonts.googleapis.com/css?family=El+Messiri|Tajawal&display=swap" rel="stylesheet">
-  </head>
+	</head>
   
   <body id="screen">
   <nav id="sidebar" class="active">
@@ -34,10 +40,10 @@
 				<a onclick="openSearch()"><span class="fa fa-search"></span>Search</a>
 			</li>
 			<li class="active">
-				<a onclick="openSearch()"><span class="fa fa-sliders-h"></span>Settings</a>
+				<a onclick="openSettings()"><span class="fa fa-sliders-h"></span>Settings</a>
 			</li>
 			<li class="active">
-				<a onclick="openSearch()"><span class="fa fa-info-circle"></span>About</a>
+				<a onclick=""><span class="fa fa-info-circle"></span>About</a>
 			</li>
 		</ul>
 	</nav>
@@ -49,42 +55,56 @@
 				<a onclick="openSearch()"><span class="fa fa-search"></span>Search</a>
 			</li>
 			<li class="active">
-				<a onclick="openSearch()"><span class="fa fa-sliders-h"></span>Settings</a>
+				<a onclick="openSettings()"><span class="fa fa-sliders-h"></span>Settings</a>
 			</li>
 			<li class="active">
-				<a onclick="openSearch()"><span class="fa fa-info-circle"></span>About</a>
+				<a onclick=""><span class="fa fa-info-circle"></span>About</a>
 			</li>
 		</ul>
 	</div>
-	<div id="mySidesearch" class="sidesearch bg-dark text-center">
-	<h2>Search Form</h2>
+	<form id="mySidesearch" class="sidesearch bg-dark text-center">
+	<h3>Search Form</h3>
 		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 		<div class="row justify-content-center form-inline">
-			<label for="input">Hadith contains:</label>
-			<input type="text" class="form-control " id="input" dir="rtl" required placeholder="الأعمال بالنية">
+			<label for="hadith-query">Hadith Query:</label>
+			<input type="search" class="form-control " id="hadith-query" dir="rtl" required placeholder="الأعمال بالنية" autocomplete="on">
 		</div><br>
+		
+		<div class="row justify-content-center">
+			<label >Sources:</label>
+			<select class="selectpicker" multiple data-live-search="true">
+				<option id="0" value=1 selected> Bukhari </option>
+				<option id="1" value=2 > Muslim </option>
+				<option id="2" value=3 > Abu Daw'ud  </option>
+				<option id="3" value=4 > Al Termithi  </option>
+				<option id="4" value=5 >  Nasa'i </option>
+				<option id="5" value=6 > Ibn Majah </option>
+			</select>
+		</div>
+		<br>	
+		<div class="row justify-content-center mx-3 form-inline">
+		  <div>
+			<button type="button" id="submit" class="btn btn-primary"> Submit</button>
+		  </div>
+		</div>
+		<div class="row justify-content-center">
+			<label id="btnMessage"></label>
+		</div>
+	</form>
+	<form id="mySidesettings" class="sidesearch bg-dark text-center">
+	<h3>Settings Form</h3>
+		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 		<div class="row justify-content-center form-inline">
 			<label for="numNarrators">Max Narrators: </label>
 			<input type="number" class="form-control" id="numNarrators" placeholder=50>
 		</div><br>
-
-		<div class="row justify-content-center">
-			  <input type="checkbox" id="0" value=1 checked> Bukhari <br>
-			  <input type="checkbox" id="1" value=1 disabled> Muslim <br>
-		</div><br>
-		<div class="row justify-content-center">
-			  <input type="checkbox" id="2" value=1 disabled> Abu Daw'ud  <br>
-			<input type="checkbox" id="3" value=1 disabled> Al Termithi <br>
-		</div><br>
-		<div class="row justify-content-center">
-			  <input type="checkbox" id="4" value=1 disabled> Nasa'i <br>
-			<input type="checkbox" id="5" value=1 disabled> Ibn Majah <br>
-		</div><br>
-		<div class="row justify-content-center">  Color Sankey:
+		
+		<div class="row justify-content-around">  Color Sankey:
 			<label class="switch">
 				<input id="colorLinksSwitch" type="checkbox" checked>
 				<span class="switchSlider round"></span>
 			</label>
+			<button type="button" id="rotate" class="btn btn-primary" ><i class="fa fa-sync-alt"></i></button>
 		  </div> <br>
 		<div class="row justify-content-center form-inline">
 		   <div class="col form-inline slidecontainer">
@@ -92,17 +112,8 @@
 			<input type="range" min="1" max="5" value="3" class="slider" id="myRange">
 		  </div>
 		</div>
-		
-		<div class="row justify-content-center mx-3 form-inline">
-		  <div>
-			<button type="button" id="submit" class="btn btn-primary"> Submit</button>
-			<button type="button" id="rotate" class="btn btn-primary" disabled><i class="fa fa-sync-alt"></i></button>
-		  </div>
-		</div>
-		<div class="row justify-content-center">
-			<label id="btnMessage"></label>
-		</div>
-		</div>
+	</form>
+	
   <div class="container-fluid">
 	  <div id="header">
 		<br>
@@ -137,6 +148,7 @@
       <div class="row justify-content-between">
         <div id="sankey_basic" class='horizontal-sankey' style="margin-bottom:-100px; margin-left:100px;"></div>
       </div>
+	  <br><br>
     </div>
     <script>
 		function openSearch() {
@@ -145,9 +157,13 @@
 		function closeNav() {
 		  document.getElementById("mySidenav").style.width = "0";
 		  document.getElementById("mySidesearch").style.width = "0";
+		  document.getElementById("mySidesettings").style.width = "0";
 		}
 		function openNav() {
 			  document.getElementById("mySidenav").style.width = "320px";
+		}
+		function openSettings() {
+			  document.getElementById("mySidesettings").style.width = "320px";
 		}
 	var isVertical = false;//vertical
 	
@@ -277,16 +293,16 @@
 		closeNav();
       }
 	  
-	  var xOffset = 300;
-	  var yOffset = 250 + document.querySelector("#header").offsetHeight;
+	  var xOffset = 100 + 600/2;
+	  var yOffset;
       const el = document.querySelector("#screen");//tooltip
       el.style.setProperty('--v', "none");
       el.addEventListener("click", (e) => {
   
-		yOffset = sankey_height + 150 + document.querySelector("#header").offsetHeight;
+		yOffset = sankey_height + 300/2 + document.querySelector("#header").offsetHeight + 50;
         if (el.style.getPropertyValue('--v') != "block" && !clickDisabled){
-          el.style.setProperty('--x', Math.min(sankey_w -2*xOffset,Math.max(0,e.pageX - xOffset)) + "px");
-          el.style.setProperty('--y', Math.max(-sankey_height-150,Math.min(-200,e.pageY - yOffset))+ "px");
+          el.style.setProperty('--x', Math.min(sankey_w - 600,Math.max(0,e.pageX - xOffset)) + "px");
+          el.style.setProperty('--y', Math.max(-sankey_height,Math.min(-300 + 50,e.pageY - yOffset))+ "px");
           el.style.setProperty('--v', "block");
         }
       }, true);
@@ -305,7 +321,7 @@
 	  
     </script>
   </body>
-<!--footer style="height: 50px; text-align: center;" class="justify-content-between">
+<footer style="height: 50px; text-align: center;" class="justify-content-between">
 	<i class="fa fa-copyright"></i> 2019 Omar Shafie in Doha, Qatar- All Rights Reserved - 
-  </footer-->
+  </footer>
 </html>

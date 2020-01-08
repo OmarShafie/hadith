@@ -1,7 +1,7 @@
-//TODO: Take input from user
+//TODO: Take hadith-query from user
 var args = [
   {
-    "key": "input", 
+    "key": "hadith-query", 
     "default": "الاعمال بالنية", 
     "value": "الاعمال بالنية"
   },
@@ -12,15 +12,15 @@ var args = [
   },
 ];
 
-var input = 0;
+var hadithQuery = 0;
 var numNarrators = 1;
 var colorLinks = [];
 function query(data, index){
-  // hadith contains the input
+  // hadith contains the hadith-query
   //return a list of chains
   var asaneed = [];
   var txt = simplifyArabic(getHadithTxt(data,index));
-  if(txt.includes(simplifyArabic(args[input]["value"]))){
+  if(txt.includes(simplifyArabic(args[hadithQuery]["value"]))){
     asaneed = getHadithAsaneed(data, index);
   }
   return asaneed;
@@ -789,7 +789,7 @@ function main(hadithData){
   }
   
   for (var i = 0; i < num_books; i++) {
-    if(document.getElementById(i).checked){
+    if(document.getElementById(i).selected){
       HadithArr = HadithArr.concat(hadithData.slice(books[i][0], books[i][1]));
     }
   }
