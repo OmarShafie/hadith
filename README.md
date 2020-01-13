@@ -57,21 +57,20 @@ Ready Features:
 - On node hover: rawi details
 - Sankey Diagram weights represent number of hadiths between any 2 rawis'
 - Populate Hadiths in Link in a table tooltip
-- responsivness?
+- semi-responsivness
+- view top down
 
 Next Steps (I know how to do):
 - Color links based on narration term (صيغ التخمل) + highlight Tadlees
 - Sanad Search (squence of rawi's)
-- Regex Search
-- UI regex search for rawi by name and tag it
+- Regex Search + UI regex search for rawi by name and tag it
 - *Information Retrieval: search for hadith (content)then select list of wanted ahadith
 
 Possible feature (possible, but not now):
 -Sankey Settings tab:
   - transliterate names
   - light - Dark theme
-  - Collapse nodes
-  - view top down rather than left right
+  - Collapse(delete) nodes
   - font sizes controller
   
 - Search Settings tab:
