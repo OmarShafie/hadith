@@ -2,8 +2,8 @@
 var args = [
   {
     "key": "hadith-query", 
-    "default": "الاعمال بالنية", 
-    "value": "الاعمال بالنية"
+    "default": "الأعمال بالنية", 
+    "value": "الأعمال بالنية"
   },
   {
     "key": "numNarrators", 

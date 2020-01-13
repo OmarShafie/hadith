@@ -145,8 +145,8 @@
 			</div>
 			<span class="tooltiptext" id="gradeTooltip">Tooltip text</span>
 		  </div>
-      <div class="row justify-content-between">
-        <div id="sankey_basic" class='horizontal-sankey' style="margin-bottom:-100px; margin-left:100px;"></div>
+      <div id="sankey_container" class="row justify-content-center">
+        <div id="sankey_basic" class='vertical-sankey'></div>
       </div>
 	  <br><br>
     </div>
@@ -165,9 +165,9 @@
 		function openSettings() {
 			  document.getElementById("mySidesettings").style.width = "320px";
 		}
-	var isVertical = false;//vertical
+	var isVertical = true;//vertical
 	
-	var sankey_height = 0;
+	var sankey_h = 0;
 	var sankey_w = 0
 		var inputFeild = document.getElementById("mySidesearch");
 		inputFeild.addEventListener("keyup", function(event) {
@@ -198,14 +198,18 @@
         // Sets chart options.
 		//var screen_h = Math.min(screen.width,screen.height - 170);
 		var node_height = Math.min(100,20*(first_layer_total/first_layer_count));
-		var padding = 15*parseInt(slider.value);
-		var layer_height = 100;
-		sankey_height = first_layer_count*node_height + (first_layer_count-1)*padding;
-		sankey_w = isVertical? longest_sanad*layer_height + 200*(parseInt(slider.value)/5): Math.max(longest_sanad*210,Math.max(screen.width,screen.height)-100);
-        document.querySelector("#screen").style.setProperty("width",sankey_w+100+"px");
+		var padding = isVertical?20:15*parseInt(slider.value);
+		var minVerticalDistance = 100;
+		var minHorizontalDistance = 220;
+		sankey_h = (isVertical? (minHorizontalDistance/2)*first_layer_total:first_layer_count*node_height) + padding*(first_layer_count-1);
+		sankey_w = isVertical? Math.max(longest_sanad*minVerticalDistance, Math.min(screen.width,screen.height)-80): Math.max(longest_sanad*minHorizontalDistance,Math.max(screen.width,screen.height)-80);
+        document.querySelector("#screen").style.setProperty("width",(Math.max(80+(isVertical?sankey_h:sankey_w),Math.max(screen.width,screen.height))+"px")); 
+        document.querySelector("#sankey_basic").style.setProperty("margin-bottom",(isVertical?0:-100)+"px"); 
+        document.querySelector("#sankey_basic").style.setProperty("height",sankey_h+"px"); 
+        document.querySelector("#sankey_container").style.setProperty("height",(isVertical?sankey_w:sankey_h)+"px"); 
         var options = {
           width: sankey_w,
-          height: isVertical? Math.max(screen.width,screen.height)-20 : sankey_height,
+          height:  sankey_h,
           tooltip: {isHtml: true},
           sankey: {
             allowHtml: true,
@@ -299,10 +303,10 @@
       el.style.setProperty('--v', "none");
       el.addEventListener("click", (e) => {
   
-		yOffset = sankey_height + 300/2 + document.querySelector("#header").offsetHeight + 50;
+		yOffset = sankey_h + 300/2 + document.querySelector("#header").offsetHeight + 50;
         if (el.style.getPropertyValue('--v') != "block" && !clickDisabled){
           el.style.setProperty('--x', Math.min(sankey_w - 600,Math.max(0,e.pageX - xOffset)) + "px");
-          el.style.setProperty('--y', Math.max(-sankey_height,Math.min(-300 + 50,e.pageY - yOffset))+ "px");
+          el.style.setProperty('--y', Math.max(-sankey_h,Math.min(-300 + 50,e.pageY - yOffset))+ "px");
           el.style.setProperty('--v', "block");
         }
       }, true);
@@ -321,7 +325,7 @@
 	  
     </script>
   </body>
-<footer style="height: 50px; text-align: center;" class="justify-content-between">
+<footer style="height: 50px; text-align: center;" class="justify-content-center">
 	<i class="fa fa-copyright"></i> 2019 Omar Shafie in Doha, Qatar- All Rights Reserved - 
   </footer>
 </html>
