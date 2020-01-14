@@ -152,6 +152,7 @@
 	  <br><br>
     </div>
     <script>
+	var isVertical = true;//vertical
 		function openSearch() {
 			  document.getElementById("mySidesearch").style.width = "320px";
 		}
@@ -166,7 +167,6 @@
 		function openSettings() {
 			  document.getElementById("mySidesettings").style.width = "320px";
 		}
-	var isVertical = true;//vertical
 	
 	var sankey_h = 0;
 	var sankey_w = 0
@@ -299,17 +299,18 @@
         document.querySelector("svg").setAttribute("version","1.1"); 
 		closeNav();
       }
-	  
-	  var xOffset = isVertical?0:100 + 600/2;
+
+      var xOffset;
 	  var yOffset;
       const el = document.querySelector("#screen");//tooltip
       el.style.setProperty('--v', "none");
       el.addEventListener("click", (e) => {
-  
-		yOffset = isVertical?0:sankey_h + 300/2 + document.querySelector("#header").offsetHeight + 50;
+
+	   xOffset= (isVertical?(parseInt(document.querySelector("#screen").style.getPropertyValue('width').split("px")[0])+ sankey_h)/2  -100:100) + 600/2;
+		yOffset = (isVertical?sankey_w - 300/2:sankey_h + 300/2 + document.querySelector("#header").offsetHeight) + 50;
         if (el.style.getPropertyValue('--v') != "block" && !clickDisabled){
-          el.style.setProperty('--x', (isVertical?0:e.pageX - xOffset)/*Math.min(sankey_w - 600,Math.max(0,e.pageX - xOffset))*/ + "px");
-          el.style.setProperty('--y', (isVertical?0:e.pageY - yOffset)/*Math.max(-sankey_h,Math.min(-300 + 50,e.pageY - yOffset))*/+ "px");
+          el.style.setProperty('--x', (isVertical? Math.min(sankey_w-(300 + document.querySelector("#header").offsetHeight),Math.max(-150,-e.pageY + yOffset)):Math.min(sankey_w - 600, Math.max(0,e.pageX - xOffset)))  + "px");
+          el.style.setProperty('--y', (isVertical? Math.max(-sankey_h + 150,Math.min(-400 -50,e.pageX - xOffset)):Math.max(-sankey_h, Math.min(-300 + 50,e.pageY - yOffset)))+ "px");
           el.style.setProperty('--v', "block");
         }
       }, true);
