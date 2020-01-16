@@ -34,10 +34,9 @@ XML needs to be extracted:
 
 Out of scope (Research Topics):
 - *Classification of Hadith (Saheeh/ hasan/ Dha'eef) or (Prophet-like-speech "textual finger print")
-  - Possible crowd sourced
-  - Percentage of score for each rawi of accuracy
+  - Possible crowd sourced (الدرر السنية)
+  - Percentage of score for each rawi of accuracy based on multiple sources
   - filter by classification
-  - add rawi/hadith notes and tags: weak in arabic-evidency- israeliyat - marfoo3 7ukmn - 
 - *Named Entity Recognition
   - Identifying Entity
   - case of shifting isnad using ح
@@ -45,9 +44,15 @@ Out of scope (Research Topics):
 - *Predict Missing / Missing check
   - Connectivity who could be missing between any 2 rawi?
 - *Knowledge Extraction: Extract tags/grades from Narrator Discription
-- prefix and suffix + ignore punctuations?
-- color code each route/chain as visual analysis
-- combine the "Zeyadat" narrations into one steched narration and color code links to highlight sources
+  - add rawi/hadith notes and tags: weak in arabic-evidency- israeliyat - marfoo3 7ukmn -
+  - fill missing grades + add more grading sources
+  - validate connectivity (time & place)
+- *Information Retrieval: search for hadith (content) full ranking system
+  - prefix and suffix + ignore punctuations?
+  - color code each route/chain as visual analysis
+  - combine the "Zeyadat" narrations into one steched narration and color code links to highlight sources
+- Indexing:
+  - find pages in websites /chapters in books that are linked/discussing a specific hadith
 
 Ready Features:
 - *Visulaize Sankey diagram of Hadiths of any rawi in bukhari
@@ -61,12 +66,13 @@ Ready Features:
 - view top down
 
 Next Steps (I know how to do):
-- Color links based on narration term (صيغ التخمل) + highlight Tadlees
 - Sanad Search (squence of rawi's)
-- Regex Search + UI regex search for rawi by name and tag it
-- *Information Retrieval: search for hadith (content)then select list of wanted ahadith
+  - name to suggest (AJAX XML)
+  - Regex Search + UI regex search for rawi by name and tag it
+  - select list of wanted ahadith
 
 Possible feature (possible, but not now):
+- Color links based on narration term (صيغ التخمل) + highlight Tadlees
 -Sankey Settings tab:
   - transliterate names
   - light - Dark theme
@@ -84,6 +90,8 @@ Visualization Library Limitations:
 - Highlight full route on node click => Documentation: "For this chart, only one entity can be selected at a time."
 - To add a text on links
 - Order of the nodes
+- different lengths of layers
+- layering
 
 سائل واللطائف والفوائد واستخدامات البرنامج:
 * ثم إضافة هذه الفوائد في وصف الحديث/الراوي
