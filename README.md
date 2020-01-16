@@ -52,7 +52,7 @@ Out of scope (Research Topics):
 - Indexing:
   - find pages in websites /chapters in books that are linked/discussing a specific hadith
 - Advanced Viz:
-  - color code each route/chain as visual analysis
+  - color code method: comparison by: 1)route/chain, 2)narration (matn) 3) both 4) none [current] as visual analysis
   - combine the "Zeyadat" narrations into one steched narration and color code links to highlight sources
 
 Ready Features:
@@ -68,8 +68,11 @@ Ready Features:
 
 Next Steps (I know how to do):
 - Sanad Search (squence of rawi's)
-  - name to suggest (AJAX XML)
-  - Regex Search + UI regex search for rawi by name and tag it
+  - name to suggest (AJAX XML): UI search for rawi by name and tag it
+  - Regex Search: 
+    - Proof "hadith is regular"
+    - construct FDA
+    - implement search
   - select list of wanted ahadith
 
 Known bugs:
