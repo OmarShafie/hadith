@@ -49,10 +49,11 @@ Out of scope (Research Topics):
   - validate connectivity (time & place)
 - *Information Retrieval: search for hadith (content) full ranking system
   - prefix and suffix + ignore punctuations?
-  - color code each route/chain as visual analysis
-  - combine the "Zeyadat" narrations into one steched narration and color code links to highlight sources
 - Indexing:
   - find pages in websites /chapters in books that are linked/discussing a specific hadith
+- Advanced Viz:
+  - color code each route/chain as visual analysis
+  - combine the "Zeyadat" narrations into one steched narration and color code links to highlight sources
 
 Ready Features:
 - *Visulaize Sankey diagram of Hadiths of any rawi in bukhari
@@ -70,6 +71,10 @@ Next Steps (I know how to do):
   - name to suggest (AJAX XML)
   - Regex Search + UI regex search for rawi by name and tag it
   - select list of wanted ahadith
+
+Known bugs:
+- tooltip on vertical
+- mobile text on vertical
 
 Possible feature (possible, but not now):
 - Color links based on narration term (صيغ التخمل) + highlight Tadlees
