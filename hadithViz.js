@@ -2,8 +2,8 @@
 var args = [
   {
     "key": "pattern-query", 
-    "default": "4677", 
-    "value": "4677"
+    "default": "", 
+    "value": ""
   },
   {
     "key": "hadith-query", 
@@ -32,7 +32,7 @@ function query(data, index){
     for(var i = 0; i < asaneed.length; i++){
       var sanad = asaneed[i];
       console.log(chains);
-      if (sanad.includes(String(args[patternQuery]["value"]))){
+      if (args[patternQuery]["value"] == "" || sanad.includes(String(args[patternQuery]["value"]))){
         chains.push(sanad);
       }
     }
