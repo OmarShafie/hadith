@@ -65,12 +65,16 @@
 	<form id="mySidesearch" class="sidesearch bg-dark text-center">
 	<h3>Search Form</h3>
 		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-		<div class="row justify-content-center form-inline">
+		<div class="justify-content-center" style="margin: 10px">
+			<label for="pattern-query">Sanad Pattern:</label>
+			<input type="search" class="form-control " id="pattern-query" dir="rtl" required placeholder=" " autocomplete="on">
+		</div>
+		<div class="justify-content-center" style="margin: 10px">
 			<label for="hadith-query">Hadith Query:</label>
 			<input type="search" class="form-control " id="hadith-query" dir="rtl" required placeholder="الأعمال بالنية" autocomplete="on">
 		</div><br>
 		
-		<div class="row justify-content-center">
+		<div class="justify-content-center">
 			<label >Sources:</label>
 			<select class="selectpicker" multiple data-live-search="true">
 				<option id="0" value=1 selected> Bukhari </option>
@@ -82,7 +86,7 @@
 			</select>
 		</div>
 		<br>	
-		<div class="row justify-content-center mx-3 form-inline">
+		<div class=" justify-content-center mx-3 form-inline">
 		  <div>
 			<button type="button" id="submit" class="btn btn-primary"> Submit</button>
 		  </div>
@@ -147,12 +151,12 @@
 			<span class="tooltiptext" id="gradeTooltip">Tooltip text</span>
 		  </div>
       <div id="sankey_container" class="row justify-content-center">
-        <div id="sankey_basic" class='vertical-sankey'></div>
+        <div id="sankey_basic" class='horizontal-sankey'></div>
       </div>
 	  <br><br>
     </div>
     <script>
-	var isVertical = true;//vertical
+	var isVertical = false;//vertical
 		function openSearch() {
 			  document.getElementById("mySidesearch").style.width = "320px";
 		}
@@ -198,7 +202,7 @@
         
         // Sets chart options.
 		//var screen_h = Math.min(screen.width,screen.height - 170);
-		var node_height = Math.min(100,20*(first_layer_total/first_layer_count));
+		var node_height = Math.min(100,30*(first_layer_total/first_layer_count));
 		var padding = isVertical?20:15*parseInt(slider.value);
 		var minVerticalDistance = 100;
 		var minHorizontalDistance = 220;
@@ -307,7 +311,7 @@
       el.addEventListener("click", (e) => {
 
 	   xOffset= (isVertical?(parseInt(document.querySelector("#screen").style.getPropertyValue('width').split("px")[0])+ sankey_h)/2  -100:100) + 600/2;
-		yOffset = (isVertical?sankey_w - 300/2:sankey_h + 300/2 + document.querySelector("#header").offsetHeight) + 50;
+		yOffset = (isVertical?sankey_w - 300/2:(sankey_h + 300/2 + document.querySelector("#header").offsetHeight + 30)) + 50;
         if (el.style.getPropertyValue('--v') != "block" && !clickDisabled){
           el.style.setProperty('--x', (isVertical? Math.min(sankey_w-(300 + document.querySelector("#header").offsetHeight),Math.max(-150,-e.pageY + yOffset)):Math.min(sankey_w - 600, Math.max(0,e.pageX - xOffset)))  + "px");
           el.style.setProperty('--y', (isVertical? Math.max(-sankey_h + 150,Math.min(-400 -50,e.pageX - xOffset)):Math.max(-sankey_h, Math.min(-300 + 50,e.pageY - yOffset)))+ "px");
@@ -317,7 +321,7 @@
 
       el.addEventListener("mousemove", (e) => { 
 
-        var xPos = Math.max(e.pageX - parseInt(el.style.getPropertyValue('--x').split("px")[0]), parseInt(el.style.getPropertyValue('--x').split("px")[0]) -e.pageX);
+        var xPos = -80 + Math.max(e.pageX - parseInt(el.style.getPropertyValue('--x').split("px")[0]), parseInt(el.style.getPropertyValue('--x').split("px")[0]) -e.pageX);
         var yPos = 150 + e.pageY - yOffset - parseInt(el.style.getPropertyValue('--y').split("px")[0]);
 		
         if (el.style.getPropertyValue('--v') == "block"){

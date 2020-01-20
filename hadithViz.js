@@ -1,6 +1,11 @@
 //TODO: Take hadith-query from user
 var args = [
   {
+    "key": "pattern-query", 
+    "default": "4677", 
+    "value": "4677"
+  },
+  {
     "key": "hadith-query", 
     "default": "الأعمال بالنية", 
     "value": "الأعمال بالنية"
@@ -12,18 +17,27 @@ var args = [
   },
 ];
 
-var hadithQuery = 0;
-var numNarrators = 1;
+var patternQuery = 0;
+var hadithQuery = 1;
+var numNarrators = 2;
 var colorLinks = [];
 function query(data, index){
   // hadith contains the hadith-query
   //return a list of chains
-  var asaneed = [];
   var txt = simplifyArabic(getHadithTxt(data,index));
+  var asaneed = getHadithAsaneed(data,index);
+
+  var chains = []
   if(txt.includes(simplifyArabic(args[hadithQuery]["value"]))){
-    asaneed = getHadithAsaneed(data, index);
+    for(var i = 0; i < asaneed.length; i++){
+      var sanad = asaneed[i];
+      console.log(chains);
+      if (sanad.includes(String(args[patternQuery]["value"]))){
+        chains.push(sanad);
+      }
+    }
   }
-  return asaneed;
+  return chains;
 }
 
 /****************** Library **********************/
