@@ -16,8 +16,9 @@ Libraies:
 
 Challenges:
 - Scrape
-- Parse
+- Parse CSV
 - Cycle detection
+- Recursive descent parsing of Pattern Query
 
 Data Challenges:
 XML needs to be extracted:
