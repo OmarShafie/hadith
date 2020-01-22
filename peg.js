@@ -1,30 +1,35 @@
-// Simple Arithmetics Grammar
-// ==========================
-//
-// Accepts expressions like "2 * (3 + 4)" and computes their value.
-Start = Query //input:Isnad eq: _"=="_ pattern:Query { return input==pattern;}
+Start = Query
 
-Query = head:Expression tail:(("^" / "&" / "|") Expression)*{
-      return tail.reduce(function(result, element) {
-        if (element[1] === "^") { return result? !element[3]: element[3]}
-        if (element[1] === "&") { return result && element[3]; }
-        if (element[1] === "|") { return result || element[3]; }
-      }, head);
+Query 
+	= head:Expression tail:(ORQuery)*
+    { 
+      var re = new RegExp("("+head + tail+")","g");
+      var input = [1,22,3].toString();
+      return "{" + re + "}.'"+ input +"' => " +re.test(input);
     } 
+
+ORQuery
+	= op:("|") tail: Expression
+    {return op + tail}
 
 Expression = ex:(Isnad / Factor) {return ex;}
 
 Factor
-  = "(" q:Query ")" { return q; }
-  /  "!(" _ q:Query _ ")" { return !q; }
+  = "(" q:Expression ")" { return "("+q+")"; }
+  /  "!(" _ q:Expression _ ")" { return "!("+q+")"; }
   
-Isnad = list:Rawi+ {
-	return list}
+Isnad = list:Rawi+ {return "(^|,)"+list.join()+"(,|$)";}
 
-Rawi = head:"@" id:Integer {return id; } 
+Rawi 
+	= head:"@" id:Integer tail:(ORRawi)* {return "("+id + tail+")"; } 
+    / "*" {return "[0-9]+";}
+
+ORRawi
+	= op:"|" tail:Rawi { return op + tail; }
 
 Integer "integer"
-  = _ [0-9]+ { return parseInt(text()); }
+  = [0-9]+ 
+  { return parseInt(text()); }
 
 _ "whitespace"
   = [ \t\n\r]*
