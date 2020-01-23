@@ -13,12 +13,13 @@ Libraies:
 - Google Chart - Sankey Diagram
 - Papa Parse - JS cvs Parsing Library
 - Scrapy - Python for scraping the data (Narrators and Hadith)
+- PEG.js
 
 Challenges:
 - Scrape
 - Parse CSV
 - Cycle detection
-- Recursive descent parsing of Pattern Query
+- Query Grammer
 
 Data Challenges:
 XML needs to be extracted:
@@ -66,14 +67,11 @@ Ready Features:
 - Populate Hadiths in Link in a table tooltip
 - semi-responsivness
 - view top down
+- Sanad Search (squence of rawi's)
 
 Next Steps (I know how to do):
-- Sanad Search (squence of rawi's)
+  - Error Handling + Infinite loop breaks
   - name to suggest (AJAX XML): UI search for rawi by name and tag it
-  - Regex Search: 
-    - Proof "hadith is regular"
-    - construct FDA
-    - implement search
   - select list of wanted ahadith
 
 Known bugs:
