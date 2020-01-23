@@ -1,35 +1,46 @@
-Start = Query
-
-Query 
-	= head:Expression tail:(ORQuery)*
-    { 
-      var re = new RegExp("("+head + tail+")","g");
-      var input = [1,22,3].toString();
-      return "{" + re + "}.'"+ input +"' => " +re.test(input);
+Start 
+	= q:Query {
+      var re = new RegExp("("+q+")","g");
+      //var input = processingSanad.toString();
+      var input =[1,2,3,4,5,618].toString(); return "{" + re + "}.'"+ input +"' => " +re.test(input);
+      return re.test(input); 
     } 
 
-ORQuery
-	= op:("|") tail: Expression
-    {return op + tail}
+Query 
+	= head:Expression tail:(TailQuery)* { return "(?=.*"+head +")"+ tail;} 
+    // NOT "!(" neg:Query  ")"{ return "("+neg+")";} 
 
-Expression = ex:(Isnad / Factor) {return ex;}
+TailQuery
+	= op:("|") tail: Expression {return op + tail}
+	/ op:("&") tail: Expression {return "(?=.*"+tail+")"}
+    // XOR
+
+Expression 
+	= ex:(Isnad / Factor) {return ex;}
 
 Factor
-  = "(" q:Expression ")" { return "("+q+")"; }
-  /  "!(" _ q:Expression _ ")" { return "!("+q+")"; }
+  = "(" q:Query ")" { return q; }
   
-Isnad = list:Rawi+ {return "(^|,)"+list.join()+"(,|$)";}
-
+Isnad 
+	= "$" list:Rawi+ "$" {return "(^)"+list.join()+"($)";}
+    / "$" list:Rawi+ {return "(^)"+list.join()+"(,|$)";}
+    / list:(Rawi+) "$" {return "(^|,)"+list.join()+"($)";}
+    / list:Rawi+ {return "(^|,)"+list.join()+"(,|$)"}
+    
 Rawi 
 	= head:"@" id:Integer tail:(ORRawi)* {return "("+id + tail+")"; } 
+    / "(" r:Rawi ")" { return r; }
     / "*" {return "[0-9]+";}
-
+    // Quantifier
+    
+Quantifier
+	= "<" n:Integer ">"  r:Isnad { return "("+r+"){"+n+"}";}
+    
 ORRawi
 	= op:"|" tail:Rawi { return op + tail; }
-
 Integer "integer"
   = [0-9]+ 
-  { return parseInt(text()); }
+  { return text(); }
 
 _ "whitespace"
   = [ \t\n\r]*

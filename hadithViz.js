@@ -7,8 +7,8 @@ var args = [
   },
   {
     "key": "hadith-query", 
-    "default": "الأعمال بالنية", 
-    "value": "الأعمال بالنية"
+    "default": "", 
+    "value": ""
   },
   {
     "key": "numNarrators", 
@@ -21,6 +21,8 @@ var patternQuery = 0;
 var hadithQuery = 1;
 var numNarrators = 2;
 var colorLinks = [];
+var processingSanad;
+
 function query(data, index){
   // hadith contains the hadith-query
   //return a list of chains
@@ -30,10 +32,10 @@ function query(data, index){
   var chains = []
   if(txt.includes(simplifyArabic(args[hadithQuery]["value"]))){
     for(var i = 0; i < asaneed.length; i++){
-      var sanad = asaneed[i];
-      console.log(chains);
-      if (args[patternQuery]["value"] == "" || sanad.includes(String(args[patternQuery]["value"]))){
-        chains.push(sanad);
+      processingSanad = asaneed[i];
+      
+      if (args[patternQuery]["value"] == "" || QueryParser.parse(args[patternQuery]["value"])){
+        chains.push(processingSanad);
       }
     }
   }
@@ -369,12 +371,12 @@ function overlapMatching(str, regexps, nextStartIndexFn){
 function getHadithXML(data, index){
   var xml = data[index][3];
   xml = xml.replace(/&gt;/g,">\n").replace(/&lt;/g,"\n<");
-  console.log(xml);
+  //console.log(xml);
   console.log(getHadithAsaneed(data, index));
   var narratorTerm = '(<راوي(.*)>\n(.*)\n</راوي>\n(\n<مصطلح_صيغ(.*)">\n)?\n<صيغة_تحديث>\n(.*)\n</صيغة_تحديث>)';
   var termNarrator = '(<صيغة_تحديث>\n(.*)\n</صيغة_تحديث>\n(\n<\/مصطلح_صيغ>\n)?\n<راوي(.*)>\n(.*)\n<\/راوي>)';
   var isnad = Array.from(xml.matchAll(termNarrator+"|"+narratorTerm,"g"), m => m[0].split("\n"));
-  console.log(isnad);
+  //console.log(isnad);
   var parsed = {
     'xml': xml,
     'رقم_حديث نوع="حرف"': xml.match(/<رقم_حديث نوع="حرف">\n(.)* \n<\/رقم_حديث>/)[0].split("\n")[1],
@@ -758,11 +760,12 @@ function afterProcess(temp){
           tooltip += getHadithTxt(HadithArr, hadith);
           tooltip += "</td>";
 
-          /*Debugging tooltip += "<td>";
+          /*
+          tooltip += "<td>";
           tooltip += getHadithAsaneed(HadithArr, hadith).join().replace(/,/g, "<br>");
           tooltip += "</td>";
-
-          tooltip += "<td>";
+          */
+          /*tooltip += "<td>";
           tooltip += getHadithNum(HadithArr, hadith);
           tooltip += "</td>";*/
 
