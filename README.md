@@ -68,11 +68,11 @@ Ready Features:
 - semi-responsivness
 - view top down
 - Sanad Search (squence of rawi's)
+- Error Handling
 
 Next Steps (I know how to do):
-  - Error Handling + Infinite loop breaks
-  - name to suggest (AJAX XML): UI search for rawi by name and tag it
   - select list of wanted ahadith
+  - name to suggest (AJAX XML): UI search for rawi by name and tag it
 
 Known bugs:
 - tooltip on vertical
