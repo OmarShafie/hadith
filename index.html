@@ -88,10 +88,22 @@
       </ul>
     </div>
     <form id="mySidesearch" class="sidesearch bg-dark text-center">
-      <h3>Search Form</h3>
+      <h3>Search Form <span class="fa fa-search"></span></h3>
       <a href="javascript:void(0)" class="closebtn" onclick="closeNav()"
         >&times;</a
       >
+      <div class="justify-content-center" style="margin: 10px">
+        <label>Sources:</label>
+        <select class="selectpicker" multiple data-live-search="true">
+          <option id="0" value="1" selected> Bukhari </option>
+          <option id="1" value="2"> Muslim </option>
+          <option id="2" value="3"> Abu Daw'ud </option>
+          <option id="3" value="4"> Al Termithi </option>
+          <option id="4" value="5"> Nasa'i </option>
+          <option id="5" value="6"> Ibn Majah </option>
+        </select>
+      </div>
+
       <div class="justify-content-center" style="margin: 10px">
         <label for="pattern-query">Sanad Pattern:</label>
         <input
@@ -100,7 +112,7 @@
           id="pattern-query"
           dir="rtl"
           required
-          placeholder=" "
+          placeholder=""
           autocomplete="on"
         />
       </div>
@@ -112,37 +124,34 @@
           id="hadith-query"
           dir="rtl"
           required
-          placeholder="الأعمال بالنية"
+          placeholder="مثلا: الأعمال بالنية"
           autocomplete="on"
         />
+        <label id="pattern-error" style="color:orange"></label>
       </div>
-      <br />
-
-      <div class="justify-content-center">
-        <label>Sources:</label>
-        <select class="selectpicker" multiple data-live-search="true">
-          <option id="0" value="1" selected> Bukhari </option>
-          <option id="1" value="2"> Muslim </option>
-          <option id="2" value="3"> Abu Daw'ud </option>
-          <option id="3" value="4"> Al Termithi </option>
-          <option id="4" value="5"> Nasa'i </option>
-          <option id="5" value="6"> Ibn Majah </option>
-        </select>
-      </div>
-      <br />
-      <div class=" justify-content-center mx-3 form-inline">
+      <div class="justify-content-center mx-3 form-inline">
         <div>
           <button type="button" id="submit" class="btn btn-primary">
             Submit
           </button>
         </div>
       </div>
-      <div class="row justify-content-center">
+      <div class="justify-content-center">
         <label id="btnMessage"></label>
+      </div>
+
+      <div id="resultTable"></div>
+
+      <div class="justify-content-center mx-3 form-inline">
+        <div>
+          <button type="button" disabled id="draw" class="btn btn-primary">
+            Draw
+          </button>
+        </div>
       </div>
     </form>
     <form id="mySidesettings" class="sidesearch bg-dark text-center">
-      <h3>Settings Form</h3>
+      <h3>Settings Form <span class="fa fa-sliders-h"></span></h3>
       <a href="javascript:void(0)" class="closebtn" onclick="closeNav()"
         >&times;</a
       >
@@ -221,7 +230,7 @@
       <div id="sankey_container" class="row justify-content-center">
         <div id="sankey_basic" class="horizontal-sankey"></div>
       </div>
-      <br /><br />
+      <br />
     </div>
     <script>
       var isVertical = false; //vertical
@@ -266,6 +275,7 @@
         }
         return false;
       }
+
       function drawChart(data) {
         // Sets chart options.
         //var screen_h = Math.min(screen.width,screen.height - 170);
@@ -442,7 +452,12 @@
                 300 / 2 +
                 document.querySelector("#header").offsetHeight +
                 30) + 50;
-          if (el.style.getPropertyValue("--v") != "block" && !clickDisabled) {
+          if (
+            el.style.getPropertyValue("--v") != "block" &&
+            !clickDisabled &&
+            document.getElementById("mySidesearch").style.width ==
+              document.getElementById("mySidesettings").style.width
+          ) {
             el.style.setProperty(
               "--x",
               (isVertical

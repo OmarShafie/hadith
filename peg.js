@@ -1,47 +1,47 @@
-Start 
-  = q:Query {
-      var re = new RegExp("("+q+")","g");
-      var input = processingSanad.toString();
-      //var input =[1,5917].toString(); return "{" + re + "}.'"+ input +"' => " +re.test(input);
-      return re.test(input); 
-    } 
+Start
+  = _ q: Query _ {
+  var re = new RegExp(q, "g");
+  //var input = processingSanad.toString();
+  var input = [1, 5917, 2].toString(); return "{" + re + "}.'" + input + "' => " + re.test(input);
+  return re.test(input);
+}
 
-Query 
-  = head:Expression tail:(TailQuery)* { return "(?=.*"+head +")"+ tail;} 
-    // NOT "!(" neg:Query  ")"{ return "("+neg+")";} 
+Query
+  = _ head: Expression _ tail: (TailQuery) * _{ return "(?=.*" + head + ")" + tail; }
+// NOT "!(" neg:Query  ")"{ return "("+neg+")";} 
 
 TailQuery
-  = op:("|") tail: Expression {return op + tail}
-  / op:("&") tail: Expression {return "(?=.*"+tail+")"}
-    // XOR
+  = _ op: ("|") _ tail: Expression _ { return "|" + tail; }
+/ _ op:("&") _ tail: Expression _ {return "(?=.*"+tail+")";}
+// XOR
 
-Expression 
-  = ex:(Isnad / Factor) {return ex;}
+Expression
+  = _ ex: (Isnad / Factor) _ { return ex; }
 
 Factor
-  = "(" q:Query ")" { return q; }
-  
-Isnad 
-  = "$" list:Rawi+ "$" {return "(^)"+list.join()+"($)";}
-    / "$" list:Rawi+ {return "(^)"+list.join()+"(,|$)";}
-    / list:(Rawi+) "$" {return "(^|,)"+list.join()+"($)";}
-    / list:Rawi+ {return "(^|,)"+list.join()+"(,|$)"}
-    
-Rawi 
-  = head:"@" id:Integer tail:(ORRawi)* {return "(" + id + tail + ")"; } 
-    / "(" r:Rawi+ ")" tail:(ORRawi)*{ return "(" + r.join() + tail + ")"; }
-    / "*" tail:(ORRawi)* {return "([0-9]+" + tail + ")";}
-    // Quantifier
-    
+  = _ "(" _ q: Query _ ")" _ { return "(" + q + ")"; }
+
+Isnad
+  = _ "$" _ list: Rawi + _ "$" _ { return "(^)" + list.join() + "($)"; }
+/ _ "$" _ list:Rawi+ _ {return "(^)"+list.join()+"(,|$)";}
+  / _ list: (Rawi +) _ "$" _ { return "(^|,)" + list.join() + "($)"; }
+/ _ list:Rawi+ _{return "(^|,)"+list.join()+"(,|$)"}
+
+Rawi
+  = _ head: "@" id: Integer _ tail: (ORRawi) * _ { return id + tail; }
+/ _ "(" _ r:Rawi+ _ ")" _ tail:(ORRawi)* _ { return "("+r.join()+")" + tail; }
+  / _ "*" _ tail: (ORRawi) * _ { return "[0-9]+" + tail; }
+// Quantifier
+
 Quantifier
-  = "<" n:Integer ">"  r:Isnad { return "("+r+"){"+n+"}";}
-    
+  = "<" n: Integer ">"  r: Isnad { return "(" + r + "){" + n + "}"; }
+
 ORRawi
-  = op:"|" tail:Rawi { return op + tail; }
-    
+  = _ op: "|" _ tail: Rawi _{ return "|" + tail; }
+
 Integer "integer"
-  = [0-9]+ 
+  = _[0 - 9] +
   { return text(); }
 
 _ "whitespace"
-  = [ \t\n\r]*
+  = [\t\n\r] *
