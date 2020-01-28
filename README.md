@@ -33,6 +33,7 @@ XML needs to be extracted:
 - Narrators time/places - useful to verify connection
 - inconsistent narrator labeling i.e. معلقات الليث 
 - حديث (عماي) له راويان ولم يحقق
+- حديث رقم 4292  باسناد واحد لكنه عندهم باثنين
 
 Out of scope (Research Topics):
 - *Classification of Hadith (Saheeh/ hasan/ Dha'eef) or (Prophet-like-speech "textual finger print")
