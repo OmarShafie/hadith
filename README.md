@@ -34,6 +34,9 @@ XML needs to be extracted:
 - inconsistent narrator labeling i.e. معلقات الليث 
 - حديث (عماي) له راويان ولم يحقق
 - حديث رقم 4292  باسناد واحد لكنه عندهم باثنين
+- Takhreej is limited to first rawi (Search for لَا فَرَعَةَ وَلَا عَتِيرَةَ )
+  - Complete Matn is only per takhreej
+- Isnad connection is not provided
 
 Out of scope (Research Topics):
 - *Classification of Hadith (Saheeh/ hasan/ Dha'eef) or (Prophet-like-speech "textual finger print")
@@ -86,6 +89,7 @@ Possible feature (possible, but not now):
   - light - Dark theme
   - Collapse(delete) nodes
   - font sizes controller
+- Select most frequent/common name instead of the full name
   
 - Search Settings tab:
   - find similar hadiths (mutaba'at & shuhood)
