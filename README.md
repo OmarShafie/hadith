@@ -97,6 +97,7 @@ Possible feature (possible, but not now):
   - Search by book title
   - *Scraping: Get more resource data/books. Scale to all avaible Sunnah Books+, show kunya and nasab and name of each rawi onHover
     - Grouped Matn: color each group by a unique color + color each zyadah by a n-bit binary colors,  where nth bit is existance of zyadah. grouping by matn, grouping by sanad, grouping by both, none (default).
+   - search over hadiths instead of over route ( for analytics, not necessarily for non coder user)
 
 Visualization Library Limitations:
 - Highlight full route on node click => Documentation: "For this chart, only one entity can be selected at a time."
@@ -108,13 +109,15 @@ Visualization Library Limitations:
 سائل واللطائف والفوائد واستخدامات البرنامج:
 * ثم إضافة هذه الفوائد في وصف الحديث/الراوي
 
-- نسبة موافقة لفظ البخاري مع لفظ مسلم في الأحاديث المتوافقة في الإسناد
-
--ابن حجر في كتاب التفسير في الفتح:
-وهذا أحد الأحاديث الأربع التي على فيها مسلم على البخاري عن نفس الشيخ
-
+- Done: 
+- سبر مرويات الراوي للحكم عليه
 - من روى عن شيخ حديثا واحدا او عدد بحصر
-
 * قول الطبراني وتفرد به فلان في الكتب الستة ... مع تحفة الأشراف للمزي
 
-* سبر مرويات الراوي للحكم عليه
+Isnad Graph: 
+-ابن حجر في كتاب التفسير في الفتح:
+وهذا أحد الأحاديث الأربع التي على فيها مسلم على البخاري عن نفس الشيخ
+*  : وَلَا يُعْرَفُ حَدِيثٌ اجْتَمَعَ عَلَى رِوَايَتِهِ الْعَشَرَةُ إِلَّا هَذَا
+
+Matn: 
+-نسبة موافقة لفظ البخاري مع لفظ مسلم في الأحاديث المتوافقة في الإسناد
