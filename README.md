@@ -49,8 +49,9 @@ Out of scope (Research Topics):
   - Identifying Entity
   - case of shifting isnad using ح
   - case of using عطف
-- *Predict Missing / Missing check
+- *Predict Missing / Missing check المبهم أو المدلس
   - Connectivity who could be missing between any 2 rawi?
+  - probabilities for each rawi
 - *Knowledge Extraction: Extract tags/grades from Narrator Discription
   - add rawi/hadith notes and tags: weak in arabic-evidency- israeliyat - marfoo3 7ukmn -
   - fill missing grades + add more grading sources
