@@ -37,6 +37,8 @@ XML needs to be extracted:
 - Takhreej is limited to first rawi (Search for لَا فَرَعَةَ وَلَا عَتِيرَةَ )
   - Complete Matn is only per takhreej
 - Isnad connection is not provided
+- grouped matn is not complete nor proper (manual?):  فَإِذَا أَمَرْتُكُمْ بِشَيْءٍ فَأْتُوهُ ، وَإِذَا نَهَيْتُكُمْ عَنْ شَيْءٍ فَاجْتَنِبُوهُ مَا اسْتَطَعْتُمْ .
+is not included as مقلوب
 
 Out of scope (Research Topics):
 - *Classification of Hadith (Saheeh/ hasan/ Dha'eef) or (Prophet-like-speech "textual finger print")
