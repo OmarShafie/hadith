@@ -41,28 +41,35 @@ XML needs to be extracted:
 is not included as مقلوب
 
 Out of scope (Research Topics):
+- Advanced Viz:
+  - color code method: comparison by: 1)route/chain, 2)narration (matn) 3) both 4) none [current] as visual analysis
+  - combine the "Zeyadat" narrations into one steched narration and color code links to highlight sources
+  
+- *Information Retrieval: search for hadith (content) full ranking system
+  - prefix and suffix + ignore punctuations?
+  - hadith similarity
+  
+  - *Knowledge Extraction: Extract tags/grades from Narrator Discription
+  - add rawi/hadith notes and tags: weak in arabic-evidency- israeliyat - marfoo3 7ukmn -
+  - fill missing grades + add more grading sources
+  - validate connectivity (time & place)
+  
+  - *Named Entity Recognition
+  - Identifying Entity
+  - case of shifting isnad using ح
+  - case of using عطف
+
+- *Predict Missing / Missing check المبهم أو المدلس
+  - Connectivity who could be missing between any 2 rawi?
+  - probabilities for each rawi
+  
 - *Classification of Hadith (Saheeh/ hasan/ Dha'eef) or (Prophet-like-speech "textual finger print")
   - Possible crowd sourced (الدرر السنية)
   - Percentage of score for each rawi of accuracy based on multiple sources
   - filter by classification
-- *Named Entity Recognition
-  - Identifying Entity
-  - case of shifting isnad using ح
-  - case of using عطف
-- *Predict Missing / Missing check المبهم أو المدلس
-  - Connectivity who could be missing between any 2 rawi?
-  - probabilities for each rawi
-- *Knowledge Extraction: Extract tags/grades from Narrator Discription
-  - add rawi/hadith notes and tags: weak in arabic-evidency- israeliyat - marfoo3 7ukmn -
-  - fill missing grades + add more grading sources
-  - validate connectivity (time & place)
-- *Information Retrieval: search for hadith (content) full ranking system
-  - prefix and suffix + ignore punctuations?
+
 - Indexing:
   - find pages in websites /chapters in books that are linked/discussing a specific hadith
-- Advanced Viz:
-  - color code method: comparison by: 1)route/chain, 2)narration (matn) 3) both 4) none [current] as visual analysis
-  - combine the "Zeyadat" narrations into one steched narration and color code links to highlight sources
 
 Ready Features:
 - *Visulaize Sankey diagram of Hadiths of any rawi in bukhari
