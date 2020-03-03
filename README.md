@@ -85,6 +85,9 @@ Ready Features:
 - Error Handling
 
 Next Steps (I know how to do):
+  - Arabic UI
+  - Help page (documentation) - What is this website? What does it provide? what is a hadith? where is the source/ who else knows about this? how to share? features
+  -
   - select list of wanted ahadith
   - name to suggest (AJAX XML): UI search for rawi by name and tag it
 
