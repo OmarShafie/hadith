@@ -120,6 +120,10 @@ Visualization Library Limitations:
 - different lengths of layers
 - layering
 
+Visualization Library Altenatives:
+- Move to D3.js (Google Charts is built upon D3.js, hence more flexibility is expected, though more implementation)
+- Sefaria.org
+
 سائل واللطائف والفوائد واستخدامات البرنامج:
 * ثم إضافة هذه الفوائد في وصف الحديث/الراوي
 
