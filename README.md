@@ -67,6 +67,8 @@ Out of scope (Research Topics):
   - Possible crowd sourced (الدرر السنية)
   - Percentage of score for each rawi of accuracy based on multiple sources
   - filter by classification
+  
+- Ontology of concepts
 
 - Indexing:
   - find pages in websites /chapters in books that are linked/discussing a specific hadith
