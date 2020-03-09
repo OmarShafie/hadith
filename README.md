@@ -1,130 +1,15 @@
-# VizHadith
-Search engine which provides Visual analysis of Hadith from Hadith Books Data.
+# The Hadith Visualization Engine
 
-Web-based using pure HTML, Bootstrap and JavaScript.
+Welcome to **Hadith Visualization Engine**, a search engine which provides Visual analysis of *Hadith Isnad tree* (Narration routes) highlighting narrators and narrator grades. 
 
-Sankey Diagram is built using Google Chart's Sankey.
+** The Hadith ** is Narration of sayings and actions of the prophet. In its classic form, a hadith has two parts — the sequence of reporting individuals who have transmitted the report (*the isnad*), and the actual sayings of the prophet/companion (*the matn*). Hadith books are ....
 
-Data Sets are scraped from: ...
-18,800 Narrators [ID, Name, Grade(source: Ibn Hajar)]
-7,200  Ahadeeth [ID, Title, Hadith Span, Asaneed (Comma separated),Hadith XML]:Bukhari (other 34 books to be scraped later)
+## The Sankey Diagram ##
 
-Libraies:
-- Google Chart - Sankey Diagram
-- Papa Parse - JS cvs Parsing Library
-- Scrapy - Python for scraping the data (Narrators and Hadith)
-- PEG.js
+## The Sanad Search ##
 
-Challenges:
-- Scrape
-- Parse CSV
-- Cycle detection
-- Query Grammer
-
-Data Challenges:
-XML needs to be extracted:
-  - Narration term between the links (صيغ الأداء) to show connection
-  - chain does not show if this is a Prophet Hadith or a Companion (منتهى الإسناد)
-- 56.8% grades are missing (10,680 / 18,800 ) (درجة الراوي)
-- Grade are not uniformed (1363 unique terms) run gradeAnalysis from console to see distribution.
-- Other sources of grades are missing
-- Main known name is missing
-- Narrators Special comments
-- Narrators time/places - useful to verify connection
-- inconsistent narrator labeling i.e. معلقات الليث 
-- حديث (عماي) له راويان ولم يحقق
-- حديث رقم 4292  باسناد واحد لكنه عندهم باثنين
-- Takhreej is limited to first rawi (Search for لَا فَرَعَةَ وَلَا عَتِيرَةَ )
-  - Complete Matn is only per takhreej
-- Isnad connection is not provided
-- grouped matn is not complete nor proper (manual?):  فَإِذَا أَمَرْتُكُمْ بِشَيْءٍ فَأْتُوهُ ، وَإِذَا نَهَيْتُكُمْ عَنْ شَيْءٍ فَاجْتَنِبُوهُ مَا اسْتَطَعْتُمْ .
-is not included as مقلوب
-
-Out of scope (Research Topics):
-- Advanced Viz:
-  - color code method: comparison by: 1)route/chain, 2)narration (matn) 3) both 4) none [current] as visual analysis
-  - combine the "Zeyadat" narrations into one steched narration and color code links to highlight sources
-  
-- *Information Retrieval: search for hadith (content) full ranking system
-  - prefix and suffix + ignore punctuations?
-  - hadith similarity
-  
-  - *Knowledge Extraction: Extract tags/grades from Narrator Discription
-  - add rawi/hadith notes and tags: weak in arabic-evidency- israeliyat - marfoo3 7ukmn -
-  - fill missing grades + add more grading sources
-  - validate connectivity (time & place)
-  
-  - *Named Entity Recognition
-  - Identifying Entity
-  - case of shifting isnad using ح
-  - case of using عطف
-
-- *Predict Missing / Missing check المبهم أو المدلس
-  - Connectivity who could be missing between any 2 rawi?
-  - probabilities for each rawi
-  
-- *Classification of Hadith (Saheeh/ hasan/ Dha'eef) or (Prophet-like-speech "textual finger print")
-  - Possible crowd sourced (الدرر السنية)
-  - Percentage of score for each rawi of accuracy based on multiple sources
-  - filter by classification
-  
-- Ontology of concepts
-
-- Indexing:
-  - find pages in websites /chapters in books that are linked/discussing a specific hadith
-
-Ready Features:
-- *Visulaize Sankey diagram of Hadiths of any rawi in bukhari
-- filter by top K number of narrators (reduce size)
-- Filter Hadiths by book
-- Narrators are color coded to highlight grade of narration with grade legend
-- On node hover: rawi details
-- Sankey Diagram weights represent number of hadiths between any 2 rawis'
-- Populate Hadiths in Link in a table tooltip
-- semi-responsivness
-- view top down
-- Sanad Search (squence of rawi's)
-- Error Handling
-
-Next Steps (I know how to do):
-  - Arabic UI
-  - Help page (documentation) - What is this website? What does it provide? what is a hadith? where is the source/ who else knows about this? how to share? features
-  - readme formatting
-  - adjust weights of links
-  - select list of wanted ahadith
-  - name to suggest (AJAX XML): UI search for rawi by name and tag it
-
-Known bugs:
-- tooltip on vertical
-- mobile text on vertical
-
-Possible feature (possible, but not now):
-- Color links based on narration term (صيغ التخمل) + highlight Tadlees
--Sankey Settings tab:
-  - transliterate names
-  - light - Dark theme
-  - Collapse(delete) nodes
-  - font sizes controller
-- Select most frequent/common name instead of the full name
-  
-- Search Settings tab:
-  - find similar hadiths (mutaba'at & shuhood)
-  - Search by أطراف , تخريج, or exact match+similarity
-  - Search by book title
-  - *Scraping: Get more resource data/books. Scale to all avaible Sunnah Books+, show kunya and nasab and name of each rawi onHover
-    - Grouped Matn: color each group by a unique color + color each zyadah by a n-bit binary colors,  where nth bit is existance of zyadah. grouping by matn, grouping by sanad, grouping by both, none (default).
-   - search over hadiths instead of over route ( for analytics, not necessarily for non coder user)
-
-Visualization Library Limitations:
-- Highlight full route on node click => Documentation: "For this chart, only one entity can be selected at a time."
-- To add a text on links
-- Order of the nodes
-- different lengths of layers
-- layering
-
-Visualization Library Altenatives:
-- Move to D3.js (Google Charts is built upon D3.js, hence more flexibility is expected, though more implementation)
-- Sefaria.org
+## Use Case Examples ##
+What I would like to be able to do with this tool?
 
 سائل واللطائف والفوائد واستخدامات البرنامج:
 * ثم إضافة هذه الفوائد في وصف الحديث/الراوي
@@ -146,3 +31,149 @@ Isnad Graph:
 Matn: 
 -نسبة موافقة لفظ البخاري مع لفظ مسلم في الأحاديث المتوافقة في الإسناد
 - تحقيق لفظ يوم الجمعة في قراءة الكهف
+
+
+#### Current Release Features ####
+**Hadith Retrieval**
+- filter by top K number of narrators (reduce size)
+- Filter Hadiths by book
+
+**Sankey Diagram**
+- Visulaize Sankey diagram of Hadiths of any rawi in bukhari
+- Rotate sankey, view top down
+- Sankey Diagram weights represent number of hadiths between any 2 rawis'
+
+**Narrator Nodes**
+- Narrators are color coded to highlight grade of narration with grade legend
+- On node hover: rawi details
+ 
+**Sanad Query**
+- Sanad Search (squence of rawi's) 
+- Query Error Handling messages
+
+**Route Link**
+- Populate Hadiths in Link in a table tooltip
+
+**UI Design**
+- semi-responsivness
+- dark theme
+
+**Known bugs:**
+- tooltip on vertical disappears one mouse mouvment
+- node lables text on vertical is not visible on iphone/ipad
+
+##### Future Release Features #####
+Next Steps (I know how to do):
+  - Arabic UI
+  - Help page (documentation) - What is this website? What does it provide? what is a hadith? where is the source/ who else knows about this? how to share? features
+  - readme formatting
+  - adjust weights of links
+  - select list of wanted ahadith
+  - name to suggest (AJAX XML): UI search for rawi by name and tag it
+
+Possible feature (possible, but not now):
+- Color links based on narration term (صيغ التخمل) + highlight Tadlees
+-Sankey Settings tab:
+  - transliterate names
+  - light - Dark theme
+  - Collapse(delete) nodes
+  - font sizes controller
+- Select most frequent/common name instead of the full name
+  
+- Search Settings tab:
+  - find similar hadiths (mutaba'at & shuhood)
+  - Search by أطراف , تخريج, or exact match+similarity
+  - Search by book title
+  - *Scraping: Get more resource data/books. Scale to all avaible Sunnah Books+, show kunya and nasab and name of each rawi onHover
+    - Grouped Matn: color each group by a unique color + color each zyadah by a n-bit binary colors,  where nth bit is existance of zyadah. grouping by matn, grouping by sanad, grouping by both, none (default).
+   - search over hadiths instead of over route ( for analytics, not necessarily for non coder user)
+
+
+#### The Development and Data ####
+
+Purely developed using HTML, Bootstrap and JavaScript. Visualization library in use, is Google Chart's Sankey. Only needs a browser to run!For research purposes only, data Sets are scraped from: ...
+
+##### Development Libraries: #####
+- Google Chart - Sankey Diagram
+- Papa Parse - JS cvs Parsing Library
+- Scrapy - Python for scraping the data (Narrators and Hadith)
+- PEG.js
+
+Development Challenges:
+- Scraping
+- Parse CSV
+- Cycle detection
+- Query Grammer
+
+Visualization Library Limitations:
+- Highlight full route on node click => Documentation: "For this chart, only one entity can be selected at a time."
+- To add a text on links
+- Order of the nodes
+- different lengths of layers
+- layering
+
+Visualization Library Altenatives:
+- Move to D3.js (Google Charts is built upon D3.js, hence more flexibility is expected, though more implementation)
+- Sefaria.org
+
+##### Data Challenges: #####
+XML needs to be extracted:
+  - Narration term between the links (صيغ الأداء) to show connection
+  - chain does not show if this is a Prophet Hadith or a Companion (منتهى الإسناد)
+- 56.8% grades are missing (10,680 / 18,800 ) (درجة الراوي)
+- Grade are not uniformed (1363 unique terms) run gradeAnalysis from console to see distribution.
+- Other sources of grades are missing
+- Main known name is missing
+- Narrators Special comments
+- Narrators time/places - useful to verify connection
+- inconsistent narrator labeling i.e. معلقات الليث 
+- حديث (عماي) له راويان ولم يحقق
+- حديث رقم 4292  باسناد واحد لكنه عندهم باثنين
+- Takhreej is limited to first rawi (Search for لَا فَرَعَةَ وَلَا عَتِيرَةَ )
+  - Complete Matn is only per takhreej
+- Isnad connection is not provided
+- grouped matn is not complete nor proper (manual?):  فَإِذَا أَمَرْتُكُمْ بِشَيْءٍ فَأْتُوهُ ، وَإِذَا نَهَيْتُكُمْ عَنْ شَيْءٍ فَاجْتَنِبُوهُ مَا اسْتَطَعْتُمْ .
+is not included as مقلوب
+
+##### Available Data #####
+18,800+ Narrators [ID, Name, Grade(source: Tah'theeb Al-Tah'theeb by Ibn Hajar)]
+7,200  Ahadeeth [ID, Title, Hadith Span, Asaneed (Comma separated),Hadith XML]:Bukhari (other 34 books to be scraped later)
+
+
+#### Hadith Research Topics ####:
+
+**Advanced Viz:**
+  - color code method: comparison by: 1)route/chain, 2)narration (matn) 3) both 4) none [current] as visual analysis
+  - combine the "Zeyadat" narrations into one steched narration and color code links to highlight sources
+  
+**Information Retrieval:**
+  - search for hadith (content) full ranking system
+  - prefix and suffix + ignore punctuations?
+  - hadith similarity
+  
+**Knowledge Extraction:**
+  - Extract tags/grades from Narrator Discription
+  - add rawi/hadith notes and tags: weak in arabic-evidency- israeliyat - marfoo3 7ukmn -
+  - fill missing grades + add more grading sources
+  - validate connectivity (time & place)
+  
+**Named Entity Recognition**
+  - Identifying Entity
+  - case of shifting isnad using ح
+  - case of using عطف
+
+**Predict Missing / Missing check **
+  - المبهم أو المدلس
+  - Connectivity who could be missing between any 2 rawi?
+  - probabilities for each rawi
+  
+**Classification of Hadith: **
+  - (Saheeh/ hasan/ Dha'eef) or (Prophet-like-speech "textual finger print")
+  - Possible crowd sourced (الدرر السنية)
+  - Percentage of score for each rawi of accuracy based on multiple sources
+  - filter by classification
+  
+**Ontology of concepts**
+
+**Indexing:**
+  - find pages in websites /chapters in books that are linked/discussing a specific hadith
