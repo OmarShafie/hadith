@@ -1,77 +1,57 @@
-# The Hadith Visualization Engine
+# The Hadith Visualization Search Engine
 
-Welcome to **Hadith Visualization Engine**, a search engine which provides Visual analysis of *Hadith Isnad tree* (Narration routes) highlighting narrators and narrator grades. 
+Welcome to **[Hadith Visualization Search Engine](https://www.omarshafie.com/hadith)**, a search engine which provides Visual analysis of *Hadith Isnad tree* (Narration routes) highlighting narrators and narrator grades. The engine also provides the ability to search for Isnad patterns.
 
-** The Hadith ** is Narration of sayings and actions of the prophet. In its classic form, a hadith has two parts — the sequence of reporting individuals who have transmitted the report (*the isnad*), and the actual sayings of the prophet/companion (*the matn*). Hadith books are ....
+**The Hadith** is Narration of sayings and actions of the prophet. In its classic form, a hadith has two parts — the sequence of reporting individuals who have transmitted the report (*the isnad*), and the actual sayings of the prophet/companion (*the matn*). Hadith books are collections of hadiths written in the classic forms.
 
-## The Sankey Diagram ##
+## The Hadith Sankey Diagram ##
 
-## The Sanad Search ##
+![GitHub Logo](/images/logo.png)
+Format: ![Alt Text](url)
 
-## Use Case Examples ##
-What I would like to be able to do with this tool?
+## The Sanad Pattern Search ##
 
-سائل واللطائف والفوائد واستخدامات البرنامج:
-* ثم إضافة هذه الفوائد في وصف الحديث/الراوي
+## Current Release Features ##
 
-- Done: 
-- سبر مرويات الراوي للحكم عليه
-- من روى عن شيخ حديثا واحدا او عدد بحصر
-* قول الطبراني وتفرد به فلان في الكتب الستة ... مع تحفة الأشراف للمزي
+- [ ] **Hadith Retrieval**
+ - filter by top K number of narrators (reduce size)
+ - Filter Hadiths by book
 
-Isnad Graph: 
--ابن حجر في كتاب التفسير في الفتح:
-وهذا أحد الأحاديث الأربع التي على فيها مسلم على البخاري عن نفس الشيخ
-*  : وَلَا يُعْرَفُ حَدِيثٌ اجْتَمَعَ عَلَى رِوَايَتِهِ الْعَشَرَةُ إِلَّا هَذَا
--وَأَمَّا قَوْلُ مُسْلِمٍ : ( وَحَدَّثَنِي أَبُو سَعِيدٍ الْأَشَجُّ قَالَ : حَدَّثَنَا وَكِيعٌ قَالَ : حَدَّثَنَا الْأَعْمَشُ ، عَنِ الْمُسَيَّبِ بْنِ رَافِعٍ ، عَنْ عَامِرِ بْنِ عَبْدَةَ قَالَ : قَالَ عَبْدُ اللَّهِ ) فَهَذَا إِسْنَادٌ اجْتَمَعَ فِيهِ طُرْفَتَانِ مِنْ لَطَائِفِ الْإِسْنَادِ ؛ إِحْدَاهُمَا أَنَّ إِسْنَادَهُ كُوفِيٌّ كُلَّهُ ، وَالثَّانِيَةُ أَنَّ فِيهِ ثَلَاثَةً تَابِعِيِّينَ يَرْوِي بَعْضُهُمْ عَنْ بَعْضٍ ، وَهُمُ الْأَعْمَشُ وَالْمُسَيَّبُ وَعَامِرٌ ، وَهَذِهِ فَائِدَةٌ نَفِيسَةٌ قَلَّ أَنْ يَجْتَمِعَ فِي إِسْنَادِ هَاتَانِ اللَّطِيفَتَانِ
-- ما ثبت عند مسلم مماهو صحيح بالقطع ولا يتحقق فيه البخاري
-- وَهَذَا أَبُو عُثْمَانَ النَّهْدِيُّ وَأَبُو رَافِعٍ الصَّائِغُ - وَهُمَا ممَنْ أَدْرَكَ الْجَاهِلِيَّةَ ، وَصَحِبَا أَصْحَابَ رَسُولِ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ مِنْ الْبَدْرِيِّينَ هَلُمَّ جَرًّا ، وَنَقَلَا عَنْهُمْ الْأَخْبَارَ حَتَّى نَزَلَا إِلَى مِثْلِ أَبِي هُرَيْرَةَ وَابْنِ عُمَرَ وَذَوِيهِمَا - قَدْ أَسْنَدَ كُلُّ وَاحِدٍ مِنْهُمَا عَنْ أُبَيِّ بْنِ كَعْبٍ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ حَدِيثًا ، وَلَمْ نَسْمَعْ فِي رِوَايَةٍ بِعَيْنِهَا أَنَّهُمَا عَايَنَا أُبَيًّا أَوْ سَمِعَا مِنْهُ شَيْئًا . وَأَسْنَدَ أَبُو عَمْرٍو الشَّيْبَانِيُّ - وَهُوَ مِمَّنْ أَدْرَكَ الْجَاهِلِيَّةَ ، وَكَانَ فِي زَمَنِ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ رَجُلًا - وَأَبُو مَعْمَرٍ عَبْدُ اللَّهِ بْنُ سَخْبَرَةَ كُلُّ وَاحِدٍ مِنْهُمَا عَنْ أَبِي مَسْعُودٍ الْأَنْصَارِيِّ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ خَبَرَيْنِ . وَأَسْنَدَ عُبَيْدُ بْنُ عُمَيْرٍ عَنْ أُمِّ سَلَمَةَ زَوْجِ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ حَدِيثًا ، وَعُبَيْدُ بْنُ عُمَيْرٍ وُلِدَ فِي زَمَنِ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ . وَأَسْنَدَ قَيْسُ بْنُ أَبِي حَازِمٍ - وَقَدْ أَدْرَكَ زَمَنَ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ - عَنْ أَبِي مَسْعُودٍ الْأَنْصَارِيِّ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ ثَلَاثَةَ أَخْبَارٍ . وَأَسْنَدَ عَبْدُ الرَّحْمَنِ بْنُ أَبِي لَيْلَى - وَقَدْ حَفِظَ عَنْ عُمَرَ بْنِ الْخَطَّابِ ، وَصَحِبَ عَلِيًّا - ، عَنْ أَنَسِ بْنِ مَالِكٍ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ حَدِيثًا . وَأَسْنَدَ رِبْعِيُّ بْنُ حِرَاشٍ ، عَنْ عِمْرَانَ بْنِ حُصَيْنٍ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ حَدِيثَيْنِ ، وَعَنْ أَبِي بَكْرَةَ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ حَدِيثًا ، وَقَدْ سَمِعَ رِبْعِيٌّ مِنْ عَلِيِّ بْنِ أَبِي طَالِبٍ وَرَوَى عَنْهُ . وَأَسْنَدَ نَافِعُ بْنُ جُبَيْرِ بْنِ مُطْعِمٍ ، عَنْ أَبِي شُرَيْحٍ الْخُزَاعِيِّ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ حَدِيثًا ، وَأَسْنَدَ النُّعْمَانُ بْنُ أَبِي عَيَّاشٍ ، عَنْ أَبِي سَعِيدٍ الْخُدْرِيِّ ثَلَاثَةَ أَحَادِيثَ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ ، وَأَسْنَدَ عَطَاءُ بْنُ يَزِيدَ اللَّيْثِيُّ ، عَنْ تَمِيمٍ الدَّارِيِّ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ حَدِيثًا ، وَأَسْنَدَ سُلَيْمَانُ بْنُ يَسَارٍ ، عَنْ رَافِعِ بْنِ خَدِيجٍ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ حَدِيثًا ، وَأَسْنَدَ حُمَيْدُ بْنُ عَبْدِ الرَّحْمَنِ الْحِمْيَرِيُّ ، عَنْ أَبِي هُرَيْرَةَ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ أَحَادِيثَ . فَكُلُّ هَؤُلَاءِ التَّابِعِينَ الَّذِينَ نَصَبْنَا رِوَايَتَهُمْ عَنْ الصَّحَابَةِ الَّذِينَ سَمَّيْنَاهُمْ لَمْ يُحْفَظْ عَنْهُمْ سَمَاعٌ عَلِمْنَاهُ مِنْهُمْ فِي رِوَايَةٍ بِعَيْنِهَا ، وَلَا أَنَّهُمْ لَقُوهُمْ فِي نَفْسِ خَبَرٍ بِعَيْنِهِ ، وَهِيَ أَسَانِيدُ عِنْدَ ذَوِي الْمَعْرِفَةِ بِالْأَخْبَارِ وَالرِّوَايَاتِ مِنْ صِحَاحِ الْأَسَانِيدِ ، لَا نَعْلَمُهُمْ وَهَّنُوا مِنْهَا شَيْئًا قَطُّ وَلَا الْتَمَسُوا فِيهَا سَمَاعَ بَعْضِهِمْ مِنْ بَعْضٍ
+- [x] **Sankey Diagram**
+ - Visulaize Sankey diagram of Hadiths of any rawi in bukhari
+ - Rotate sankey, view top down
+ - Sankey Diagram weights represent number of hadiths between any 2 rawis'
 
-
-Matn: 
--نسبة موافقة لفظ البخاري مع لفظ مسلم في الأحاديث المتوافقة في الإسناد
-- تحقيق لفظ يوم الجمعة في قراءة الكهف
-
-
-#### Current Release Features ####
-**Hadith Retrieval**
-- filter by top K number of narrators (reduce size)
-- Filter Hadiths by book
-
-**Sankey Diagram**
-- Visulaize Sankey diagram of Hadiths of any rawi in bukhari
-- Rotate sankey, view top down
-- Sankey Diagram weights represent number of hadiths between any 2 rawis'
-
-**Narrator Nodes**
-- Narrators are color coded to highlight grade of narration with grade legend
-- On node hover: rawi details
+- [x] **Narrator Nodes**
+ - Narrators are color coded to highlight grade of narration with grade legend
+ - On node hover: rawi details
  
-**Sanad Query**
-- Sanad Search (squence of rawi's) 
-- Query Error Handling messages
+- [x] **Sanad Query**
+ - Sanad Search (squence of rawi's) 
+ - Query Error Handling messages
 
-**Route Link**
-- Populate Hadiths in Link in a table tooltip
+- [ ] **Route Link**
+ - Populate Hadiths in Link in a table tooltip
 
-**UI Design**
-- semi-responsivness
-- dark theme
+- [ ] **UI Design**
+ - semi-responsivness
+ - dark theme
 
-**Known bugs:**
-- tooltip on vertical disappears one mouse mouvment
-- node lables text on vertical is not visible on iphone/ipad
+- **Known bugs:**
+ - tooltip on vertical disappears one mouse mouvment
+ - node lables text on vertical is not visible on iphone/ipad
 
-##### Future Release Features #####
+###### Future Release Features ######
 Next Steps (I know how to do):
   - Arabic UI
+  - Onvertical: rotate/sloppy text + thinner
   - Help page (documentation) - What is this website? What does it provide? what is a hadith? where is the source/ who else knows about this? how to share? features
   - readme formatting
   - adjust weights of links
   - select list of wanted ahadith
   - name to suggest (AJAX XML): UI search for rawi by name and tag it
 
-Possible feature (possible, but not now):
+**Possible feature (possible, but not now):**
 - Color links based on narration term (صيغ التخمل) + highlight Tadlees
 -Sankey Settings tab:
   - transliterate names
@@ -84,20 +64,20 @@ Possible feature (possible, but not now):
   - find similar hadiths (mutaba'at & shuhood)
   - Search by أطراف , تخريج, or exact match+similarity
   - Search by book title
-  - *Scraping: Get more resource data/books. Scale to all avaible Sunnah Books+, show kunya and nasab and name of each rawi onHover
+  - Scraping: Get more resource data/books. Scale to all avaible Sunnah Books+, show kunya and nasab and name of each rawi onHover
     - Grouped Matn: color each group by a unique color + color each zyadah by a n-bit binary colors,  where nth bit is existance of zyadah. grouping by matn, grouping by sanad, grouping by both, none (default).
    - search over hadiths instead of over route ( for analytics, not necessarily for non coder user)
 
 
-#### The Development and Data ####
+## The Development and Data ##
 
 Purely developed using HTML, Bootstrap and JavaScript. Visualization library in use, is Google Chart's Sankey. Only needs a browser to run!For research purposes only, data Sets are scraped from: ...
 
-##### Development Libraries: #####
-- Google Chart - Sankey Diagram
-- Papa Parse - JS cvs Parsing Library
-- Scrapy - Python for scraping the data (Narrators and Hadith)
-- PEG.js
+###### Development Libraries: ######
+- [Google Chart - Sankey Diagram](https://developers.google.com/chart/interactive/docs/gallery/sankey)
+- [Papa Parse](https://www.papaparse.com/) - JS cvs Parsing Library
+- [Scrapy](https://scrapy.org/) - Python for scraping the data (Narrators and Hadith)
+- [PEG.js](https://pegjs.org/) - Grammer construction library for query parsing
 
 Development Challenges:
 - Scraping
@@ -116,12 +96,12 @@ Visualization Library Altenatives:
 - Move to D3.js (Google Charts is built upon D3.js, hence more flexibility is expected, though more implementation)
 - Sefaria.org
 
-##### Data Challenges: #####
+###### Data Challenges: ######
 XML needs to be extracted:
   - Narration term between the links (صيغ الأداء) to show connection
   - chain does not show if this is a Prophet Hadith or a Companion (منتهى الإسناد)
 - 56.8% grades are missing (10,680 / 18,800 ) (درجة الراوي)
-- Grade are not uniformed (1363 unique terms) run gradeAnalysis from console to see distribution.
+- Grade are not uniformed (1363 unique terms) run `gradeAnalysis()` from console to see distribution.
 - Other sources of grades are missing
 - Main known name is missing
 - Narrators Special comments
@@ -135,12 +115,17 @@ XML needs to be extracted:
 - grouped matn is not complete nor proper (manual?):  فَإِذَا أَمَرْتُكُمْ بِشَيْءٍ فَأْتُوهُ ، وَإِذَا نَهَيْتُكُمْ عَنْ شَيْءٍ فَاجْتَنِبُوهُ مَا اسْتَطَعْتُمْ .
 is not included as مقلوب
 
-##### Available Data #####
-18,800+ Narrators [ID, Name, Grade(source: Tah'theeb Al-Tah'theeb by Ibn Hajar)]
-7,200  Ahadeeth [ID, Title, Hadith Span, Asaneed (Comma separated),Hadith XML]:Bukhari (other 34 books to be scraped later)
+###### Available Data ######
+18,800+ Narrators 
+ID | Name | Grade(source: Tah'theeb Al-Tah'theeb by Ibn Hajar)
+-- | ---- | ---------------------------------------------------
+
+7,200  Ahadeeth :Bukhari (other 34 books to be scraped later)
+
+ID | Title | Hadith Span | Asaneed (Comma separated) | Hadith XML
 
 
-#### Hadith Research Topics ####:
+## Hadith Research Topics: ##
 
 **Advanced Viz:**
   - color code method: comparison by: 1)route/chain, 2)narration (matn) 3) both 4) none [current] as visual analysis
@@ -177,3 +162,27 @@ is not included as مقلوب
 
 **Indexing:**
   - find pages in websites /chapters in books that are linked/discussing a specific hadith
+###### Use Case Examples ######
+What I would like to be able to do with this tool?
+
+سائل واللطائف والفوائد واستخدامات البرنامج:
+* ثم إضافة هذه الفوائد في وصف الحديث/الراوي
+
+- Done: 
+- سبر مرويات الراوي للحكم عليه
+- من روى عن شيخ حديثا واحدا او عدد بحصر
+- قول الطبراني وتفرد به فلان في الكتب الستة ... مع تحفة الأشراف للمزي
+
+Isnad Graph: 
+-ابن حجر في كتاب التفسير في الفتح:
+وهذا أحد الأحاديث الأربع التي على فيها مسلم على البخاري عن نفس الشيخ
+-  : وَلَا يُعْرَفُ حَدِيثٌ اجْتَمَعَ عَلَى رِوَايَتِهِ الْعَشَرَةُ إِلَّا هَذَا
+-وَأَمَّا قَوْلُ مُسْلِمٍ : ( وَحَدَّثَنِي أَبُو سَعِيدٍ الْأَشَجُّ قَالَ : حَدَّثَنَا وَكِيعٌ قَالَ : حَدَّثَنَا الْأَعْمَشُ ، عَنِ الْمُسَيَّبِ بْنِ رَافِعٍ ، عَنْ عَامِرِ بْنِ عَبْدَةَ قَالَ : قَالَ عَبْدُ اللَّهِ ) فَهَذَا إِسْنَادٌ اجْتَمَعَ فِيهِ طُرْفَتَانِ مِنْ لَطَائِفِ الْإِسْنَادِ ؛ إِحْدَاهُمَا أَنَّ إِسْنَادَهُ كُوفِيٌّ كُلَّهُ ، وَالثَّانِيَةُ أَنَّ فِيهِ ثَلَاثَةً تَابِعِيِّينَ يَرْوِي بَعْضُهُمْ عَنْ بَعْضٍ ، وَهُمُ الْأَعْمَشُ وَالْمُسَيَّبُ وَعَامِرٌ ، وَهَذِهِ فَائِدَةٌ نَفِيسَةٌ قَلَّ أَنْ يَجْتَمِعَ فِي إِسْنَادِ هَاتَانِ اللَّطِيفَتَانِ
+- ما ثبت عند مسلم مماهو صحيح بالقطع ولا يتحقق فيه البخاري
+- وَهَذَا أَبُو عُثْمَانَ النَّهْدِيُّ وَأَبُو رَافِعٍ الصَّائِغُ - وَهُمَا ممَنْ أَدْرَكَ الْجَاهِلِيَّةَ ، وَصَحِبَا أَصْحَابَ رَسُولِ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ مِنْ الْبَدْرِيِّينَ هَلُمَّ جَرًّا ، وَنَقَلَا عَنْهُمْ الْأَخْبَارَ حَتَّى نَزَلَا إِلَى مِثْلِ أَبِي هُرَيْرَةَ وَابْنِ عُمَرَ وَذَوِيهِمَا - قَدْ أَسْنَدَ كُلُّ وَاحِدٍ مِنْهُمَا عَنْ أُبَيِّ بْنِ كَعْبٍ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ حَدِيثًا ، وَلَمْ نَسْمَعْ فِي رِوَايَةٍ بِعَيْنِهَا أَنَّهُمَا عَايَنَا أُبَيًّا أَوْ سَمِعَا مِنْهُ شَيْئًا . وَأَسْنَدَ أَبُو عَمْرٍو الشَّيْبَانِيُّ - وَهُوَ مِمَّنْ أَدْرَكَ الْجَاهِلِيَّةَ ، وَكَانَ فِي زَمَنِ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ رَجُلًا - وَأَبُو مَعْمَرٍ عَبْدُ اللَّهِ بْنُ سَخْبَرَةَ كُلُّ وَاحِدٍ مِنْهُمَا عَنْ أَبِي مَسْعُودٍ الْأَنْصَارِيِّ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ خَبَرَيْنِ . وَأَسْنَدَ عُبَيْدُ بْنُ عُمَيْرٍ عَنْ أُمِّ سَلَمَةَ زَوْجِ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ حَدِيثًا ، وَعُبَيْدُ بْنُ عُمَيْرٍ وُلِدَ فِي زَمَنِ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ . وَأَسْنَدَ قَيْسُ بْنُ أَبِي حَازِمٍ - وَقَدْ أَدْرَكَ زَمَنَ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ - عَنْ أَبِي مَسْعُودٍ الْأَنْصَارِيِّ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ ثَلَاثَةَ أَخْبَارٍ . وَأَسْنَدَ عَبْدُ الرَّحْمَنِ بْنُ أَبِي لَيْلَى - وَقَدْ حَفِظَ عَنْ عُمَرَ بْنِ الْخَطَّابِ ، وَصَحِبَ عَلِيًّا - ، عَنْ أَنَسِ بْنِ مَالِكٍ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ حَدِيثًا . وَأَسْنَدَ رِبْعِيُّ بْنُ حِرَاشٍ ، عَنْ عِمْرَانَ بْنِ حُصَيْنٍ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ حَدِيثَيْنِ ، وَعَنْ أَبِي بَكْرَةَ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ حَدِيثًا ، وَقَدْ سَمِعَ رِبْعِيٌّ مِنْ عَلِيِّ بْنِ أَبِي طَالِبٍ وَرَوَى عَنْهُ . وَأَسْنَدَ نَافِعُ بْنُ جُبَيْرِ بْنِ مُطْعِمٍ ، عَنْ أَبِي شُرَيْحٍ الْخُزَاعِيِّ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ حَدِيثًا ، وَأَسْنَدَ النُّعْمَانُ بْنُ أَبِي عَيَّاشٍ ، عَنْ أَبِي سَعِيدٍ الْخُدْرِيِّ ثَلَاثَةَ أَحَادِيثَ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ ، وَأَسْنَدَ عَطَاءُ بْنُ يَزِيدَ اللَّيْثِيُّ ، عَنْ تَمِيمٍ الدَّارِيِّ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ حَدِيثًا ، وَأَسْنَدَ سُلَيْمَانُ بْنُ يَسَارٍ ، عَنْ رَافِعِ بْنِ خَدِيجٍ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ حَدِيثًا ، وَأَسْنَدَ حُمَيْدُ بْنُ عَبْدِ الرَّحْمَنِ الْحِمْيَرِيُّ ، عَنْ أَبِي هُرَيْرَةَ عَنْ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ أَحَادِيثَ . فَكُلُّ هَؤُلَاءِ التَّابِعِينَ الَّذِينَ نَصَبْنَا رِوَايَتَهُمْ عَنْ الصَّحَابَةِ الَّذِينَ سَمَّيْنَاهُمْ لَمْ يُحْفَظْ عَنْهُمْ سَمَاعٌ عَلِمْنَاهُ مِنْهُمْ فِي رِوَايَةٍ بِعَيْنِهَا ، وَلَا أَنَّهُمْ لَقُوهُمْ فِي نَفْسِ خَبَرٍ بِعَيْنِهِ ، وَهِيَ أَسَانِيدُ عِنْدَ ذَوِي الْمَعْرِفَةِ بِالْأَخْبَارِ وَالرِّوَايَاتِ مِنْ صِحَاحِ الْأَسَانِيدِ ، لَا نَعْلَمُهُمْ وَهَّنُوا مِنْهَا شَيْئًا قَطُّ وَلَا الْتَمَسُوا فِيهَا سَمَاعَ بَعْضِهِمْ مِنْ بَعْضٍ
+
+
+Matn: 
+-نسبة موافقة لفظ البخاري مع لفظ مسلم في الأحاديث المتوافقة في الإسناد
+- تحقيق لفظ يوم الجمعة في قراءة الكهف
+
