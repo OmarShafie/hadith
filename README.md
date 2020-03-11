@@ -6,8 +6,7 @@ Welcome to **[Hadith Visual Search Engine](https://omarshafie.github.io/hadith/)
 
 ## The Hadith Sankey Diagram ##
 
-![GitHub Logo](/Hadith%20Sankey.png)
-Format: ![Sankey Diagram example](https://github.com/OmarShafie/hadith/blob/master/Hadith%20Sankey.png)
+![Sankey Diagram example](https://github.com/OmarShafie/hadith/blob/master/Hadith%20Sankey.png)
 
 ## The Sanad Pattern Search ##
 
@@ -39,11 +38,11 @@ Format: ![Sankey Diagram example](https://github.com/OmarShafie/hadith/blob/mast
  - semi-responsivness
  - dark theme
 
-##### Known bugs: #####
+### Known bugs: ###
  - tooltip on vertical disappears one mouse mouvment
  - node lables text on vertical is not visible on iphone/ipad
 
-###### Future Release Features ######
+#### Future Release Features ####
 Next Steps (I know how to do):
   - Arabic UI
   - Onvertical: rotate/sloppy text + thinner
@@ -53,7 +52,7 @@ Next Steps (I know how to do):
   - select list of wanted ahadith
   - name to suggest (AJAX XML): UI search for rawi by name and tag it
 
-**Possible feature (possible, but not now):**
+#### Possible feature (possible, but not now): ####
 - Color links based on narration term (صيغ التخمل) + highlight Tadlees
 -Sankey Settings tab:
   - transliterate names
@@ -117,7 +116,7 @@ XML needs to be extracted:
 - grouped matn is not complete nor proper (manual?):  فَإِذَا أَمَرْتُكُمْ بِشَيْءٍ فَأْتُوهُ ، وَإِذَا نَهَيْتُكُمْ عَنْ شَيْءٍ فَاجْتَنِبُوهُ مَا اسْتَطَعْتُمْ .
 is not included as مقلوب
 
-**Available Data **
+### Available Data ###
 ###### 18,800+ Narrators ######
 ID | Name | Grade(source: Tah'theeb Al-Tah'theeb by Ibn Hajar)
 
