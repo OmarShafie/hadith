@@ -1,21 +1,19 @@
-# The Hadith Visualization Search Engine
+# The Hadith Visual Search Engine
 
-Welcome to **[Hadith Visualization Search Engine](https://www.omarshafie.com/hadith)**, a search engine which provides Visual analysis of *Hadith Isnad tree* (Narration routes) highlighting narrators and narrator grades. The engine also provides the ability to search for Isnad patterns.
+Welcome to **[Hadith Visual Search Engine](https://omarshafie.github.io/hadith/)**, a search engine which provides Visual analysis of *Hadith Isnad tree* (Narration routes) highlighting narrators and narrator grades. The engine also provides the ability to search for Isnad patterns.
 
 **The Hadith** is Narration of sayings and actions of the prophet. In its classic form, a hadith has two parts — the sequence of reporting individuals who have transmitted the report (*the isnad*), and the actual sayings of the prophet/companion (*the matn*). Hadith books are collections of hadiths written in the classic forms.
 
 ## The Hadith Sankey Diagram ##
 
-![GitHub Logo](/images/logo.png)
-Format: ![Alt Text](url)
+![GitHub Logo](/Hadith%20Sankey.png)
+Format: ![Sankey Diagram example](https://github.com/OmarShafie/hadith/blob/master/Hadith%20Sankey.png)
 
 ## The Sanad Pattern Search ##
 
-## Current Release Features ##
+## The Narrator Grade Classification ##
 
-- [ ] **Hadith Retrieval**
- - filter by top K number of narrators (reduce size)
- - Filter Hadiths by book
+## Current Release Features ##
 
 - [x] **Sankey Diagram**
  - Visulaize Sankey diagram of Hadiths of any rawi in bukhari
@@ -30,14 +28,18 @@ Format: ![Alt Text](url)
  - Sanad Search (squence of rawi's) 
  - Query Error Handling messages
 
-- [ ] **Route Link**
+- [X] **Route Link Tooltip**
  - Populate Hadiths in Link in a table tooltip
+
+- [ ] **Hadith Retrieval**
+ - filter by top K number of narrators (reduce size)
+ - Filter Hadiths by book
 
 - [ ] **UI Design**
  - semi-responsivness
  - dark theme
 
-- **Known bugs:**
+##### Known bugs: #####
  - tooltip on vertical disappears one mouse mouvment
  - node lables text on vertical is not visible on iphone/ipad
 
@@ -79,20 +81,20 @@ Purely developed using HTML, Bootstrap and JavaScript. Visualization library in 
 - [Scrapy](https://scrapy.org/) - Python for scraping the data (Narrators and Hadith)
 - [PEG.js](https://pegjs.org/) - Grammer construction library for query parsing
 
-Development Challenges:
+###### Development Challenges: ######
 - Scraping
 - Parse CSV
 - Cycle detection
 - Query Grammer
 
-Visualization Library Limitations:
+###### Visualization Library Limitations: ######
 - Highlight full route on node click => Documentation: "For this chart, only one entity can be selected at a time."
 - To add a text on links
 - Order of the nodes
 - different lengths of layers
 - layering
 
-Visualization Library Altenatives:
+###### Visualization Library Altenatives: ######
 - Move to D3.js (Google Charts is built upon D3.js, hence more flexibility is expected, though more implementation)
 - Sefaria.org
 
@@ -115,13 +117,11 @@ XML needs to be extracted:
 - grouped matn is not complete nor proper (manual?):  فَإِذَا أَمَرْتُكُمْ بِشَيْءٍ فَأْتُوهُ ، وَإِذَا نَهَيْتُكُمْ عَنْ شَيْءٍ فَاجْتَنِبُوهُ مَا اسْتَطَعْتُمْ .
 is not included as مقلوب
 
-###### Available Data ######
-18,800+ Narrators 
+**Available Data **
+###### 18,800+ Narrators ######
 ID | Name | Grade(source: Tah'theeb Al-Tah'theeb by Ibn Hajar)
--- | ---- | ---------------------------------------------------
 
-7,200  Ahadeeth :Bukhari (other 34 books to be scraped later)
-
+###### 7,200  Ahadeeth :Bukhari (other 34 books to be scraped later) ######
 ID | Title | Hadith Span | Asaneed (Comma separated) | Hadith XML
 
 
@@ -147,12 +147,12 @@ ID | Title | Hadith Span | Asaneed (Comma separated) | Hadith XML
   - case of shifting isnad using ح
   - case of using عطف
 
-**Predict Missing / Missing check **
+**Predict Missing / Missing check**
   - المبهم أو المدلس
   - Connectivity who could be missing between any 2 rawi?
   - probabilities for each rawi
   
-**Classification of Hadith: **
+**Classification of Hadith:**
   - (Saheeh/ hasan/ Dha'eef) or (Prophet-like-speech "textual finger print")
   - Possible crowd sourced (الدرر السنية)
   - Percentage of score for each rawi of accuracy based on multiple sources
