@@ -4,7 +4,7 @@ how to use?
 
 from scrapy.http import FormRequest
 fetch(FormRequest.from_response(response, formdata={'__EVENTTARGET': 'ctl00$ContentPlaceHolder1$ucViewHadith$btnDisplayByHadithNum','__EVENTARGUMENT': "",'ctl00$ContentPlaceHolder1$ucViewHadith$txtHadithNumber': '1407'}))
-request=FormRequest.from_response(response,formdata={'__EVENTTARGET': 'ctl00$ContentPlaceHolder1$ucViewHadith$lnkbtnAsnad'})
+request=FormRequest.from_response(response,formdata={'__EVENTTARGET': 'ctl00$ContentPlaceHolder1$ucViewHadith$lnkbtnTakhreeg'})
 fetch(request) 
 
 2) find data using CSS Selector
@@ -13,6 +13,8 @@ XMLhadith = response.css('input#ContentPlaceHolder1_AsnadTreeServiceUC1_hfDocume
 title = response.css('span#ContentPlaceHolder1_ucViewHadith_lblTocPath::text').get()
 
 hadithNum = response.css('span#TarqeemHarf::text').get()
+
+mainID = response.css('input#ContentPlaceHolder1_TakhreegServiceUC1_hidHadithMainID').attrib['value'] 
 
 3) use regular expressions
 asaneed = response.css('a.tree').re(r"'s.*5495")
@@ -52,4 +54,5 @@ def parse(self,response):
 6) Output to json:
 scrapy crawl <spider.name> -o quotes.json
 scrapy crawl <spider.name> -o quotes.jl
-rm data.csv; scrapy crawl spidyhadith -o data.csv
+rm takhreeg.csv; scrapy crawl spidytakhreeg -o takhreeg.csv
+
