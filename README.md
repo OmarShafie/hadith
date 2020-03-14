@@ -115,6 +115,7 @@ XML needs to be extracted:
 - Isnad connection is not provided
 - grouped matn is not complete nor proper (manual?):  فَإِذَا أَمَرْتُكُمْ بِشَيْءٍ فَأْتُوهُ ، وَإِذَا نَهَيْتُكُمْ عَنْ شَيْءٍ فَاجْتَنِبُوهُ مَا اسْتَطَعْتُمْ .
 is not included as مقلوب
+- معلقات البخاري غير مخدومة
 
 ### Available Data ###
 ###### 18,800+ Narrators ######
