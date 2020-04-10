@@ -38,36 +38,43 @@ Welcome to **[Hadith Visual Search Engine](https://omarshafie.github.io/hadith/)
  - semi-responsivness
  - dark theme
 
+- [ ] **Documentation**
+ - readme formatting
+
 ### Known bugs: ###
  - tooltip on vertical disappears one mouse mouvment
  - node lables text on vertical is not visible on iphone/ipad
 
 #### Future Release Features ####
 Next Steps (I know how to do):
+  - find similar hadiths (mutaba'at & shuhood)
+  - grouping by matn, grouping by sanad, grouping by both, none (default).
+  - search over hadiths instead of over route ( for analytics, not necessarily for non coder user)
+  
   - Arabic UI
-  - Onvertical: rotate/sloppy text + thinner
   - Help page (documentation) - What is this website? What does it provide? what is a hadith? where is the source/ who else knows about this? how to share? features
-  - readme formatting
-  - adjust weights of links
-  - select list of wanted ahadith
-  - name to suggest (AJAX XML): UI search for rawi by name and tag it
+  - adjust weights of links (logarithmic scale)
 
 #### Possible feature (possible, but not now): ####
-- Color links based on narration term (صيغ التخمل) + highlight Tadlees
+Sankey:
+ - Color links based on narration term (صيغ التخمل) + highlight Tadlees >> XML parsing
+ - Collapse(delete) nodes
+ - Onvertical: rotate/sloppy text + thinner
+ - scrape معلقات >> scrape by mainID
+ 
 -Sankey Settings tab:
   - transliterate names
-  - light - Dark theme
-  - Collapse(delete) nodes
+  - switch light - Dark theme
   - font sizes controller
-- Select most frequent/common name instead of the full name
+- Select most frequent/common name instead of the full name >> scraping round 3
   
 - Search Settings tab:
-  - find similar hadiths (mutaba'at & shuhood)
+  - name to suggest (AJAX XML): UI search for rawi by name and tag it
+  - select list of wanted ahadith before draw
   - Search by أطراف , تخريج, or exact match+similarity
   - Search by book title
   - Scraping: Get more resource data/books. Scale to all avaible Sunnah Books+, show kunya and nasab and name of each rawi onHover
-    - Grouped Matn: color each group by a unique color + color each zyadah by a n-bit binary colors,  where nth bit is existance of zyadah. grouping by matn, grouping by sanad, grouping by both, none (default).
-   - search over hadiths instead of over route ( for analytics, not necessarily for non coder user)
+    - Grouped Matn: color each group by a unique color + color each zyadah by a n-bit binary colors,  where nth bit is existance of zyadah. 
 
 
 ## The Development and Data ##
