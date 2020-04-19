@@ -27,8 +27,9 @@ Welcome to **[Hadith Visual Search Engine](https://omarshafie.github.io/hadith/)
  - Sanad Search (squence of rawi's) 
  - Query Error Handling messages
 
-- [X] **Route Link Tooltip**
+- [X] **Interactive: Route Link Tooltip**
  - Populate Hadiths in Link in a table tooltip
+ - Click on any hadith to retrieve all related hadith in the same Takhreeg group (mutaba'at & shuhood)
 
 - [ ] **Hadith Retrieval**
  - filter by top K number of narrators (reduce size)
@@ -47,7 +48,6 @@ Welcome to **[Hadith Visual Search Engine](https://omarshafie.github.io/hadith/)
 
 #### Future Release Features ####
 Next Steps (I know how to do):
-  - find similar hadiths (mutaba'at & shuhood)
   - grouping by matn, grouping by sanad, grouping by both, none (default).
   - search over hadiths instead of over route ( for analytics, not necessarily for non coder user)
   
@@ -74,7 +74,7 @@ Sankey:
   - Search by أطراف , تخريج, or exact match+similarity
   - Search by book title
   - Scraping: Get more resource data/books. Scale to all avaible Sunnah Books+, show kunya and nasab and name of each rawi onHover
-    - Grouped Matn: color each group by a unique color + color each zyadah by a n-bit binary colors,  where nth bit is existance of zyadah. 
+  - Grouped Matn: color each group by a unique color + color each zyadah by a n-bit binary colors,  where nth bit is existance of zyadah. 
 
 
 ## The Development and Data ##
@@ -123,6 +123,7 @@ XML needs to be extracted:
 - grouped matn is not complete nor proper (manual?):  فَإِذَا أَمَرْتُكُمْ بِشَيْءٍ فَأْتُوهُ ، وَإِذَا نَهَيْتُكُمْ عَنْ شَيْءٍ فَاجْتَنِبُوهُ مَا اسْتَطَعْتُمْ .
 is not included as مقلوب
 - معلقات البخاري غير مخدومة
+ - inconsistent inclusion, check @3320 > @2478 
 
 ### Available Data ###
 ###### 18,800+ Narrators ######
