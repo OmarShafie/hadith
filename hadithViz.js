@@ -59,6 +59,7 @@ function query(data, index) {
 // Source: Kaggle Hadith Data Set
 var URL = "https://raw.githubusercontent.com/OmarShafie/hadith/master/";
 var hadithURL = URL + "data/tutorial/data%20-%20data.csv";
+var takhreegURL = URL + "data/tutorial/takhreeg.csv";
 var narratorsURL = URL + "data/tutorial/narrators-utf8.csv";
 
 function buildErrorMessage(e) {
@@ -76,7 +77,6 @@ var firstRun = true;
 var maxUnparseLength = 10000;
 
 var isParsingDone = false;
-var parsedData;
 
 var HadithArr = [];
 var result_graph = [];
@@ -126,8 +126,6 @@ $(function () {
     errorCount = 0;
     firstError = undefined;
 
-    var config = buildConfig();
-
     // Allow only one parse at a time
     $("#draw").prop("disabled", true);
     $("#submit").prop("disabled", true);
@@ -148,30 +146,68 @@ $(function () {
       firstRun = false;
     }
     if (!isParsingDone) {
+      var hadithData;
       var narratorsData;
-      Papa.parse(narratorsURL, {
-        delimiter: $("#delimiter").val(),
-        header: $("#header").prop("checked"),
-        dynamicTyping: $("#dynamicTyping").prop("checked"),
-        skipEmptyLines: $("#skipEmptyLines").prop("checked"),
-        preview: parseInt($("#preview").val() || 0),
-        step: $("#stream").prop("checked") ? stepFn : undefined,
-        encoding: $("#encoding").val(),
-        worker: $("#worker").prop("checked"),
-        comments: $("#comments").val(),
-        complete: saveNarrators,
-        error: errorFn,
-        download: inputType == "remote"
-      });
+      var takhreegData;
+      var config = buildConfig(parseHadith);
+      Papa.parse(narratorsURL, config);
+
       if (config.worker || config.download)
         document.getElementById("btnMessage").innerHTML = "Running...";
     } else {
-      main(parsedData, narratorsData);
+      main();
     }
   });
 });
 
-function buildConfig() {
+function parseHadith(results) {
+  document.getElementById("btnMessage").innerHTML = "Parsing Hadith...";
+
+  if (results && results.errors) {
+    if (results.errors) {
+      errorCount = results.errors.length;
+      firstError = results.errors[0];
+    }
+    if (results.data && results.data.length > 0) rowCount = results.data.length;
+  }
+  narratorsData = results.data;
+  Papa.parse(hadithURL, buildConfig(parseTakhreeg));
+}
+
+function parseTakhreeg(results) {
+  document.getElementById("btnMessage").innerHTML = "Parsing Takhreeg...";
+
+  if (results && results.errors) {
+    if (results.errors) {
+      errorCount = results.errors.length;
+      firstError = results.errors[0];
+    }
+    if (results.data && results.data.length > 0) rowCount = results.data.length;
+  }
+  hadithData = results.data;
+  Papa.parse(takhreegURL, buildConfig(completeParse));
+}
+
+
+function completeParse(results) {
+  document.getElementById("btnMessage").innerHTML = "Parsed Dataset!";
+  end = now();
+
+  if (results && results.errors) {
+    if (results.errors) {
+      errorCount = results.errors.length;
+      firstError = results.errors[0];
+    }
+    if (results.data && results.data.length > 0) rowCount = results.data.length;
+  }
+  isParsingDone = true;
+  takhreegData = results.data;
+
+  autocomplete(document.getElementById("pattern-query"), narratorsData);
+  enableButton();
+}
+
+function buildConfig(completeFn) {
   return {
     delimiter: $("#delimiter").val(),
     header: $("#header").prop("checked"),
@@ -186,39 +222,6 @@ function buildConfig() {
     error: errorFn,
     download: inputType == "remote"
   };
-}
-
-function saveNarrators(results) {
-  document.getElementById("btnMessage").innerHTML = "Parsed Narrators...";
-  end = now();
-
-  if (results && results.errors) {
-    if (results.errors) {
-      errorCount = results.errors.length;
-      firstError = results.errors[0];
-    }
-    if (results.data && results.data.length > 0) rowCount = results.data.length;
-  }
-  narratorsData = results.data;
-  Papa.parse(hadithURL, buildConfig());
-}
-
-function completeFn(results) {
-  document.getElementById("btnMessage").innerHTML = "Parsed Hadith Dataset!";
-  end = now();
-
-  if (results && results.errors) {
-    if (results.errors) {
-      errorCount = results.errors.length;
-      firstError = results.errors[0];
-    }
-    if (results.data && results.data.length > 0) rowCount = results.data.length;
-  }
-  isParsingDone = true;
-  parsedData = results.data;
-
-  autocomplete(document.getElementById("pattern-query"), narratorsData);
-  enableButton();
 }
 
 function errorFn(err, file) {
@@ -452,6 +455,7 @@ function cycleFilter(edges) {
 }
 
 /*-------------- Data functions -------------*/
+
 function getHadithNum(data, index) {
   return data[index][0];
 }
@@ -505,6 +509,57 @@ function overlapMatching(str, regexps, nextStartIndexFn) {
   return res;
 }
 
+function getTakhreegByHadithNum(data, hadithNum) {
+  var found = recursiveSearch(data, hadithNum, 1, data.length - 1, function (
+    x,
+    y
+  ) {
+    return parseInt(x[0]) - parseInt(y);
+  });
+  if (found == -1) {
+    return [];
+  }
+  return data[found];
+}
+
+function getTakhreegByMainID(data, mainID) {
+  var found = recursiveSearch(data, mainID, 1, data.length - 1, function (
+    x,
+    y
+  ) {
+    return parseInt(x[1]) - parseInt(y);
+  });
+  if (found == -1) {
+    return [];
+  }
+  return data[found];
+}
+
+function getTakhreegHadithNum(takhreeg) {
+  return takhreeg[0];
+}
+
+function getTakhreegIDs(takhreeg) {
+  return takhreeg[2].split(",").filter(function(x){
+    return x !== "0";
+  });
+}
+
+function loadHadith(hadith){
+  console.log(getHadithXML(HadithArr,hadith));
+
+  var takhreeg = getTakhreegByHadithNum(takhreegData, getHadithNum(HadithArr, hadith));
+  matching_hadiths = getTakhreegIDs(takhreeg);
+  //console.log(matching_hadiths);
+  matching_hadiths = matching_hadiths.map(id => getTakhreegHadithNum(getTakhreegByMainID(takhreegData,id)));
+  console.log(matching_hadiths);
+  matching_hadiths = matching_hadiths.filter(function(x){
+  return x;}).map(id => [lookupHadithIndex(id), cleanAsaneed(lookupHadith(id)[4])]);
+  afterProcess();
+  openSearch();
+  return;
+}
+
 function getHadithXML(data, index) {
   var xml = data[index][3];
   xml = xml.replace(/&gt;/g, ">\n").replace(/&lt;/g, "\n<");
@@ -518,7 +573,7 @@ function getHadithXML(data, index) {
     xml.matchAll(termNarrator + "|" + narratorTerm, "g"),
     m => m[0].split("\n")
   );
-  //console.log(isnad);
+  /*console.log(isnad);
   var parsed = {
     xml: xml,
     'رقم_حديث نوع="حرف"': xml
@@ -533,12 +588,12 @@ function getHadithXML(data, index) {
     اسناد: isnad,
     //'متن': "",
     //طرف: simplifyArabic(xml.match(/<طرف>\n(.*)\n<\/طرف>\n/)[0].split("\n")[1])
-  };
+  };*/
   return xml;
 }
 
-function getHadithAsaneed(data, index) {
-  var s = data[index][4]
+function cleanAsaneed(asaneed){
+    var s = asaneed
     .replace(/'/g, "")
     .replace(/s/g, "")
     .split(",");
@@ -546,6 +601,9 @@ function getHadithAsaneed(data, index) {
     s[chain] = s[chain].split("%5C%5C");
   }
   return s;
+}
+function getHadithAsaneed(data, index) {
+  return cleanAsaneed(data[index][4]);
 }
 
 function recursiveSearch(arr, x, start, end, cmpFn) {
@@ -598,6 +656,21 @@ function lookupHadith(id) {
     return [];
   }
   return HadithArr[found];
+}
+
+function lookupHadithIndex(id) {
+  //returns data of the narrator with index from the narratorsData, Binary Search Algorithm
+  var found = recursiveSearch(HadithArr, id, 0, HadithArr.length - 1, function (
+    x,
+    y
+  ) {
+    return parseInt(x[0]) - parseInt(y);
+  });
+  if (found == -1) {
+    // else create a narrator data
+    return [];
+  }
+  return found;
 }
 
 function getNarratorGrade(index) {
@@ -896,9 +969,7 @@ function afterProcess() {
     for (var h = 0; h < matching_hadiths.length; h++) {
       var hadith = matching_hadiths[h][0];
       list +=
-        "<tr><td dir='rtl' onClick='console.log(getHadithXML(HadithArr, " +
-        hadith +
-        "))'>";
+        "<tr><td dir='rtl' onClick='loadHadith("+ hadith +")'>";
 
       list += "<h6>" + getTitle(HadithArr, hadith) + "</h6>";
       list += getHadithTxt(HadithArr, hadith);
@@ -1010,9 +1081,7 @@ function drawSankey(tempData) {
         for (var h = 0; h < node[j][2].length; h++) {
           var hadith = node[j][2][h];
           tooltip +=
-            "<tr><td dir='rtl' onClick='console.log(getHadithXML(HadithArr, " +
-            hadith +
-            "))'>";
+            "<tr><td dir='rtl' onClick='loadHadith(" + hadith + ")'>";
 
           tooltip += "<h6>" + getTitle(HadithArr, hadith) + "</h6>";
           tooltip += getHadithTxt(HadithArr, hadith);
@@ -1052,7 +1121,7 @@ function drawSankey(tempData) {
   enableButton(true);
 }
 
-function main(hadithData) {
+function main() {
   HadithArr = [];
   var num_books = 1;
   // TODO: Check book Indices
