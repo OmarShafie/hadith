@@ -24,7 +24,7 @@ var colorLinks = [];
 var processingSanad;
 var matching_hadiths = [];
 var num_books = 9;
-var BOOK_COMPILERS = ["5495", "6116", "5361","5361","5361","5361","5361","5361","487"]; //This must be in-order
+var BOOK_COMPILERS = ["5495", "6116", "5361","9712","2577","10859","","10935","484"]; //This must be in-order
 var align_reward = 4 , align_mispen = 2, align_gappen = 1, align_skwpen = 1;
 /*-------------- Main Code -------------*/
 window.onload = function () {
@@ -76,7 +76,7 @@ function process(array, callback) {
     var cnt = chunk;
     while (cnt-- && i < array.length - 1) {
       var hadithId = i;
-      var chains = query(array, hadithId);
+      var chains = query(array, hadithId, false);
       if (chains && chains.length) {
         matching_hadiths.push([hadithId, chains]);
       }
@@ -94,7 +94,7 @@ function process(array, callback) {
   loop(); //start with 0
 }
 
-function query(data, index) {
+function query(data, index, onTakhreej) {
   /* Given a data array and the index of a hadith, it will return the chains
    * of the hadith that match the criteria on both the text and the chains
    * TODO: it will chech for criteria on the takhreeg 
@@ -109,7 +109,7 @@ function query(data, index) {
       var chains = [];
       //var re = new RegExp(simplifyArabic(args[hadithQuery]["value"]), "g");
 
-      if (txt.includes(simplifyArabic(args[hadithQuery]["value"]))) {
+      if (onTakhreej || txt.includes(simplifyArabic(args[hadithQuery]["value"]))) {
         var asaneed = getHadithAsaneed(data, index);
         for (var i = 0; i < asaneed.length; i++) {
           processingSanad = asaneed[i];
@@ -228,8 +228,11 @@ function drawSankey(tempData) {
 
   //result_graph = result_graph.slice(0, parseInt(args[numNarrators]["value"]));
 
-  last_layer_count = 0; // used as indication of height of sankey
-  last_layer_total = 0;
+
+  layers_count = new Array(longest_sanad); // used as indication of height of sankey
+  for(var l = 0; l < longest_sanad; l++){
+    layers_count[l] = [];
+  }
 
   // set the lables of the nodes
   var names = [];
@@ -248,6 +251,7 @@ function drawSankey(tempData) {
   var hadiths_in_link = [];
   for (var i = 0; i < result_graph.length; i++) {
     var node = result_graph[i];
+    layers_count[node[0][3]].push(node[0][0]);
     for (var j = 1; j < node.length; j++) {
       hadiths_in_link.push(node[j][2]);
       //Out neighbors
@@ -282,11 +286,6 @@ function drawSankey(tempData) {
         var row = [names[index], names[i], node[j][1], tooltip];
         var channel = node[j][3];
         links.push([row, colorPool[getColorAssignment(color_assignments, channel) % colorPool.length],node[j][2]]);
-
-        if (BOOK_COMPILERS.includes(names[i].split(" ")[0])) {
-          last_layer_count += 1;
-          last_layer_total += Math.sqrt(1 * Math.log(node[j][2].length+1));
-        }
       }
     }
   }
@@ -420,7 +419,8 @@ function get_roots(graph){
   for (var i = 0; i < num_books; i++) {
     if (document.getElementById(i).selected) {
       var r = getIndex(BOOK_COMPILERS[i],graph);
-      if (r > -1){
+      if (r > -1 && graph.filter(node=> node.slice(1,node.length, node).filter(neighbor=> neighbor[0]===BOOK_COMPILERS[i]).length > 0).length == 0){
+        
         roots.push(r);
       }
     }
@@ -453,15 +453,17 @@ function build_graph(edges) {
         var w = graph[roots[r]][neighbor][1];
         var neighbor_index = getIndex(graph[roots[r]][neighbor][0], graph);
         var formula = logScale()? Math.sqrt(c * Math.log(w+1)): w;
-        visited_ancistors[neighbor_index] += graph[roots[r]][neighbor][1];
+        visited_ancistors[neighbor_index] += graph[roots[r]][neighbor][2].length;
         graph[neighbor_index][0][2] += formula;
         graph[roots[r]][0][2]       += formula;
         graph[roots[r]][neighbor][1] = formula;
          // possible that another root has already visited
         if (visited_ancistors[neighbor_index] == graph[neighbor_index][0][1]) {
           queue.push(neighbor_index);
-        } 
-      }
+          graph[neighbor_index][0].push(1); 
+        }
+      }    
+    graph[roots[r]][0].push(0);
   }
   //While there are nodes left to visit...
   while (queue.length) {
@@ -470,12 +472,13 @@ function build_graph(edges) {
       for (var neighbor = 1; neighbor < graph[node].length; neighbor++) {
         var neighbor_index = getIndex(graph[node][neighbor][0], graph);
         var frac = graph[node][neighbor][2].length / graph[node][0][1];
-        visited_ancistors[neighbor_index] += graph[node][neighbor][1];
+        visited_ancistors[neighbor_index] += graph[node][neighbor][2].length;
         graph[node][neighbor][1]     = frac * graph[node][0][2];
         graph[neighbor_index][0][2] += frac * graph[node][0][2];
         check_sum                   += frac;
         if (visited_ancistors[neighbor_index] == graph[neighbor_index][0][1]) {
           queue.push(neighbor_index);
+          graph[neighbor_index][0].push(graph[node][0][3]+1); 
         }
       }
       if (check_sum != 1 && graph[node].length > 1){
@@ -602,7 +605,7 @@ function loadHadith(hadith){
     function(x){
       return x > 0;
     });
-  matching_hadiths = matching_hadiths.map(idx => [idx, query(HadithArr, idx)]);
+  matching_hadiths = matching_hadiths.map(idx => [idx, query(HadithArr, idx, true)]);
   afterProcess();
   openSearch();
   return;
@@ -904,8 +907,8 @@ var HadithArr    = [];
 var result_graph = [];
 var ready_data   = [];
 var data;
-var first_layer_count = 0; // used as indication of height of sankey
-var first_layer_total = 0;
+var layers_count = []; // used as indication of height of sankey
+var layers_total = [];
 var longest_sanad     = 0;
 
 $(function () {

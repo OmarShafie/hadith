@@ -273,12 +273,14 @@
       //var screen_h = Math.min(screen.width,screen.height - 170);
       var node_height = 25;
       var nodeWidth = 12;
+      var layers_density = layers_count.map(set => set.length);
+      var dense_layer_count = layers_density[layers_density.indexOf(Math.max(...layers_density))];
       var padding = parseInt(slider.value) * Math.min(node_height/2, 
-                                                      Math.sqrt(last_layer_count)*node_height);
+                                                      Math.sqrt(dense_layer_count)*node_height);
       var expected_lable_length = isVertical? 50:100;
       var verticalDistance   = isVertical? expected_lable_length*2.1 : padding; // between nodes
       var horizontalDistance = isVertical? padding : (expected_lable_length*2.1); // between nodes
-      sankey_h = last_layer_total * node_height + (last_layer_count-1)* verticalDistance;
+      sankey_h = dense_layer_count * node_height + (dense_layer_count-1)* verticalDistance;
       sankey_w = isVertical? Math.max(longest_sanad * verticalDistance,
                                       Math.min(screen.width, screen.height) - 80 /*menue*/) :
                              Math.max(longest_sanad * horizontalDistance,
