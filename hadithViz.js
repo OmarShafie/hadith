@@ -226,7 +226,7 @@ function drawSankey(tempData) {
   document.getElementById("btnMessage").innerHTML =
     "<br>    Total of Narrators: " + result_graph.length;
 
-  result_graph = result_graph.slice(0, parseInt(args[numNarrators]["value"]));
+  //result_graph = result_graph.slice(0, parseInt(args[numNarrators]["value"]));
 
   last_layer_count = 0; // used as indication of height of sankey
   last_layer_total = 0;
@@ -310,7 +310,14 @@ function drawSankey(tempData) {
   google.charts.setOnLoadCallback(
     drawChart(data)
   );
-  stringalign(matching_hadiths, color_assignments, -1.0*align_reward, 1.0*align_mispen, 1.0*align_gappen, 1.0*align_skwpen);
+  if(colorLinksBySanad() && colorLinksByMatn()){
+    document.getElementById("card").style.setProperty("visibility", "visible");
+    stringalign(matching_hadiths, color_assignments, -1.0*align_reward, 1.0*align_mispen, 1.0*align_gappen, 1.0*align_skwpen);
+  }
+  else {
+    document.getElementById("card").style.setProperty("visibility", "hidden");
+  }
+
   enableButton(true);
 }
 
@@ -445,7 +452,7 @@ function build_graph(edges) {
     for (var neighbor = 1; neighbor < graph[roots[r]].length; neighbor++) {
         var w = graph[roots[r]][neighbor][1];
         var neighbor_index = getIndex(graph[roots[r]][neighbor][0], graph);
-        var formula = Math.sqrt(c * w);
+        var formula = logScale()? Math.sqrt(c * Math.log(w+1)): w;
         visited_ancistors[neighbor_index] += graph[roots[r]][neighbor][1];
         graph[neighbor_index][0][2] += formula;
         graph[roots[r]][0][2]       += formula;
@@ -479,7 +486,6 @@ function build_graph(edges) {
 }
 
 function updateChannelsByCommonLink(prev_graph){
-  console.log(prev_graph);
   var graph = prev_graph.slice();
   for(var node = 0; node < graph.length; node++){
     for(var n = 1; n < graph[node].length; n++){
@@ -488,11 +494,9 @@ function updateChannelsByCommonLink(prev_graph){
       var hadith = channel[0];
       var sanad = channel.slice(1,channel.length,channel);
       var teachers = sanad.slice(0, sanad.indexOf(graph[node][0][0]), sanad);
-      console.log(graph[node][0][0], channel, teachers);
       var t = teachers.length-1; 
       var found = false;
       while(t >= 0 && !found){
-        console.log(teachers[t]);
         var tin_degreee = graph[getIndex(teachers[t], graph)][0][1];
         if(tin_degreee == graph[node][n][1]){
           commonLink = teachers[t];
@@ -598,7 +602,7 @@ function loadHadith(hadith){
     function(x){
       return x > 0;
     });
-  matching_hadiths = matching_hadiths.map(idx => [idx, getHadithAsaneed(HadithArr, idx)]);
+  matching_hadiths = matching_hadiths.map(idx => [idx, query(HadithArr, idx)]);
   afterProcess();
   openSearch();
   return;
@@ -803,33 +807,31 @@ function gradeToColor(grade) {
   var mapping = {
     1: "#002700",
     2: "#003f00",
-    3: "crimson",
-    4: "#005800",
-    5: "#008a00",
-    6: "#7cb840",
+    3: "#005800",
+    4: "#008a00",
+    5: "#7cb840",
+    6: "#d8c100",
     7: "#f0a30a",
-    8: "#f0a30a",
-    9: "#fa6800",
-    10: "#e51400",
-    11: "#a20025",
-    12: "#4b0011",
-    13: "silver",
-    14: "lightslategray",
-    15: "darkslategray"
+    8: "#fa6800",
+    9: "#e51400",
+    10: "#a20025",
+    11: "#4b0011",
+    12: "silver",
+    13: "lightslategray",
   };
   grade = simplifyArabic(grade);
   if (grade.includes("كذب")) {
-    return mapping[12];
-  } else if (grade.includes("متروك") || grade.includes("منكر")) {
     return mapping[11];
+  } else if (grade.includes("متروك") || grade.includes("منكر")) {
+    return mapping[10];
   } else if (
     grade.includes("تغير ") ||
     grade.includes("اختلط") ||
     grade.includes("وخلط ")
   ) {
-    return mapping[7];
+    return mapping[6];
   } else if (grade.includes("دلس") || grade.includes("تدليس")) {
-    return mapping[8];
+    return mapping[7];
   } else if (
     grade.includes("ثقه ثبت") ||
     grade.includes("حافظ") ||
@@ -839,9 +841,9 @@ function gradeToColor(grade) {
   ) {
     return mapping[2];
   } else if (grade.includes("ثقه")) {
-    return mapping[4];
+    return mapping[3];
   } else if (grade.includes("ضعيف") || grade.includes(" ضعف")) {
-    return mapping[10];
+    return mapping[9];
   } else if (
     grade.includes("مجهول") ||
     grade.includes("مستور") ||
@@ -849,19 +851,17 @@ function gradeToColor(grade) {
     grade.includes("لا تعرف") ||
     grade.includes("مختلف في صحبته")
   ) {
-    return mapping[13];
+    return mapping[12];
   } else if (grade.includes("لين") && !grade.includes("اولين")) {
-    return mapping[9];
+    return mapping[8];
   } else if (grade.includes("صدوق")) {
-    return mapping[5];
-  } else if (grade.includes("مخضرم")) {
-    return mapping[3];
+    return mapping[4];
   } else if (
     grade.includes("مقبول") ||
     grade.includes("شيخ ") ||
     grade.includes(" باس")
   ) {
-    return mapping[6];
+    return mapping[5];
   } else if (
     grade.includes("صحابي") ||
     grade.includes("صحابه") ||
@@ -871,11 +871,9 @@ function gradeToColor(grade) {
   ) {
     //for order preference
     return mapping[1];
-  } else if (grade === "") {
-    return mapping[15];
   } else {
     //Other
-    return mapping[14];
+    return mapping[13];
   }
 }
 
@@ -944,6 +942,12 @@ $(function () {
 
 $(function () {
   $("#clearRouteSwitch").click(function () {
+    prepareData();
+  });
+});
+
+$(function () {
+  $("#logScaleSwitch").click(function () {
     prepareData();
   });
 });
@@ -1245,6 +1249,10 @@ function clearRoute() {
   return document.getElementById("clearRouteSwitch").checked;
 }
 
+function logScale() {
+  return document.getElementById("logScaleSwitch").checked;
+}
+
 /* ---------- Utility functions --------*/
 function now() {
   return new Date().getTime();
@@ -1355,23 +1363,21 @@ function stringalign(hadithlist, assignments, reward, mispen, gappen, skwpen)
     // get the consensus sequence
     var consensus = get_consensus(alignments);
     // get coloring sets
-    if (colorLinksBySanad() && colorLinksByMatn()){
-      var sets = [];
-      for(var k = 0; k < assignments.length; k++){
-        var s = [];
-        var node = assignments[k]; //keys are local commonLink nodes
-        for(var h = 0; h < hadithlist.length; h++){
-          for(var asaneed = 0; asaneed < hadithlist[h][1].length; asaneed++){
-            var sanad = hadithlist[h][1][asaneed];
-            if(sanad.includes(node)){
-              s.push(scores.findIndex(i => i['seq'] === h));
-            }
+    var sets = [];
+    for(var k = 0; k < assignments.length; k++){
+      var s = [];
+      var node = assignments[k]; //keys are local commonLink nodes
+      for(var h = 0; h < hadithlist.length; h++){
+        for(var asaneed = 0; asaneed < hadithlist[h][1].length; asaneed++){
+          var sanad = hadithlist[h][1][asaneed];
+          if(sanad.includes(node)){
+            s.push(scores.findIndex(i => i['seq'] === h));
           }
         }
-        sets.unshift({ 'set': s, 'color': colorPool[k % colorPool.length]});
       }
-      colorset(alignments, sets);
+      sets.unshift({ 'set': s, 'color': colorPool[k % colorPool.length]});
     }
+    colorset(alignments, sets);
     //fix '>' if not colored
     for (var i = alignments.length - 1; i >= 0; i--) {
       for (var w = alignments[i].length - 1; w >= 0; w--) {
