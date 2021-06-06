@@ -24,7 +24,7 @@ var colorLinks = [];
 var processingSanad;
 var matching_hadiths = [];
 var num_books = 9;
-var BOOK_COMPILERS = ["5495", "6116", "5361","9712","2577","10859","","10935","484"]; //This must be in-order
+var BOOK_COMPILERS = ["5495", "6116", "5361","9712","2577","10859","3741","10935","484"]; //This must be in-order
 var align_reward = 4 , align_mispen = 2, align_gappen = 1, align_skwpen = 1;
 /*-------------- Main Code -------------*/
 window.onload = function () {
@@ -175,10 +175,9 @@ function prepareData() {
         var matn = getTakhreegIDs(getTakhreegByID(takhreegData, getHadithNum(HadithArr, hadithId)))[0];
         longest_sanad =
           sanad.length > longest_sanad ? sanad.length : longest_sanad;
+        var channel = (colorLinksBySanad()? sanad :
+                                            (colorLinksByMatn()? matn : ""));
         for (var n = 0; n < sanad.length - 1; n++) {
-          var channel = (colorLinksBySanad() && colorLinksByMatn())? [hadithId, chains[c]]: 
-                                                                     (colorLinksBySanad()? sanad : 
-                                                                                          (colorLinksByMatn()? matn : ""));
           updateCount(tempData, sanad[n + 1], sanad[n], hadithId, channel.toString());
         }
       }
@@ -200,7 +199,9 @@ function updateCount(data, source, target, hadith, channel) {
   var i = 0;
   //TODO: Optimize this
   while (!found && i < data.length) {
-    if (data[i][0] == source && data[i][1] === target && (data[i][4] === channel || colorLinksBySanad() && colorLinksByMatn())) {
+    if (data[i][0] === source                                                && 
+        data[i][1] === target                                                && 
+        (data[i][4] === channel || (colorLinksBySanad() && colorLinksByMatn()))) {
       // narrators index matءches
       found = true;
       data[i][2]++; //increment count of the link
@@ -217,8 +218,47 @@ function updateCount(data, source, target, hadith, channel) {
 function drawSankey(tempData) {
   links = [];
   colorBlindPool  = ['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabed4', '#469990', '#dcbeff', '#9A6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#a9a9a9', '#ffffff', '#000000'];
-  bluePurpleShades = ['#00aba9','#1ba1e2','#0050ef','#6a00ff','#aa00ff','#f472d0','#d80073','#76608a',"#008080","#00bfff","#00ffff","#191970","#663399","#6863D4","#8B008B","#9370DB","#AFEEEE","#ba55d3","#C71585","#da70d6","#db7093","#8e4585","#FA8072","#FF69B4","#FFC0CB","#0000cd",]
-  colorPool  = friendlyColor()? colorBlindPool:bluePurpleShades;
+  bluePurpleShades = ['#00aba9','#1ba1e2','#0050ef','#6a00ff','#aa00ff','#f472d0','#d80073','#76608a',"#00ffff","#191970","#663399","#6863D4","#8B008B","#9370DB","#AFEEEE","#ba55d3","#C71585","#da70d6","#db7093","#8e4585","#FA8072","#FF69B4","#FFC0CB","#0000cd",]
+  very_large_color_set = ["#1CE6FF", "#FF34FF", "#FF4A46", "#008941", "#006FA6", "#A30059",
+        "#FFDBE5", "#7A4900", "#0000A6", "#63FFAC", "#B79762", "#004D43", "#8FB0FF", "#997D87",
+        "#5A0007", "#809693", "#FEFFE6", "#1B4400", "#4FC601", "#3B5DFF", "#4A3B53", "#FF2F80",
+        "#61615A", "#BA0900", "#6B7900", "#00C2A0", "#FFAA92", "#FF90C9", "#B903AA", "#D16100",
+        "#DDEFFF", "#000035", "#7B4F4B", "#A1C299", "#300018", "#0AA6D8", "#013349", "#00846F",
+        "#372101", "#FFB500", "#C2FFED", "#A079BF", "#CC0744", "#C0B9B2", "#C2FF99", "#001E09",
+        "#00489C", "#6F0062", "#0CBD66", "#EEC3FF", "#456D75", "#B77B68", "#7A87A1", "#788D66",
+        "#885578", "#FAD09F", "#FF8A9A", "#D157A0", "#BEC459", "#456648", "#0086ED", "#886F4C",
+        
+        "#34362D", "#B4A8BD", "#00A6AA", "#452C2C", "#636375", "#A3C8C9", "#FF913F", "#938A81",
+        "#575329", "#00FECF", "#B05B6F", "#8CD0FF", "#3B9700", "#04F757", "#C8A1A1", "#1E6E00",
+        "#7900D7", "#A77500", "#6367A9", "#A05837", "#6B002C", "#772600", "#D790FF", "#9B9700",
+        "#549E79", "#FFF69F", "#201625", "#72418F", "#BC23FF", "#99ADC0", "#3A2465", "#922329",
+        "#5B4534", "#FDE8DC", "#404E55", "#0089A3", "#CB7E98", "#A4E804", "#324E72", "#6A3A4C",
+        "#83AB58", "#001C1E", "#D1F7CE", "#004B28", "#C8D0F6", "#A3A489", "#806C66", "#222800",
+        "#BF5650", "#E83000", "#66796D", "#DA007C", "#FF1A59", "#8ADBB4", "#1E0200", "#5B4E51",
+        "#C895C5", "#320033", "#FF6832", "#66E1D3", "#CFCDAC", "#D0AC94", "#7ED379", "#012C58",
+        
+        "#7A7BFF", "#D68E01", "#353339", "#78AFA1", "#FEB2C6", "#75797C", "#837393", "#943A4D",
+        "#B5F4FF", "#D2DCD5", "#9556BD", "#6A714A", "#001325", "#02525F", "#0AA3F7", "#E98176",
+        "#DBD5DD", "#5EBCD1", "#3D4F44", "#7E6405", "#02684E", "#962B75", "#8D8546", "#9695C5",
+        "#E773CE", "#D86A78", "#3E89BE", "#CA834E", "#518A87", "#5B113C", "#55813B", "#E704C4",
+        "#00005F", "#A97399", "#4B8160", "#59738A", "#FF5DA7", "#F7C9BF", "#643127", "#513A01",
+        "#6B94AA", "#51A058", "#A45B02", "#1D1702", "#E20027", "#E7AB63", "#4C6001", "#9C6966",
+        "#64547B", "#97979E", "#006A66", "#391406", "#F4D749", "#0045D2", "#006C31", "#DDB6D0",
+        "#7C6571", "#9FB2A4", "#00D891", "#15A08A", "#BC65E9", "#FFFFFE", "#C6DC99", "#203B3C",
+
+        "#671190", "#6B3A64", "#F5E1FF", "#FFA0F2", "#CCAA35", "#374527", "#8BB400", "#797868",
+        "#C6005A", "#3B000A", "#C86240", "#29607C", "#402334", "#7D5A44", "#CCB87C", "#B88183",
+        "#AA5199", "#B5D6C3", "#A38469", "#9F94F0", "#A74571", "#B894A6", "#71BB8C", "#00B433",
+        "#789EC9", "#6D80BA", "#953F00", "#5EFF03", "#E4FFFC", "#1BE177", "#BCB1E5", "#76912F",
+        "#003109", "#0060CD", "#D20096", "#895563", "#29201D", "#5B3213", "#A76F42", "#89412E",
+        "#1A3A2A", "#494B5A", "#A88C85", "#F4ABAA", "#A3F3AB", "#00C6C8", "#EA8B66", "#958A9F",
+        "#BDC9D2", "#9FA064", "#BE4700", "#658188", "#83A485", "#453C23", "#47675D", "#3A3F00",
+        "#061203", "#DFFB71", "#868E7E", "#98D058", "#6C8F7D", "#D7BFC2", "#3C3E6E", "#D83D66",
+        
+        "#2F5D9B", "#6C5E46", "#D25B88", "#5B656C", "#00B57F", "#545C46", "#866097", "#365D25",
+        "#252F99", "#00CCFF", "#674E60", "#FC009C", "#92896B"];
+
+  colorPool  = friendlyColor()? colorBlindPool: very_large_color_set;
 
   //filter cycles and add lables
   // graph = [..., [[key, Sum(w[1],w[2] ...w[m])], [n1,w[1]], [n2,w[2]], ..., [nm,w[m]] [h1,h2...] ], ...]
@@ -271,9 +311,9 @@ function drawSankey(tempData) {
         tooltip += "</tr></thead><tbody>";
         var hadith_set = []; //no duplicates are allowed
         for (var h = 0; h < node[j][2].length; h++) {
+          var hadith = node[j][2][h];
           if(!hadith_set.includes(hadith)){
             hadith_set.push(hadith);
-            var hadith = node[j][2][h];
             tooltip +=
               "<tr><td dir='rtl' onClick='loadHadith(" + hadith + ")'>";
 
@@ -328,6 +368,7 @@ function getColorAssignment(assignments, key){
   assignments.push(key);
   return assignments.length -1
 }
+
 /*-------------- Graph bulild functions ------------*/
 function getIndex(key, graph) {
   // returns the index of key in the graph
@@ -339,6 +380,20 @@ function getIndex(key, graph) {
     }
   }
   return -1;
+}
+
+
+function get_parents(key, graph){
+  var parents = [];
+  for (var i = graph.length - 1; i >= 0; i--) {
+    var node = graph[i];
+    for (var n = node.length - 1; n >= 1; n--) {
+      if(node[n][0] === key){
+        parents.push(node[0][0]);
+      }
+    }
+  }
+  return parents;
 }
 
 function isCyclicUtil(v, visited, recStack, graph) {
@@ -435,7 +490,7 @@ function build_graph(edges) {
    * Sqrt(c * n * lon(n)) and propagete the sum through the layers.
    */
   if(colorLinksBySanad() && colorLinksByMatn()){
-    graph = updateChannelsByCommonLink(graph);
+    graph = updateChannelsBySegments(graph);
   }
   var c = 1000; //constnant value 
   var roots = get_roots(graph);
@@ -488,33 +543,39 @@ function build_graph(edges) {
   return graph
 }
 
-function updateChannelsByCommonLink(prev_graph){
+function updateChannelsBySegments(prev_graph){
   var graph = prev_graph.slice();
   for(var node = 0; node < graph.length; node++){
     for(var n = 1; n < graph[node].length; n++){
-      var commonLink = graph[node][0][0]; //initial assumption, myself
-      var channel = graph[node][n][3].split(",");
-      var hadith = channel[0];
-      var sanad = channel.slice(1,channel.length,channel);
-      var teachers = sanad.slice(0, sanad.indexOf(graph[node][0][0]), sanad);
-      var t = teachers.length-1; 
-      var found = false;
-      while(t >= 0 && !found){
-        var tin_degreee = graph[getIndex(teachers[t], graph)][0][1];
-        if(tin_degreee == graph[node][n][1]){
-          commonLink = teachers[t];
+      var sanad = graph[node][n][3].split(",");
+      var commonLinks = get_sanad_commonlinks(sanad, graph); //initial assumption, myself
+      var node_index = sanad.indexOf(graph[node][0][0]);
+      for(var cl = commonLinks.length-1; cl >= 0; cl--){
+        var cl_index = sanad.indexOf(commonLinks[cl]);
+        var next_cl_index = sanad.indexOf(commonLinks[cl-1]);
+        if(cl_index >= node_index && node_index > next_cl_index){
+          graph[node][n][3] = sanad.slice(next_cl_index, cl_index+1, sanad).toString();
         }
-        else{
-          found = true;
-        }
-        t--;
       }
-      graph[node][n][3] = commonLink;
     }
   }
   return graph;
 }
 
+function get_sanad_commonlinks(sanad, graph){
+  var common_links = [sanad[sanad.length-1]];
+  for(var narrator = sanad.length-1; narrator > 0; narrator--){
+    var node = graph[getIndex(sanad[narrator], graph)];
+    var teacher = node.filter(neighbor=>neighbor[0] == sanad[narrator-1])[0];
+    if(get_parents(teacher[0],graph).length > 1){
+      //set channel
+      common_links.unshift(sanad[narrator-1]);
+    }
+  }
+  common_links.unshift(sanad[narrator]);
+  return common_links;
+
+}
 /*-------------- Data functions -------------*/
 
 function getHadithNum(data, index) {
@@ -535,18 +596,6 @@ function getHadithMatn(data, index) {
     matn = "";
   }
   return matn;
-}
-
-function parseNarrative(segments) {
-  var term_index = 3;
-  var narrator_index = 8;
-  if (segments.length < 11) {
-    term_index = 1;
-    narrator_index = 4;
-  }
-  var term = simplifyArabic(segments[term_index]);
-  var narrator = segments[narrator_index].match(/ربط="(.*)"/)[0].split('"')[1];
-  return [term, narrator];
 }
 
 function oneIndex(str, m, i) {
@@ -1319,10 +1368,10 @@ var simplifyArabic = function (str) {
   ).replace(/ +(?= )/g, "");
 };
 
-function stringalign(hadithlist, assignments, reward, mispen, gappen, skwpen)
+function stringalign(hadithlist, madarat, reward, mispen, gappen, skwpen)
 {  
   // Convert the list of matching hadiths to their matns
-  var strlist = hadithlist.map(x => getHadithMatn(HadithArr, x[0]).replace(/\n/g, "").replace(/\r/g, "").replace(/\t/g, ""));
+  var strlist = hadithlist.map(x => getHadithAsaneed(HadithArr, x[0])[0][getHadithAsaneed(HadithArr, x[0])[0].length-1]+ " " + getHadithMatn(HadithArr, x[0]).replace(/\n/g, "").replace(/\r/g, "").replace(/\t/g, ""));
 
   // If only a single hadith, then never mind
   if (strlist.length > 1){
@@ -1367,25 +1416,27 @@ function stringalign(hadithlist, assignments, reward, mispen, gappen, skwpen)
     var consensus = get_consensus(alignments);
     // get coloring sets
     var sets = [];
-    for(var k = 0; k < assignments.length; k++){
+    for(var k = 0; k < madarat.length; k++){
       var s = [];
-      var node = assignments[k]; //keys are local commonLink nodes
+      var madar = madarat[k];
       for(var h = 0; h < hadithlist.length; h++){
-        for(var asaneed = 0; asaneed < hadithlist[h][1].length; asaneed++){
-          var sanad = hadithlist[h][1][asaneed];
-          if(sanad.includes(node)){
+        for(var i = 0; i < hadithlist[h][1].length; i++){
+          if(hadithlist[h][1][i].toString().includes(madar)){
             s.push(scores.findIndex(i => i['seq'] === h));
           }
         }
       }
-      sets.unshift({ 'set': s, 'color': colorPool[k % colorPool.length]});
+      sets.push({ 'madar': madar, 'set': s, 'color': colorPool[k % colorPool.length]});
     }
-    colorset(alignments, sets);
-    //fix '>' if not colored
+    console.log(sets);
+    sets.sort((a,b) =>
+          b['set'].length
+        - a['set'].length);
+    alignments = colorset(alignments, sets);
     for (var i = alignments.length - 1; i >= 0; i--) {
       for (var w = alignments[i].length - 1; w >= 0; w--) {
         if(!alignments[i][w].includes(">")){
-          alignments[i][w] = ">"+alignments[i][w]
+          alignments[i][w] = ">"+alignments[i][w];
         }
       }
     }
@@ -1571,29 +1622,27 @@ function mode(arr){
 }
 
 function colorset(alignments, setlist){
+  var colorings = alignments.slice().map(x=>x.slice());
   for(var s = 0; s < setlist.length; s++){
     var color = setlist[s]['color'];
     var set = setlist[s]['set'];
     for(var i = 0; i < alignments[0].length; i++){
       var is_local_consensus = alignments[set[0]][i];
       for(var seq = 0; seq < set.length; seq++){
-        if (alignments[set[seq]][i] != is_local_consensus){
-          is_local_consensus = 0;
+        if (alignments[set[seq]][i] !== is_local_consensus){
+          is_local_consensus = false;
         }
       }
-      if (is_local_consensus !== 0){
+      if (is_local_consensus !== false){
         for(var seq = 0; seq < set.length; seq++){
-          if (alignments[set[seq]][i].split(" ")[0] != 'style' && alignments[set[seq]][i].split(" ")[0] != ''){
-            alignments[set[seq]][i] = 'style = "background-color: '+hexToRgba(color)+'">'+alignments[set[seq]][i]; // not colored
-          }
-          else if(alignments[set[seq]][i].split(" ")[0] == ''){
-            //empty
-            alignments[set[seq]][i] = 'style = "background-color: '+hexToRgba(color)+'">';
+          if (colorings[set[seq]][i].split(" ")[0] != 'style'){
+            colorings[set[seq]][i] = 'style = "background-color: '+hexToRgba(color)+'">'+ colorings[set[seq]][i]; // not colored
           }
         }
       }
     }
   }
+  return colorings;
 }
 
 function hexToRgba(hex) {
