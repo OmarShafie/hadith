@@ -24,7 +24,7 @@ var colorLinks = [];
 var processingSanad;
 var matching_hadiths = [];
 var num_books = 9;
-var BOOK_COMPILERS = ["5495", "6116", "5361","9712","2577","10859","3741","10935","484"]; //This must be in-order
+var BOOK_COMPILERS = [["5495"], ["6116"], ["5361"],["9712"],["2577"],["10859"],["3741"],["13950","10935"],["484"]]; //This must be in-order
 var align_reward = 4 , align_mispen = 2, align_gappen = 1, align_skwpen = 1;
 /*-------------- Main Code -------------*/
 window.onload = function () {
@@ -163,7 +163,6 @@ function prepareData() {
   var tempData = [];
   var chunk = 300;
   var i = 0;
-  longest_sanad = 0;
 
   function loop() {
     var cnt = chunk;
@@ -173,8 +172,6 @@ function prepareData() {
       for (var c = 0; c < chains.length; c++) {
         var sanad = chains[c];
         var matn = getTakhreegIDs(getTakhreegByID(takhreegData, getHadithNum(HadithArr, hadithId)))[0];
-        longest_sanad =
-          sanad.length > longest_sanad ? sanad.length : longest_sanad;
         var channel = (colorLinksBySanad()? sanad :
                                             (colorLinksByMatn()? matn : ""));
         for (var n = 0; n < sanad.length - 1; n++) {
@@ -269,8 +266,8 @@ function drawSankey(tempData) {
   //result_graph = result_graph.slice(0, parseInt(args[numNarrators]["value"]));
 
 
-  layers_count = new Array(longest_sanad); // used as indication of height of sankey
-  for(var l = 0; l < longest_sanad; l++){
+  layers_count = new Array(longest_sanad +1); // used as indication of height of sankey
+  for(var l = 0; l <= longest_sanad; l++){
     layers_count[l] = [];
   }
 
@@ -473,10 +470,12 @@ function get_roots(graph){
   var roots = [];
   for (var i = 0; i < num_books; i++) {
     if (document.getElementById(i).selected) {
-      var r = getIndex(BOOK_COMPILERS[i],graph);
-      if (r > -1 && graph.filter(node=> node.slice(1,node.length, node).filter(neighbor=> neighbor[0]===BOOK_COMPILERS[i]).length > 0).length == 0){
-        
-        roots.push(r);
+      for(var source = 0; source < BOOK_COMPILERS[i].length; source++){
+        var r = getIndex(BOOK_COMPILERS[i][source],graph);
+        //root in graph and with no parents
+        if (r > -1 && get_parents(BOOK_COMPILERS[i][source], graph).length == 0){
+          roots.push(r);
+        }
       }
     }
   }
@@ -486,6 +485,7 @@ function get_roots(graph){
 function build_graph(edges) {
   // graph = [..., [[key, Sum(w[1],w[2] ...w[m])], [n1,w[1]], [n2,w[2]], ..., [nm,w[m]] ], ...]
   var graph = cycleFilter(edges);
+  ongest_sanad = 0;
   /* Adjust the weights of the graph to scale first layer to
    * Sqrt(c * n * lon(n)) and propagete the sum through the layers.
    */
@@ -498,9 +498,10 @@ function build_graph(edges) {
   var queue = [];
   //A boolean array indicating whether we have already visited a node
   var visited_ancistors = [];
+
+  //weights
   for (var i = 0; i < graph.length; i++) {
     graph[i][0].push(0);
-    graph[i][0][2] = 0; //redundant
     visited_ancistors.push(0);
   }
   for (var r = 0; r < roots.length; r++) {
@@ -508,14 +509,14 @@ function build_graph(edges) {
         var w = graph[roots[r]][neighbor][1];
         var neighbor_index = getIndex(graph[roots[r]][neighbor][0], graph);
         var formula = logScale()? Math.sqrt(c * Math.log(w+1)): w;
-        visited_ancistors[neighbor_index] += graph[roots[r]][neighbor][2].length;
+        visited_ancistors[neighbor_index] += 1;
         graph[neighbor_index][0][2] += formula;
         graph[roots[r]][0][2]       += formula;
         graph[roots[r]][neighbor][1] = formula;
          // possible that another root has already visited
-        if (visited_ancistors[neighbor_index] == graph[neighbor_index][0][1]) {
+        if (visited_ancistors[neighbor_index] === get_parents(graph[roots[r]][neighbor][0], graph).length) {
           queue.push(neighbor_index);
-          graph[neighbor_index][0].push(1); 
+          graph[neighbor_index][0].push(1);
         }
       }    
     graph[roots[r]][0].push(0);
@@ -527,13 +528,14 @@ function build_graph(edges) {
       for (var neighbor = 1; neighbor < graph[node].length; neighbor++) {
         var neighbor_index = getIndex(graph[node][neighbor][0], graph);
         var frac = graph[node][neighbor][2].length / graph[node][0][1];
-        visited_ancistors[neighbor_index] += graph[node][neighbor][2].length;
+        visited_ancistors[neighbor_index] += 1;
         graph[node][neighbor][1]     = frac * graph[node][0][2];
         graph[neighbor_index][0][2] += frac * graph[node][0][2];
         check_sum                   += frac;
-        if (visited_ancistors[neighbor_index] == graph[neighbor_index][0][1]) {
+        if (visited_ancistors[neighbor_index] === get_parents(graph[node][neighbor][0], graph).length) {
           queue.push(neighbor_index);
-          graph[neighbor_index][0].push(graph[node][0][3]+1); 
+          graph[neighbor_index][0].push(graph[node][0][3]+1);
+          longest_sanad = graph[node][0][3]+1 > longest_sanad ? graph[node][0][3]+1 : longest_sanad;
         }
       }
       if (check_sum != 1 && graph[node].length > 1){
@@ -566,8 +568,7 @@ function get_sanad_commonlinks(sanad, graph){
   var common_links = [sanad[sanad.length-1]];
   for(var narrator = sanad.length-1; narrator > 0; narrator--){
     var node = graph[getIndex(sanad[narrator], graph)];
-    var teacher = node.filter(neighbor=>neighbor[0] == sanad[narrator-1])[0];
-    if(get_parents(teacher[0],graph).length > 1){
+    if(get_parents(sanad[narrator-1],graph).length > 1 || graph[getIndex(sanad[narrator-1], graph)].length > 2){
       //set channel
       common_links.unshift(sanad[narrator-1]);
     }
@@ -579,19 +580,19 @@ function get_sanad_commonlinks(sanad, graph){
 /*-------------- Data functions -------------*/
 
 function getHadithNum(data, index) {
-  return data[index][0];
+  return data[index]['hadithID'];
 }
 
 function getTitle(data, index) {
-  return data[index][2];
+  return data[index]['BookID'];
 }
 
 function getHadithTxt(data, index) {
-  return data[index][4];
+  return data[index]['hadithTxt'];
 }
 
 function getHadithMatn(data, index) {
-  var matn = data[index][5];
+  var matn = data[index]['Matn'];
   if (!matn.length){
     matn = "";
   }
@@ -672,7 +673,7 @@ function cleanAsaneed(asaneed){
   return s;
 }
 function getHadithAsaneed(data, index) {
-  return cleanAsaneed(data[index][3]);
+  return cleanAsaneed(data[index]['asaneed']);
 }
 
 function recursiveSearch(arr, x, start, end, cmpFn) {
@@ -931,10 +932,10 @@ function gradeToColor(grade) {
 
 /****************** Library **********************/
 // Source: Kaggle Hadith Data Set
-var URL = "https://raw.githubusercontent.com/OmarShafie/hadith/master/";
-var hadithURL    = URL + "data/nine_books_data.csv";
-var takhreegURL  = URL + "data/takhreeg_data.csv";
-var narratorsURL = URL + "data/narrators-utf8.csv";
+var dir = "https://raw.githubusercontent.com/OmarShafie/hadith/master";
+var hadithURL    = dir + "/data/nine_books_data.csv";
+var takhreegURL  = dir + "/data/takhreeg_data.csv";
+var narratorsURL = dir + "/data/narrators-utf8.csv";
 
 function buildErrorMessage(e) {
   return e.message;
@@ -942,15 +943,14 @@ function buildErrorMessage(e) {
 
 //Parse Parameters
 var inputType = "remote";
+var input_file = hadithURL;
 var stepped    = 0,
     rowCount   = 0,
     errorCount = 0,
     firstError;
 var start, end;
-var firstRun = true;
+var new_upload = true;
 var maxUnparseLength = 10000;
-
-var isParsingDone = false;
 
 var HadithArr    = [];
 var result_graph = [];
@@ -1058,28 +1058,25 @@ $(function () {
       }
     }
 
-    if (!firstRun) {
+    if (!new_upload) {
       console.log("--------------------------------------------------");
-    } else {
-      firstRun = false;
-    }
-    if (!isParsingDone) {
+      main();
+    } 
+    else {
       var hadithData;
       var narratorsData;
       var takhreegData;
-      var config = buildConfig(parseHadith);
-      Papa.parse(narratorsURL, config);
+      var config = buildConfig(parseNarrators, inputType);
+      Papa.parse(input_file, config);
 
       if (config.worker || config.download)
         document.getElementById("btnMessage").innerHTML = "Running...";
-    } else {
-      main();
     }
   });
 });
 
-function parseHadith(results) {
-  document.getElementById("btnMessage").innerHTML = "Parsing Hadith...";
+function parseNarrators(results) {
+  document.getElementById("btnMessage").innerHTML = "Parsing Narrators...";
 
   if (results && results.errors) {
     if (results.errors) {
@@ -1088,8 +1085,8 @@ function parseHadith(results) {
     }
     if (results.data && results.data.length > 0) rowCount = results.data.length;
   }
-  narratorsData = results.data;
-  Papa.parse(hadithURL, buildConfig(parseTakhreeg));
+  hadithData = results.data;
+  Papa.parse(narratorsURL, buildConfig(parseTakhreeg, "remote"));
 }
 
 function parseTakhreeg(results) {
@@ -1102,8 +1099,8 @@ function parseTakhreeg(results) {
     }
     if (results.data && results.data.length > 0) rowCount = results.data.length;
   }
-  hadithData = results.data;
-  Papa.parse(takhreegURL, buildConfig(completeParse));
+  narratorsData = results.data;
+  Papa.parse(takhreegURL, buildConfig(completeParse, "remote"));
 }
 
 
@@ -1118,7 +1115,7 @@ function completeParse(results) {
     }
     if (results.data && results.data.length > 0) rowCount = results.data.length;
   }
-  isParsingDone = true;
+  new_upload = false;
   takhreegData = results.data;
 
   autocomplete(document.getElementById("pattern-query"), narratorsData);
@@ -1131,6 +1128,7 @@ function check_dataset_format(data){
   var format =  ["hadithID", "BookID", "title", "asaneed", "hadithTxt", "Matn"];
   if(!data.length){
       document.getElementById("data-error").innerHTML = "Dataset is empty!";
+      return;
   }
   else {
     for(var col = 0; col < data[0].length; col++){
@@ -1138,25 +1136,21 @@ function check_dataset_format(data){
         console.log("Used format:", data[0]);
         document.getElementById("data-error").innerHTML = 
           'Dataset format Mismatch! \nUse ["", "hadithID", "BookID", "hadithNum", "title", "asaneed", "hadithTxt"] format!';
+        return;
         }
       }
   }
+  document.getElementById("data-error").innerHTML = "";
 }
 
-function buildConfig(completeFn) {
+function buildConfig(completeFn, input_type) {
   return {
-    delimiter: $("#delimiter").val(),
-    header: $("#header").prop("checked"),
-    dynamicTyping: $("#dynamicTyping").prop("checked"),
-    skipEmptyLines: $("#skipEmptyLines").prop("checked"),
-    preview: parseInt($("#preview").val() || 0),
-    step: $("#stream").prop("checked") ? stepFn : undefined,
-    encoding: $("#encoding").val(),
-    worker: $("#worker").prop("checked"),
-    comments: $("#comments").val(),
+    header: true,
+    dynamicTyping: true,
+    worker: true,
     complete: completeFn,
     error: errorFn,
-    download: inputType == "remote"
+    download: input_type == "remote"
   };
 }
 
@@ -1368,10 +1362,12 @@ var simplifyArabic = function (str) {
   ).replace(/ +(?= )/g, "");
 };
 
-function stringalign(hadithlist, madarat, reward, mispen, gappen, skwpen)
+function stringalign(matching, madarat, reward, mispen, gappen, skwpen)
 {  
   // Convert the list of matching hadiths to their matns
-  var strlist = hadithlist.map(x => getHadithAsaneed(HadithArr, x[0])[0][getHadithAsaneed(HadithArr, x[0])[0].length-1]+ " " + getHadithMatn(HadithArr, x[0]).replace(/\n/g, "").replace(/\r/g, "").replace(/\t/g, ""));
+  var hadithlist = matching.filter(h=>getHadithMatn(HadithArr, h[0]) !== "");
+  var strlist = hadithlist.map(x => getHadithAsaneed(HadithArr, x[0])[0][getHadithAsaneed(HadithArr, x[0])[0].length-1]+ " " + 
+                                    getHadithMatn(HadithArr, x[0]).replace(/\n|\r|\t/g, ""));
 
   // If only a single hadith, then never mind
   if (strlist.length > 1){
@@ -1405,7 +1401,6 @@ function stringalign(hadithlist, madarat, reward, mispen, gappen, skwpen)
     var alignments = [];
     alignments.push(pairs[s_c][scores[1]['seq']]);
     alignments.push(pairs[scores[1]['seq']][s_c]);
-    
     // progressivly add the rest using the previous alignment as a guide
     for(var s=2; s<scores.length; s++){
       var guide = pairs[s_c][scores[s]['seq']];
@@ -1428,11 +1423,13 @@ function stringalign(hadithlist, madarat, reward, mispen, gappen, skwpen)
       }
       sets.push({ 'madar': madar, 'set': s, 'color': colorPool[k % colorPool.length]});
     }
-    console.log(sets);
     sets.sort((a,b) =>
           b['set'].length
         - a['set'].length);
+//    console.log(sets);
+    
     alignments = colorset(alignments, sets);
+
     for (var i = alignments.length - 1; i >= 0; i--) {
       for (var w = alignments[i].length - 1; w >= 0; w--) {
         if(!alignments[i][w].includes(">")){
@@ -1459,14 +1456,18 @@ function stringalign(hadithlist, madarat, reward, mispen, gappen, skwpen)
     $("#card").html(alignment_table);
   }
 }
+
 function twostringalign(ainstr, binstr, reward, mispen, gappen, skwpen)
 {
   //matn, clean arabic, space, diacretics, punctuations, multiple spaces
   // This is a word based Sequence Alignment using Dynamic Programming
   // Modified implementation of wunsch-needleman from https://berthub.eu/nwunsch/
-  ain = ainstr.replace(/،/g, "").replace(/\./g, "").replace(/  /g, " ").replace(/^ /g, "").split(' ');
-  bin = binstr.replace(/،/g, "").replace(/\./g, "").replace(/^ /g, "").replace(/  /g, " ").split(' ');
-
+  var ain = ainstr.replace(/:|؛|،|\./g, "").replace(/ +(?= )/g, "").trim()
+  var bin = binstr.replace(/:|؛|،|\./g, "").replace(/ +(?= )/g, "").trim()
+  var s_ain = simplifyArabic(ain).split(' ');
+  var s_bin = simplifyArabic(bin).split(' ');
+  ain = ain.split(' ');
+  bin = bin.split(' ');
   var i, j ,k;
   var dn,rt,dg;
   var ia = ain.length, ib = bin.length;
@@ -1488,7 +1489,7 @@ function twostringalign(ainstr, binstr, reward, mispen, gappen, skwpen)
    for (i=1;i<=ia;i++) for (j=1;j<=ib;j++) {
        dn = cost[i-1][j] + ((j == ib)? skwpen : gappen);
        rt = cost[i][j-1] + ((i == ia)? skwpen : gappen);
-       dg = cost[i-1][j-1] + ((ain[i-1] == bin[j-1])? reward : mispen);
+       dg = cost[i-1][j-1] + ((s_ain[i-1] == s_bin[j-1])? reward : mispen);
        cost[i][j] = Math.min(dn,rt,dg);
    }
 
@@ -1501,23 +1502,23 @@ function twostringalign(ainstr, binstr, reward, mispen, gappen, skwpen)
        if (i>0) dn = cost[i-1][j] + ((j==ib)? skwpen : gappen);
        if (j>0) rt = cost[i][j-1] + ((i==ia)? skwpen : gappen);
        if (i>0 && j>0) dg = cost[i-1][j-1] +
-                          ((ain[i-1] == bin[j-1])? reward : mispen);
+                          ((s_ain[i-1] == s_bin[j-1])? reward : mispen);
        if (dg <= Math.min(dn,rt)) {
-           aout[k] = ain[i-1];
-           bout[k] = bin[j-1];
+           aout.push(ain[i-1]);
+           bout.push(bin[j-1]);
            summary[k++] = ((ain[i-1] == bin[j-1])? '=' : '!');
            i--; j--;
        }
        else if (dn < rt) {
           // replace by a gap of equal length
-           aout[k] = ain[i-1];
-           bout[k] = simplifyArabic(ain[i-1]).replace(/./g,'.'); 
+           aout.push(ain[i-1]);
+           bout.push("-");//simplifyArabic(ain[i-1]).replace(/./g,'.'); 
            summary[k++] = ' ';           
            i--;
        }
        else {
-           aout[k] = simplifyArabic(bin[j-1]).replace(/./g,'.');
-           bout[k] = bin[j-1];
+           aout.push("-");//simplifyArabic(bin[j-1]).replace(/./g,'.');
+           bout.push(bin[j-1]);
            summary[k++] = ' ';
            j--;
        }
@@ -1546,28 +1547,30 @@ function twostringalign(ainstr, binstr, reward, mispen, gappen, skwpen)
 }
 
 
-function add_to_alignmentset(prev_alignments, new_alignment, guide){
+function add_to_alignmentset(prev_alignments, new_alignment, new_guide){
   //copy to a new addresses
   var alignments = prev_alignments.slice();
   var origin = alignments[0].slice();
   var adjusted_alignment = new_alignment.slice();
+  var guide = new_guide.slice();
 
   // Origin and guide are the same sequence but with diffrent lengths due to gaps
   var i=0; j=0;
-  while (i < origin.length-1 || j < guide.length-1) {
-    if (i == origin.length-1){
+  while (i < origin.length || j < guide.length) {
+    //console.log(origin[i], adjusted_alignment[j]);
+    if (i == origin.length){
       // The origin has ended, but guide hasn't, add the guide jth word (gap) to all alignments end
       for(var a = 0; a< alignments.length; a++){
         alignments[a].push(guide[j]);
       }
       origin.push(guide[j]);
     }
-    else if (j == guide.length-1) {
+    else if (j == guide.length) {
       // The guide has ended, but origin hasn't, add the origin ith word (gap) to guide end 
       adjusted_alignment.push(origin[i]);
       guide.push(origin[i]);
     }
-    else if (origin[i] != guide[j] && !(origin[i][0]=="." && guide[j][0]==".")) {
+    else if (simplifyArabic(origin[i]) != simplifyArabic(guide[j]) && !(origin[i][0]=="." && guide[j][0]==".")) {
       if (origin[i][0]=="."){
         adjusted_alignment.splice(j, 0, origin[i]);
         guide.splice(j, 0, origin[i]);
@@ -1583,6 +1586,11 @@ function add_to_alignmentset(prev_alignments, new_alignment, guide){
     j++;
   }
   alignments.push(adjusted_alignment);
+  if(origin.join(" ") !== guide.join(" ")){
+    console.log("ALIGNMENT OUT PUT Mismatch");
+    console.log(origin.join(" "));
+    console.log(guide.join(" "));
+  }
   return alignments;
 }
 
@@ -1602,7 +1610,7 @@ function get_consensus(seqs){
     for(var s = 0; s <seqs.length; s++){
       // if it is equal to the mode, then it can be deleted
       if (seqs[s][i] == mode_item){
-        seqs[s][i] = "";
+        seqs[s][i] = simplifyArabic(mode_item).replace(/./g,'.');
       }
       // if the mode is not a gap, then the sequence made a deletion
       else if (seqs[s][i][0] == "." && mode_item[0] != "."){
@@ -1622,27 +1630,33 @@ function mode(arr){
 }
 
 function colorset(alignments, setlist){
-  var colorings = alignments.slice().map(x=>x.slice());
+  var colorings = alignments.slice().map(x=>[x.slice(),0]);
   for(var s = 0; s < setlist.length; s++){
     var color = setlist[s]['color'];
     var set = setlist[s]['set'];
-    for(var i = 0; i < alignments[0].length; i++){
-      var is_local_consensus = alignments[set[0]][i];
+    if(set.length > 0){
       for(var seq = 0; seq < set.length; seq++){
-        if (alignments[set[seq]][i] !== is_local_consensus){
-          is_local_consensus = false;
-        }
+        colorings[set[seq]][1] = colorings[set[seq]][1]? colorings[set[seq]][1]:s;
       }
-      if (is_local_consensus !== false){
+      for(var i = 0; i < alignments[0].length; i++){
+        var is_local_consensus = alignments[set[0]][i];
         for(var seq = 0; seq < set.length; seq++){
-          if (colorings[set[seq]][i].split(" ")[0] != 'style'){
-            colorings[set[seq]][i] = 'style = "background-color: '+hexToRgba(color)+'">'+ colorings[set[seq]][i]; // not colored
+          if (alignments[set[seq]][i] !== is_local_consensus){
+            is_local_consensus = false;
+          }
+        }
+        if (is_local_consensus !== false){
+          for(var seq = 0; seq < set.length; seq++){
+            if (colorings[set[seq]][0][i].split(" ")[0] != 'style'){
+              colorings[set[seq]][0][i] = 'style = "background-color: '+hexToRgba(color)+'">'+ colorings[set[seq]][0][i]; // not colored
+            }
           }
         }
       }
     }
   }
-  return colorings;
+  colorings.sort((a,b)=> a[1] - b[1]);
+  return colorings.map(p=>p[0]);
 }
 
 function hexToRgba(hex) {
