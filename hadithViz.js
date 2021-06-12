@@ -38,25 +38,31 @@ function main() {
    * from the hadith data from the selected books.
    */
 
-  HadithArr = [];
-  // TODO: Check book Indices
-  var books = {
-    0: [1, 7411],
-    1: [7411, 15076],
-    2: [15076, 16857],
-    3: [16857, 22637],
-    4: [22637, 27897],
-    5: [27897, 32309],
-    6: [32309, 35850],
-    7: [35850, 40317],
-    8: [40317, 68561]
-  };
+  if(inputType == "remote"){
+    HadithArr = [];
+    // TODO: Check book Indices
+    var books = {
+      0: [1, 7411],
+      1: [7411, 15076],
+      2: [15076, 16857],
+      3: [16857, 22637],
+      4: [22637, 27897],
+      5: [27897, 32309],
+      6: [32309, 35850],
+      7: [35850, 40317],
+      8: [40317, 68561]
+    };
 
-  for (var i = 0; i < num_books; i++) {
-    if (document.getElementById(i).selected) {
-      HadithArr = HadithArr.concat(hadithData.slice(books[i][0], books[i][1]));
+    for (var i = 0; i < num_books; i++) {
+      if (document.getElementById(i).selected) {
+        HadithArr = HadithArr.concat(hadithData.slice(books[i][0], books[i][1]));
+      }
     }
   }
+  else {
+    HadithArr = hadithData.slice()
+  }
+  
   process(HadithArr, afterProcess);
 }
 
@@ -171,6 +177,8 @@ function prepareData() {
       var chains = matching_hadiths[i][1];
       for (var c = 0; c < chains.length; c++) {
         var sanad = chains[c];
+        console.log(hadithId);
+        // take the first element of the takhreeg group is enough to indicate uniqueness
         var matn = getTakhreegIDs(getTakhreegByID(takhreegData, getHadithNum(HadithArr, hadithId)))[0];
         var channel = (colorLinksBySanad()? sanad :
                                             (colorLinksByMatn()? matn : ""));
@@ -276,11 +284,11 @@ function drawSankey(tempData) {
   for (var i = 0; i < result_graph.length; i++) {
     var node = result_graph[i];
     var narrator = lookupNarrator(node[0][0]);
-    var name = narrator[1]
+    var name = narrator['name']
       .split(" ")
       .slice(0, 4)
       .join(" ");
-    var s = narrator[0] + " " + name;
+    var s = narrator['rawi_index'] + " " + name;
     names.push(s);
   }
 
@@ -584,7 +592,7 @@ function getHadithNum(data, index) {
 }
 
 function getTitle(data, index) {
-  return data[index]['BookID'];
+  return data[index]['title'];
 }
 
 function getHadithTxt(data, index) {
@@ -593,49 +601,18 @@ function getHadithTxt(data, index) {
 
 function getHadithMatn(data, index) {
   var matn = data[index]['Matn'];
-  if (!matn.length){
+  if (matn && !matn.length){
     matn = "";
   }
   return matn;
 }
 
-function oneIndex(str, m, i) {
-  return m.index + 1;
-}
-
-function overlapMatching(str, regexps, nextStartIndexFn) {
-  var res = [];
-  var minStrIndex = str.length;
-  var minReIndex = -1;
-  var matching = [];
-  for (var i = 0; i < regexps.length; i++) {
-    var m = regexps[i].exec(str);
-    var index = m.index;
-    matching.push(m);
-    if (index < minStrIndex) {
-      minStrIndex = index;
-      minReIndex = i;
-    }
-  }
-  if (minReIndex >= 0) {
-    var m = matching[minReIndex];
-    res = res.concat(
-      overlapMatching(
-        str.slice(nextStartIndexFn(str, m, minReIndex)),
-        regexps,
-        nextStartIndexFn
-      )
-    );
-  }
-  return res;
-}
-
 function getTakhreegByID(data, mainID) {
-  var found = recursiveSearch(data, mainID, 1, data.length - 1, function (
+  var found = recursiveSearch(data, mainID, 0, data.length - 1, function (
     x,
     y
   ) {
-    return parseInt(x[0]) - parseInt(y);
+    return parseInt(x['hadithID']) - parseInt(y);
   });
   if (found == -1) {
     return [];
@@ -644,7 +621,7 @@ function getTakhreegByID(data, mainID) {
 }
 
 function getTakhreegIDs(takhreeg) {
-  return takhreeg[1].split(",")
+  return takhreeg["takhreegIDs"].split(",")
 }
 
 function loadHadith(hadith){
@@ -703,7 +680,7 @@ function lookupNarrator(id) {
     0,
     narratorsData.length - 1,
     function (x, y) {
-      return parseInt(x[0]) - parseInt(y);
+      return parseInt(x['rawi_index']) - parseInt(y);
     }
   );
   if (found == -1) {
@@ -719,7 +696,7 @@ function lookupHadith(id) {
     x,
     y
   ) {
-    return parseInt(x[0]) - parseInt(y);
+    return parseInt(x['hadithID']) - parseInt(y);
   });
   if (found == -1) {
     // else create a narrator data
@@ -734,7 +711,7 @@ function lookupHadithIndex(id) {
     x,
     y
   ) {
-    return parseInt(x[0]) - parseInt(y);
+    return parseInt(x['hadithID']) - parseInt(y);
   });
   if (found == -1) {
     // else create a narrator data
@@ -745,10 +722,7 @@ function lookupHadithIndex(id) {
 
 function getNarratorGrade(index) {
   var narrator = lookupNarrator(index);
-  if (narrator.length === 3) {
-    return narrator[2];
-  }
-  return "NA";
+  return narrator['grade'];
 }
 
 function getNarratorFromName(tag) {
@@ -775,7 +749,7 @@ function gradeAnalysis() {
     15: [0, []]
   };
   for (var narr = 0; narr < narratorsData.length; narr++) {
-    var origin_grade = narratorsData[narr][2];
+    var origin_grade = narratorsData[narr]['grade'];
     var grade = simplifyArabic(origin_grade);
 
     if (grade.includes("كذب")) {
@@ -1010,8 +984,8 @@ $(function () {
     html2canvas(element, {
         letterRendering: true,
     }).then(function(canvas){
-                    var imgageData = canvas.toDataURL("image/png");
-            var newData = imgageData.replace(/^data:image\/png/, "data:application/octet-stream");
+                    var imageData = canvas.toDataURL("image/png");
+            var newData = imageData.replace(/^data:image\/png/, "data:application/octet-stream");
             $("<a>", {href:newData, download:"Proof1.png",on:{click:function(){$(this).remove()}}})
             .appendTo("body")[0].click()
      })
@@ -1121,7 +1095,7 @@ function completeParse(results) {
   autocomplete(document.getElementById("pattern-query"), narratorsData);
   enableButton();
 
-  check_dataset_format(hadithData);
+  check_dataset_format(Object.keys(hadithData[0]));
 }
 
 function check_dataset_format(data){
@@ -1131,11 +1105,11 @@ function check_dataset_format(data){
       return;
   }
   else {
-    for(var col = 0; col < data[0].length; col++){
-      if(data[0][col] !== format[col]){
-        console.log("Used format:", data[0]);
+    for(var col = 0; col < format.length; col++){
+      if(!data.includes(format[col])){
+        console.log("Used format:", data);
         document.getElementById("data-error").innerHTML = 
-          'Dataset format Mismatch! \nUse ["", "hadithID", "BookID", "hadithNum", "title", "asaneed", "hadithTxt"] format!';
+          'Dataset format Mismatch! \nMissing: '+format[col];
         return;
         }
       }
@@ -1146,8 +1120,6 @@ function check_dataset_format(data){
 function buildConfig(completeFn, input_type) {
   return {
     header: true,
-    dynamicTyping: true,
-    worker: true,
     complete: completeFn,
     error: errorFn,
     download: input_type == "remote"
@@ -1366,8 +1338,7 @@ function stringalign(matching, madarat, reward, mispen, gappen, skwpen)
 {  
   // Convert the list of matching hadiths to their matns
   var hadithlist = matching.filter(h=>getHadithMatn(HadithArr, h[0]) !== "");
-  var strlist = hadithlist.map(x => getHadithAsaneed(HadithArr, x[0])[0][getHadithAsaneed(HadithArr, x[0])[0].length-1]+ " " + 
-                                    getHadithMatn(HadithArr, x[0]).replace(/\n|\r|\t/g, ""));
+  var strlist = hadithlist.map(x => getHadithMatn(HadithArr, x[0]).replace(/\n|\r|\t/g, ""));
 
   // If only a single hadith, then never mind
   if (strlist.length > 1){
@@ -1385,12 +1356,13 @@ function stringalign(matching, madarat, reward, mispen, gappen, skwpen)
     for(var s=0; s<strlist.length-1; s++){
       for(var s2=s+1; s2<strlist.length; s2++){
         var out = twostringalign(strlist[s], strlist[s2], reward, mispen, gappen, skwpen);
-        pairs[s][s2] = out['agaps'];
-        pairs[s2][s] = out['bgaps'];
+        pairs[s][s2] = out['agaps'].slice();
+        pairs[s2][s] = out['bgaps'].slice();
         scores[s]['score'] += out['score'];
         scores[s2]['score'] += out['score'];
       }
     }
+
     // sort to find the minimum
     scores.sort(function(a, b) {
       return a['score'] - b['score'];
@@ -1399,13 +1371,14 @@ function stringalign(matching, madarat, reward, mispen, gappen, skwpen)
     // minimum / closest
     var s_c = scores[0]['seq'];
     var alignments = [];
-    alignments.push(pairs[s_c][scores[1]['seq']]);
-    alignments.push(pairs[scores[1]['seq']][s_c]);
+    alignments.push(pairs[s_c][scores[1]['seq']].slice());
+    alignments.push(pairs[scores[1]['seq']][s_c].slice());
+
     // progressivly add the rest using the previous alignment as a guide
     for(var s=2; s<scores.length; s++){
       var guide = pairs[s_c][scores[s]['seq']];
       var new_alignment = pairs[scores[s]['seq']][s_c];
-      alignments = add_to_alignmentset(alignments, new_alignment, guide);
+      alignments = add_to_alignmentset(alignments.slice(), new_alignment.slice(), guide.slice());
     }
     // get the consensus sequence
     var consensus = get_consensus(alignments);
@@ -1512,12 +1485,12 @@ function twostringalign(ainstr, binstr, reward, mispen, gappen, skwpen)
        else if (dn < rt) {
           // replace by a gap of equal length
            aout.push(ain[i-1]);
-           bout.push("-");//simplifyArabic(ain[i-1]).replace(/./g,'.'); 
+           bout.push(ain[i-1].replace(/./g,'ـ')); 
            summary[k++] = ' ';           
            i--;
        }
        else {
-           aout.push("-");//simplifyArabic(bin[j-1]).replace(/./g,'.');
+           aout.push(bin[j-1].replace(/./g,'ـ'));
            bout.push(bin[j-1]);
            summary[k++] = ' ';
            j--;
@@ -1561,17 +1534,21 @@ function add_to_alignmentset(prev_alignments, new_alignment, new_guide){
     if (i == origin.length){
       // The origin has ended, but guide hasn't, add the guide jth word (gap) to all alignments end
       for(var a = 0; a< alignments.length; a++){
-        alignments[a].push(guide[j]);
+        alignments[a].push(guide[j].slice());
       }
-      origin.push(guide[j]);
+      origin.push(guide[j].slice());
     }
     else if (j == guide.length) {
       // The guide has ended, but origin hasn't, add the origin ith word (gap) to guide end 
-      adjusted_alignment.push(origin[i]);
-      guide.push(origin[i]);
+      adjusted_alignment.push(origin[i].slice());
+      guide.push(origin[i].slice());
     }
-    else if (simplifyArabic(origin[i]) != simplifyArabic(guide[j]) && !(origin[i][0]=="." && guide[j][0]==".")) {
-      if (origin[i][0]=="."){
+    else if (origin[i] != guide[j]) {
+      if (origin[i][0]=="ـ" && guide[j][0]=="ـ"){
+        if (origin[i].length > guide[j].length) guide[j] = origin[i];
+        else origin[i] = guide[j];
+      }
+      else if(origin[i][0]=="ـ"){
         adjusted_alignment.splice(j, 0, origin[i]);
         guide.splice(j, 0, origin[i]);
       }
@@ -1588,8 +1565,8 @@ function add_to_alignmentset(prev_alignments, new_alignment, new_guide){
   alignments.push(adjusted_alignment);
   if(origin.join(" ") !== guide.join(" ")){
     console.log("ALIGNMENT OUT PUT Mismatch");
-    console.log(origin.join(" "));
-    console.log(guide.join(" "));
+    console.log(origin);
+    console.log(guide);
   }
   return alignments;
 }
@@ -1613,8 +1590,8 @@ function get_consensus(seqs){
         seqs[s][i] = simplifyArabic(mode_item).replace(/./g,'.');
       }
       // if the mode is not a gap, then the sequence made a deletion
-      else if (seqs[s][i][0] == "." && mode_item[0] != "."){
-        seqs[s][i] = simplifyArabic(mode_item).replace(/./g,'×');
+      else if (seqs[s][i][0] == 'ـ' && mode_item[0] != 'ـ'){
+        seqs[s][i] = "×";// simplifyArabic(mode_item).replace(/./g,'×');
       }
     }
     consensus.push(mode_item);
