@@ -177,9 +177,9 @@ function prepareData() {
       var chains = matching_hadiths[i][1];
       for (var c = 0; c < chains.length; c++) {
         var sanad = chains[c];
-        console.log(hadithId);
         // take the first element of the takhreeg group is enough to indicate uniqueness
-        var matn = getTakhreegIDs(getTakhreegByID(takhreegData, getHadithNum(HadithArr, hadithId)))[0];
+        var hadith_takhreeg = getTakhreegByID(takhreegData, getHadithNum(HadithArr, hadithId));
+        var matn = hadith_takhreeg.length? getTakhreegIDs(hadith_takhreeg)[0]: "";
         var channel = (colorLinksBySanad()? sanad :
                                             (colorLinksByMatn()? matn : ""));
         for (var n = 0; n < sanad.length - 1; n++) {
@@ -284,6 +284,7 @@ function drawSankey(tempData) {
   for (var i = 0; i < result_graph.length; i++) {
     var node = result_graph[i];
     var narrator = lookupNarrator(node[0][0]);
+    console.log(narrator);
     var name = narrator['name']
       .split(" ")
       .slice(0, 4)
@@ -476,15 +477,10 @@ function cycleFilter(edges) {
 
 function get_roots(graph){
   var roots = [];
-  for (var i = 0; i < num_books; i++) {
-    if (document.getElementById(i).selected) {
-      for(var source = 0; source < BOOK_COMPILERS[i].length; source++){
-        var r = getIndex(BOOK_COMPILERS[i][source],graph);
-        //root in graph and with no parents
-        if (r > -1 && get_parents(BOOK_COMPILERS[i][source], graph).length == 0){
-          roots.push(r);
-        }
-      }
+  for (var i = graph.length - 1; i >= 0; i--) {
+    var narrator = graph[i][0][0];
+    if(get_parents(narrator, graph).length == 0){
+      roots.push(i);
     }
   }
   return roots;
@@ -685,7 +681,7 @@ function lookupNarrator(id) {
   );
   if (found == -1) {
     // else create a narrator data
-    return [id, id];
+    return {'grade': "", 'name':id, 'rawi_index': id};
   }
   return narratorsData[found];
 }
