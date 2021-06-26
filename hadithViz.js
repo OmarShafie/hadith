@@ -626,7 +626,7 @@ function loadHadith(hadith){
   matching_hadiths = matching_hadiths.map(id => lookupHadithIndex(id));
   matching_hadiths = matching_hadiths.filter(
     function(x){
-      return x > 0;
+      return typeof(x) == "number";
     });
   matching_hadiths = matching_hadiths.map(idx => [idx, query(HadithArr, idx, true)]);
   afterProcess();
