@@ -108,7 +108,8 @@ function query(data, index, onTakhreej) {
   try {
     if (args[hadithQuery]["value"] == "" && args[patternQuery]["value"] == "") {
       throw { message: "Please enter some keywords" };
-    } else {
+    } 
+    else {
       // hadith contains the hadith-query
       //return a list of chains
       var txt = simplifyArabic(getHadithTxt(data, index));
@@ -118,12 +119,12 @@ function query(data, index, onTakhreej) {
       if (onTakhreej || txt.includes(simplifyArabic(args[hadithQuery]["value"]))) {
         var asaneed = getHadithAsaneed(data, index);
         for (var i = 0; i < asaneed.length; i++) {
-          processingSanad = asaneed[i];
+          processingSanad = asaneed[i].slice().reverse();
           if (
             args[patternQuery]["value"] == "" ||
             QueryParser.parse(args[patternQuery]["value"])
           ) {
-            chains.push(processingSanad);
+            chains.push(asaneed[i]);
           }
         }
       }
@@ -179,7 +180,7 @@ function prepareData() {
         var sanad = chains[c];
         // take the first element of the takhreeg group is enough to indicate uniqueness
         var hadith_takhreeg = getTakhreegByID(takhreegData, getHadithNum(HadithArr, hadithId));
-        var matn = hadith_takhreeg.length? getTakhreegIDs(hadith_takhreeg)[0]: "";
+        var matn = hadith_takhreeg? getTakhreegIDs(hadith_takhreeg)[0]: "";
         var channel = (colorLinksBySanad()? sanad :
                                             (colorLinksByMatn()? matn : ""));
         for (var n = 0; n < sanad.length - 1; n++) {
@@ -284,7 +285,6 @@ function drawSankey(tempData) {
   for (var i = 0; i < result_graph.length; i++) {
     var node = result_graph[i];
     var narrator = lookupNarrator(node[0][0]);
-    console.log(narrator);
     var name = narrator['name']
       .split(" ")
       .slice(0, 4)
@@ -1168,14 +1168,14 @@ function autocomplete(inp, arr) {
       /*for each item in the array...*/
       for (i = 1; i < arr.length; i++) {
         /*check if the item starts with the same letters as the text field value:*/
-        if (arr[i][1].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+        if (arr[i]['name'].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
           /*create a DIV element for each matching element:*/
           b = document.createElement("DIV");
           /*make the matching letters bold:*/
-          b.innerHTML = "<strong>" + arr[i][1].substr(0, val.length) + "</strong>";
-          b.innerHTML += arr[i][1].substr(val.length);
+          b.innerHTML = "<strong>" + arr[i]['name'].substr(0, val.length) + "</strong>";
+          b.innerHTML += arr[i]['name'].substr(val.length);
           /*insert a input field that will hold the current array item's value:*/
-          b.innerHTML += "<input type='hidden' value='" + arr[i][0] + " '>";
+          b.innerHTML += "<input type='hidden' value='" + arr[i]['rawi_index'] + " '>";
           /*execute a function when someone clicks on the item value (DIV element):*/
           b.addEventListener("click", function (e) {
             /*insert the value for the autocomplete text field:*/
