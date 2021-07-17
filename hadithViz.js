@@ -181,9 +181,10 @@ function prepareData() {
         // take the first element of the takhreeg group is enough to indicate uniqueness
         var hadith_takhreeg = getTakhreegByID(takhreegData, getHadithNum(HadithArr, hadithId));
         var matn = hadith_takhreeg? getTakhreegIDs(hadith_takhreeg)[0]: "";
-        var channel = (colorLinksBySanad()? sanad :
-                                            (colorLinksByMatn()? matn : ""));
         for (var n = 0; n < sanad.length - 1; n++) {
+          var channel = (colorLinksBySanad()? sanad :
+                                            (colorLinksByMatn()? matn : 
+                                                                connection_status(sanad[n + 1], sanad[n])));
           updateCount(tempData, sanad[n + 1], sanad[n], hadithId, channel.toString());
         }
       }
@@ -264,7 +265,11 @@ function drawSankey(tempData) {
         "#2F5D9B", "#6C5E46", "#D25B88", "#5B656C", "#00B57F", "#545C46", "#866097", "#365D25",
         "#252F99", "#00CCFF", "#674E60", "#FC009C", "#92896B"];
 
-  colorPool  = friendlyColor()? colorBlindPool: very_large_color_set;
+  //'
+  connection_colors = ['#1ba1e2','#663399','#FA8072','#d80073'];
+  connection_color_assignments = ['true,true','true,false','false,true','false,false'];
+  colorPool  = (colorLinksBySanad() || colorLinksByMatn())? (friendlyColor()? colorBlindPool: very_large_color_set)
+                                                           : connection_colors;
 
   //filter cycles and add lables
   // graph = [..., [[key, Sum(w[1],w[2] ...w[m])], [n1,w[1]], [n2,w[2]], ..., [nm,w[m]] [h1,h2...] ], ...]
@@ -293,7 +298,7 @@ function drawSankey(tempData) {
     names.push(s);
   }
 
-  var color_assignments = [];
+  var color_assignments = (colorLinksBySanad() || colorLinksByMatn())? []: connection_color_assignments;
   var hadiths_in_link = [];
   for (var i = 0; i < result_graph.length; i++) {
     var node = result_graph[i];
@@ -307,10 +312,14 @@ function drawSankey(tempData) {
         tooltip +=
           '<th dir="rtl">' +
           names[index] +
-          "<---(" +
-          node[j][2].length +
-          ")---" +
+          "<---( " +
+          overlap_time(node[0], node[j][0]) +
+          " , " +
+          overlap_place(node[0], node[j][0]) +
+          " )---" +
           names[i] +
+          " = " +
+          node[j][2].length +
           "</th>";
         //tooltip += '<th dir="ltr">Chain</th>';
         //tooltip += '<th dir="ltr">Id</th>';
@@ -721,6 +730,34 @@ function getNarratorGrade(index) {
   return narrator['grade'];
 }
 
+function getNarratorBirth(index) {
+  var narrator = lookupNarrator(index);
+  return Math.round(parseInt(narrator['birth']));
+}
+
+function getNarratorDeath(index) {
+  var narrator = lookupNarrator(index);
+  return Math.round(parseInt(narrator['death']));
+}
+
+function getNarratorBirth_text(index) {
+  var narrator = lookupNarrator(index);
+  var val = narrator['date_birth'];
+  return (val.length > 0) ? val: "؟";
+}
+
+function getNarratorDeath_text(index) {
+  var narrator = lookupNarrator(index);
+  var val = narrator['date_death'];
+  return (val.length > 0) ? val: "؟";
+}
+
+function getNarratorPlaces(index) {
+  var narrator = lookupNarrator(index);
+  var places = narrator['places'].slice(1,narrator['places'].length-1).replace(/'/g, "").split(",");
+  return places.map(p => p.replace(/^ | $/g, ""));
+}
+
 function getNarratorFromName(tag) {
   return tag.split(" ")[0];
 }
@@ -847,14 +884,14 @@ function gradeToColor(grade) {
     return mapping[11];
   } else if (grade.includes("متروك") || grade.includes("منكر")) {
     return mapping[10];
-  } else if (
+  /*} else if (
     grade.includes("تغير ") ||
     grade.includes("اختلط") ||
     grade.includes("وخلط ")
   ) {
     return mapping[6];
   } else if (grade.includes("دلس") || grade.includes("تدليس")) {
-    return mapping[7];
+    return mapping[7]; */
   } else if (
     grade.includes("ثقه ثبت") ||
     grade.includes("حافظ") ||
@@ -905,7 +942,7 @@ function gradeToColor(grade) {
 var dir = "https://raw.githubusercontent.com/OmarShafie/hadith/master";
 var hadithURL    = dir + "/data/nine_books_data.csv";
 var takhreegURL  = dir + "/data/takhreeg_data.csv";
-var narratorsURL = dir + "/data/narrators-utf8.csv";
+var narratorsURL = dir + "/data/narrators_data.csv";
 
 function buildErrorMessage(e) {
   return e.message;
@@ -1670,4 +1707,44 @@ function sort_longest(a, b, hadiths_in_link) {
     }
   }
   
+}
+
+function overlap_time(rawi_1, rawi_2) {
+  if (!is_overlap_time(rawi_1, rawi_2)){
+    return "×";
+  }
+  var b1 = getNarratorBirth(rawi_1);
+  var d1 = getNarratorDeath(rawi_1);
+  var b2 = getNarratorBirth(rawi_2);
+  var d2 = getNarratorDeath(rawi_2);
+
+  var overlap_start = Math.max(b1,b2);
+  var overlap_end = Math.min(d1,d2);
+
+  return (overlap_start +"~"+ overlap_end);
+}
+
+function is_overlap_time(rawi_1, rawi_2) {
+  var b1 = getNarratorBirth(rawi_1);
+  var d1 = getNarratorDeath(rawi_1);
+  var b2 = getNarratorBirth(rawi_2);
+  var d2 = getNarratorDeath(rawi_2);
+  return !(b1 > d2 || d1 < b2);
+}
+
+function overlap_place(rawi_1, rawi_2){
+  var array1 = getNarratorPlaces(rawi_1);
+  var array2 = getNarratorPlaces(rawi_2);
+  return array1.length > 0 && array1.filter(value => array2.includes(value));
+}
+
+function is_overlap_place(rawi_1, rawi_2){
+  return overlap_place(rawi_1, rawi_2).length > 0;
+}
+
+function connection_status(rawi_1, rawi_2){
+  var time = is_overlap_time(rawi_1, rawi_2);
+  var place = is_overlap_place(rawi_1, rawi_2);
+
+  return [time, place]
 }
