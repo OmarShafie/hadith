@@ -26,6 +26,7 @@ var matching_hadiths = [];
 var num_books = 9;
 var BOOK_COMPILERS = [["5495"], ["6116"], ["5361"],["9712"],["2577"],["10859"],["3741"],["13950","10935"],["484"]]; //This must be in-order
 var align_reward = 4 , align_mispen = 2, align_gappen = 1, align_skwpen = 1;
+
 /*-------------- Main Code -------------*/
 window.onload = function () {
   document.getElementById("submit").click();
@@ -340,7 +341,7 @@ function drawSankey(tempData) {
         tooltip += "</tbody></table>";
         var row = [names[index], names[i], node[j][1], tooltip];
         var channel = node[j][3];
-        links.push([row, colorPool[getColorAssignment(color_assignments, channel) % colorPool.length],node[j][2]]);
+        links.push([row,hexToRgba(colorPool[getColorAssignment(color_assignments, channel) % colorPool.length]),node[j][2]]);
       }
     }
   }
@@ -984,6 +985,12 @@ $(function () {
 $(function () {
   $("#colorLinksSwitchBySanad").click(function () {
     prepareData();
+  });
+});
+
+$(function () {
+  $("#DayThemeSwitch").click(function () {
+    swtichThemeColor();
   });
 });
 
@@ -1674,7 +1681,7 @@ function hexToRgba(hex) {
   return result ?
     'rgba('+parseInt(result[1], 16)+','
            +parseInt(result[2], 16)+','
-           +parseInt(result[3], 16)+', 0.6 )' : null;
+           +parseInt(result[3], 16)+', 0.8)' : null;
 }
 
 function sort_longest(a, b, hadiths_in_link) {
@@ -1747,4 +1754,10 @@ function connection_status(rawi_1, rawi_2){
   var place = is_overlap_place(rawi_1, rawi_2);
 
   return [time, place]
+}
+
+function swtichThemeColor(){
+  document.body.classList.toggle("dark-mode");
+  document.querySelector("#card").classList.toggle("dark-mode");
+  closeNav()
 }
