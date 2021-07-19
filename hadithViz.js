@@ -964,6 +964,8 @@ var HadithArr    = [];
 var result_graph = [];
 var ready_data   = [];
 var data;
+var chart;
+var options;
 var layers_count = []; // used as indication of height of sankey
 var layers_total = [];
 var longest_sanad     = 0;
@@ -1020,17 +1022,50 @@ $(function () {
 
 $(function () {
   $("#saveTopPdf").click(function () {
-    var element = $("#sankey_container");          
-    html2canvas(element, {
-        letterRendering: true,
-    }).then(function(canvas){
-                    var imageData = canvas.toDataURL("image/png");
-            var newData = imageData.replace(/^data:image\/png/, "data:application/octet-stream");
-            $("<a>", {href:newData, download:"Proof1.png",on:{click:function(){$(this).remove()}}})
-            .appendTo("body")[0].click()
-     })
-    }); 
+    var domURL;
+    var fileName;
+    var imageCanvas;
+    var imageURI;
+    var svgParent;
+
+    // add svg namespace to chart
+    svgParent = chart.getContainer().getElementsByTagName('svg')[0];
+    svgParent.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+
+    // create image URI
+    domURL = window.URL || window.webkitURL || window;
+    imageURI = domURL.createObjectURL(new Blob([svgParent.outerHTML], {type: 'image/svg+xml'}));
+    image = new Image();
+    image.onload = function() {
+      // replace chart with image
+      imageCanvas = document.createElement('canvas');
+      imageCanvas.setAttribute('width', parseFloat(svgParent.getAttribute('width')));
+      imageCanvas.setAttribute('height', parseFloat(svgParent.getAttribute('height')));
+      imageCanvas.getContext('2d').drawImage(image, 0, 0);
+      $('#sankey_basic').html('<img src="' + imageCanvas.toDataURL('image/png') + '" />');
+
+      // download dashboard image
+      fileName = 'dashboard.png';
+      html2canvas($('#sankey_container').get(0)).then(function (canvas) {
+        // determine if browser is IE
+        if (false || !!document.documentMode) {
+          window.navigator.msSaveBlob(canvas.msToBlob(), fileName);
+        } else {
+          downloadLink = document.createElement('a');
+          downloadLink.href = canvas.toDataURL('image/png');
+          downloadLink.download = fileName;
+        }
+
+        // re-draw chart
+        //chart.draw(data, options);
+      });
+    }
+    //image.src = imageURI;
+        var newData = imageURI.replace(/^data:image\/png/, "data:application/octet-stream");
+        $("<a>", {href:newData, download:"Proof1.png",on:{click:function(){$(this).remove()}}})
+        .appendTo("body")[0].click()
 });
+  });
 
 $(function () {
   $("#draw").click(function () {
