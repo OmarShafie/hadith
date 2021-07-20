@@ -1,4 +1,3 @@
-//TODO: Take hadith-query from user
 var args = [
   {
     key: "pattern-query",
@@ -41,7 +40,6 @@ function main() {
 
   if(inputType == "remote"){
     HadithArr = [];
-    // TODO: Check book Indices
     var books = {
       0: [1, 7411],
       1: [7411, 15076],
@@ -85,7 +83,8 @@ function process(array, callback) {
       var hadithId = i;
       var chains = query(array, hadithId, false);
       if (chains && chains.length) {
-        matching_hadiths.push([hadithId, chains]);
+        var hadith_object = {"id": hadithId, "asaneed": chains};
+        matching_hadiths.push(hadith_object);
       }
       i++;
     }
@@ -148,12 +147,12 @@ function afterProcess() {
       '<th dir="rtl"> Matched Ahadith:' + matching_hadiths.length + "</th>";
     list += "</tr></thead><tbody>";
     for (var h = 0; h < matching_hadiths.length; h++) {
-      var hadith = matching_hadiths[h][0];
+      var hadith_id = matching_hadiths[h]["id"];
       list +=
-        "<tr><td dir='rtl' onClick='loadHadith("+ hadith +")'>";
+        "<tr><td dir='rtl' onClick='loadHadith("+ hadith_id +")'>";
 
-      list += "<h6>" + getTitle(HadithArr, hadith) + "</h6>";
-      list += getHadithTxt(HadithArr, hadith);
+      list += "<h6>" + getTitle(HadithArr, hadith_id) + "</h6>";
+      list += getHadithTxt(HadithArr, hadith_id);
       list += "</td>";
     }
     list += "</tbody></table>";
@@ -166,17 +165,17 @@ function afterProcess() {
 //2. Draw Process
 function prepareData() {
   /* This will be called by clicking on the draw button, it will create a 
-   * tempData, that has all of the rows of the sankey. 
+   * edges list, that has all of the rows of the sankey. 
    */
-  var tempData = [];
+  var edges = [];
   var chunk = 300;
   var i = 0;
 
   function loop() {
     var cnt = chunk;
     while (cnt-- && i < matching_hadiths.length) {
-      var hadithId = matching_hadiths[i][0];
-      var chains = matching_hadiths[i][1];
+      var hadithId = matching_hadiths[i]["id"];
+      var chains = matching_hadiths[i]["asaneed"];
       for (var c = 0; c < chains.length; c++) {
         var sanad = chains[c];
         // take the first element of the takhreeg group is enough to indicate uniqueness
@@ -186,7 +185,7 @@ function prepareData() {
           var channel = (colorLinksBySanad()? sanad :
                                             (colorLinksByMatn()? matn : 
                                                                 connection_status(sanad[n + 1], sanad[n])));
-          updateCount(tempData, sanad[n + 1], sanad[n], hadithId, channel.toString());
+          updateCount(edges, sanad[n + 1], sanad[n], hadithId, channel.toString());
         }
       }
       i++;
@@ -195,7 +194,7 @@ function prepareData() {
       //the condition
       setTimeout(loop, 1); //rerun when condition is true
     } else {
-      drawSankey(tempData);
+      drawSankey(edges);
     }
   }
   loop(); //start with 0
@@ -207,23 +206,30 @@ function updateCount(data, source, target, hadith, channel) {
   var i = 0;
   //TODO: Optimize this
   while (!found && i < data.length) {
-    if (data[i][0] === source                                                && 
-        data[i][1] === target                                                && 
-        (data[i][4] === channel || (colorLinksBySanad() && colorLinksByMatn()))) {
+    if (data[i]["source"] === source                                                && 
+        data[i]["target"] === target                                                && 
+        (data[i]["channel"] === channel || (colorLinksBySanad() && colorLinksByMatn()))) {
       // narrators index matءches
       found = true;
-      data[i][2]++; //increment count of the link
-      data[i][3].push(hadith);
+      data[i]["edge_weight"]++; //increment count of the link
+      data[i]["hadith_list"].push(hadith);
     }
     i++;
   }
   if (!found) {
     // not found, so add a new link
-    data.push([source, target, 1, [hadith], channel]);
+    var edge_object = {
+      "source":      source, 
+      "target":      target, 
+      "edge_weight": 1, 
+      "hadith_list": [hadith], 
+      "channel":     channel
+    };
+    data.push(edge_object);
   }
 }
 
-function drawSankey(tempData) {
+function drawSankey(edges) {
   links = [];
   colorBlindPool  = ['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabed4', '#469990', '#dcbeff', '#9A6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#a9a9a9', '#ffffff', '#000000'];
   bluePurpleShades = ['#00aba9','#1ba1e2','#0050ef','#6a00ff','#aa00ff','#f472d0','#d80073','#76608a',"#00ffff","#191970","#663399","#6863D4","#8B008B","#9370DB","#AFEEEE","#ba55d3","#C71585","#da70d6","#db7093","#8e4585","#FA8072","#FF69B4","#FFC0CB","#0000cd",]
@@ -266,15 +272,14 @@ function drawSankey(tempData) {
         "#2F5D9B", "#6C5E46", "#D25B88", "#5B656C", "#00B57F", "#545C46", "#866097", "#365D25",
         "#252F99", "#00CCFF", "#674E60", "#FC009C", "#92896B"];
 
-  //'
-  connection_colors = ['#1ba1e2','#663399','#FA8072','#d80073'];
+  connection_colors = ['#004c6d','#00aba9','silver','#d80073'];
   connection_color_assignments = ['true,true','true,false','false,true','false,false'];
   colorPool  = (colorLinksBySanad() || colorLinksByMatn())? (friendlyColor()? colorBlindPool: very_large_color_set)
                                                            : connection_colors;
 
   //filter cycles and add lables
   // graph = [..., [[key, Sum(w[1],w[2] ...w[m])], [n1,w[1]], [n2,w[2]], ..., [nm,w[m]] [h1,h2...] ], ...]
-  result_graph = build_graph(tempData); 
+  result_graph = build_graph(edges);
   document.getElementById("btnMessage").innerHTML =
     "<br>    Total of Narrators: " + result_graph.length;
 
@@ -289,8 +294,8 @@ function drawSankey(tempData) {
   // set the lables of the nodes
   var names = [];
   for (var i = 0; i < result_graph.length; i++) {
-    var node = result_graph[i];
-    var narrator = lookupNarrator(node[0][0]);
+    var node = result_graph[i]["info"]["node"];
+    var narrator = lookupNarrator(node);
     var name = narrator['name']
       .split(" ")
       .slice(0, 4)
@@ -303,31 +308,30 @@ function drawSankey(tempData) {
   var hadiths_in_link = [];
   for (var i = 0; i < result_graph.length; i++) {
     var node = result_graph[i];
-    layers_count[node[0][3]].push(node[0][0]);
-    for (var j = 1; j < node.length; j++) {
-      hadiths_in_link.push(node[j][2]);
+    layers_count[node["info"]["rank_in_graph"]].push(node["info"]["node"]);
+    for (var e = 0; e < node["edges"].length; e++) {
+      hadiths_in_link.push(node["edges"][e]["hadith_list"]);
       //Out neighbors
-      var index = getIndex(node[j][0], result_graph);
+      var index = getIndex(node["edges"][e]["target"], result_graph);
       if (index >= 0) {
         var tooltip = '<table dir="rtl"><thead><tr>';
         tooltip +=
           '<th dir="rtl">' +
           names[index] +
           "<---( " +
-          overlap_time(node[0], node[j][0]) +
+          overlap_time(node["info"]["node"], node["edges"][e]["target"]) +
           " , " +
-          overlap_place(node[0], node[j][0]) +
+          overlap_place(node["info"]["node"], node["edges"][e]["target"]) +
           " )---" +
           names[i] +
           " = " +
-          node[j][2].length +
+          node["edges"][e]["hadith_list"].length +
           "</th>";
-        //tooltip += '<th dir="ltr">Chain</th>';
-        //tooltip += '<th dir="ltr">Id</th>';
         tooltip += "</tr></thead><tbody>";
+
         var hadith_set = []; //no duplicates are allowed
-        for (var h = 0; h < node[j][2].length; h++) {
-          var hadith = node[j][2][h];
+        for (var h = 0; h < node["edges"][e]["hadith_list"].length; h++) {
+          var hadith = node["edges"][e]["hadith_list"][h];
           if(!hadith_set.includes(hadith)){
             hadith_set.push(hadith);
             tooltip +=
@@ -339,9 +343,11 @@ function drawSankey(tempData) {
           }
         }
         tooltip += "</tbody></table>";
-        var row = [names[index], names[i], node[j][1], tooltip];
-        var channel = node[j][3];
-        links.push([row,hexToRgba(colorPool[getColorAssignment(color_assignments, channel) % colorPool.length]),node[j][2]]);
+        var row = [names[index], names[i], node["edges"][e]["edge_weight"], tooltip];
+        var channel = node["edges"][e]["channel"];
+        links.push([row,
+                    colorPool[getColorAssignment(color_assignments, channel) % colorPool.length],
+                    node["edges"][e]["hadith_list"]]);
       }
     }
   }
@@ -390,8 +396,8 @@ function getIndex(key, graph) {
   // returns the index of key in the graph
   // graph = [..., [[key, Sum(w[1],w[2] ...w[m])], [n1,w[1]], [n2,w[2]], ..., [nm,w[m]] ], ...]
   for (var i = 0; i < graph.length; i++) {
-    var vertix = graph[i][0][0];
-    if (vertix == key) {
+    var node = graph[i]["info"]["node"];
+    if (node == key) {
       return i;
     }
   }
@@ -403,9 +409,9 @@ function get_parents(key, graph){
   var parents = [];
   for (var i = graph.length - 1; i >= 0; i--) {
     var node = graph[i];
-    for (var n = node.length - 1; n >= 1; n--) {
-      if(node[n][0] === key){
-        parents.push(node[0][0]);
+    for (var n = node["edges"].length - 1; n >= 0; n--) {
+      if(node["edges"][n]["target"] === key){
+        parents.push(node["info"]["node"]);
       }
     }
   }
@@ -418,13 +424,13 @@ function isCyclicUtil(v, visited, recStack, graph) {
   recStack[v] = true;
   var index = getIndex(v, graph);
   if (index >= 0) {
-    var node = graph[index];
-    for (var neighbour = 1; neighbour < node.length; neighbour++) {
-      if (!visited[node[neighbour][0]]) {
-        if (isCyclicUtil(node[neighbour][0], visited, recStack, graph)) {
+    var edges = graph[index]["edges"];
+    for (var e = 0; e < edges.length; e++) {
+      if (!visited[edges[e]["target"]]) {
+        if (isCyclicUtil(edges[e]["target"], visited, recStack, graph)) {
           return true;
         }
-      } else if (recStack[node[neighbour][0]] == true) {
+      } else if (recStack[edges[e]["target"]] == true) {
         return true;
       }
     }
@@ -437,8 +443,8 @@ function isCyclic(graph) {
   var visited = {}; // list of visited nodes
   var recStack = {};
   for (var n = 0; n < graph.length; n++) {
-    if (!visited[graph[n][0]]) {
-      if (isCyclicUtil(graph[n][0][0], visited, recStack, graph)) {
+    if (!visited[graph[n]["info"]["node"]]) {
+      if (isCyclicUtil(graph[n]["info"]["node"], visited, recStack, graph)) {
         return true;
       }
     }
@@ -447,38 +453,44 @@ function isCyclic(graph) {
 }
 
 function cycleFilter(edges) {
-
   // edges = [..., [source, target, weight,[h1,h2...]], ...]
   var graph = []; // create an adjacency list of narrators indices graph
   var data = []; // to be returned as polished data
   for (var e = 0; e < edges.length; e++) {
     // for each edge, add to graph, check if it creates a cycle
-    var source  = edges[e][0];
-    var target  = edges[e][1];
-    var weight  = edges[e][2];
-    var hadiths = edges[e][3];
-    var channel = edges[e][4];
+    var source  = edges[e]["source"];
+    var target  = edges[e]["target"];
+    var weight  = edges[e]["edge_weight"];
+    var hadiths = edges[e]["hadith_list"];
+    var channel = edges[e]["channel"];
     var sourceIndex = getIndex(source, graph);
     var targetIndex = getIndex(target, graph);
     if (sourceIndex >= 0) {
-      graph[sourceIndex].push([target, weight, hadiths, channel]);
-      graph[sourceIndex][0][1] += weight;
+      graph[sourceIndex]["edges"].push(edges[e]);
+      graph[sourceIndex]["info"]["out_weight_sum"] += weight;
     } else {
       sourceIndex = graph.length;
-      graph.push([
-        [source, weight],
-        [target, weight, hadiths, channel]
-      ]);
+      var source_node = {
+        "info" : {"node": source, "in_weight_sum": 0, "out_weight_sum": weight},
+        "edges": [edges[e]]
+      }
+      graph.push(source_node);
     }
 
     if (isCyclic(graph)) {
-      alert("Cycle detected!");
+      alert("Cycle detected, check the console!");
       console.log("removing link as it creates a cycle", [source, target]);
-      graph[sourceIndex].pop(); //remove point as it creates a cycle
+      graph[sourceIndex]["edges"].pop(); //remove point as it creates a cycle
     } else {
       if (targetIndex < 0) {
-        targetIndex = graph.length;
-        graph.push([[target, weight]]);
+        targetIndex = graph.length;    
+        var target_node = {
+          "info" : {"node": target, "in_weight_sum": weight, "out_weight_sum": 0},
+          "edges": []
+        }
+        graph.push(target_node);
+      } else {
+        graph[targetIndex]["info"]["in_weight_sum"] += weight;
       }
     }
   }
@@ -488,7 +500,7 @@ function cycleFilter(edges) {
 function get_roots(graph){
   var roots = [];
   for (var i = graph.length - 1; i >= 0; i--) {
-    var narrator = graph[i][0][0];
+    var narrator = graph[i]["info"]["node"];
     if(get_parents(narrator, graph).length == 0){
       roots.push(i);
     }
@@ -513,47 +525,51 @@ function build_graph(edges) {
   //A boolean array indicating whether we have already visited a node
   var visited_ancistors = [];
 
-  //weights
   for (var i = 0; i < graph.length; i++) {
-    graph[i][0].push(0);
+    //weights
+    graph[i]["info"]["sankey_weight"] = 0;
+    //ranks
     visited_ancistors.push(0);
   }
+
   for (var r = 0; r < roots.length; r++) {
-    for (var neighbor = 1; neighbor < graph[roots[r]].length; neighbor++) {
-        var w = graph[roots[r]][neighbor][1];
-        var neighbor_index = getIndex(graph[roots[r]][neighbor][0], graph);
+    for (var neighbor = 0; neighbor < graph[roots[r]]["edges"].length; neighbor++) {
+        var w = graph[roots[r]]["edges"][neighbor]["edge_weight"];
+        var neighbor_index = getIndex(graph[roots[r]]["edges"][neighbor]["target"], graph);
         var formula = logScale()? Math.sqrt(c * Math.log(w+1)): w;
-        visited_ancistors[neighbor_index] += 1;
-        graph[neighbor_index][0][2] += formula;
-        graph[roots[r]][0][2]       += formula;
-        graph[roots[r]][neighbor][1] = formula;
+        visited_ancistors[neighbor_index]                += 1;
+        graph[neighbor_index]["info"]["sankey_weight"]   += formula;
+        graph[roots[r]]["info"]["sankey_weight"]         += formula;
+        graph[roots[r]]["edges"][neighbor]["edge_weight"] = formula;
+
          // possible that another root has already visited
-        if (visited_ancistors[neighbor_index] === get_parents(graph[roots[r]][neighbor][0], graph).length) {
+        if (visited_ancistors[neighbor_index] === get_parents(graph[roots[r]]["edges"][neighbor]["target"], graph).length) {
           queue.push(neighbor_index);
-          graph[neighbor_index][0].push(1);
+          graph[neighbor_index]["info"]["rank_in_graph"] = 1;
         }
       }    
-    graph[roots[r]][0].push(0);
+    graph[roots[r]]["info"]["rank_in_graph"] = 0;
   }
+
   //While there are nodes left to visit...
   while (queue.length) {
-      var node = queue.shift();
+      var node = graph[queue.shift()];
       var check_sum = 0;
-      for (var neighbor = 1; neighbor < graph[node].length; neighbor++) {
-        var neighbor_index = getIndex(graph[node][neighbor][0], graph);
-        var frac = graph[node][neighbor][2].length / graph[node][0][1];
+      for (var e = 0; e < node["edges"].length; e++) {
+        var neighbor_index = getIndex(node["edges"][e]["target"], graph);
+        var frac = node["edges"][e]["hadith_list"].length / node["info"]["out_weight_sum"];
         visited_ancistors[neighbor_index] += 1;
-        graph[node][neighbor][1]     = frac * graph[node][0][2];
-        graph[neighbor_index][0][2] += frac * graph[node][0][2];
+        node["edges"][e]["edge_weight"]  = frac * node["info"]["sankey_weight"];
+        graph[neighbor_index]["info"]["sankey_weight"] += frac * node["info"]["sankey_weight"];
         check_sum                   += frac;
-        if (visited_ancistors[neighbor_index] === get_parents(graph[node][neighbor][0], graph).length) {
+        if (visited_ancistors[neighbor_index] === get_parents(node["edges"][e]["target"], graph).length) {
           queue.push(neighbor_index);
-          graph[neighbor_index][0].push(graph[node][0][3]+1);
-          longest_sanad = graph[node][0][3]+1 > longest_sanad ? graph[node][0][3]+1 : longest_sanad;
+          graph[neighbor_index]["info"]["rank_in_graph"] = node["info"]["rank_in_graph"]+1;
         }
       }
-      if (check_sum != 1 && graph[node].length > 1){
-        console.log("WARNING: IN !=== OUT !!!", graph[node][0][0]);
+      longest_sanad = Math.max(node["info"]["rank_in_graph"]+1, longest_sanad);
+      if (check_sum != 1 && node["edges"].length > 0){
+        console.log("WARNING: IN !=== OUT !!!", node["info"]["node"]);
       }
   }
   return graph
@@ -562,15 +578,15 @@ function build_graph(edges) {
 function updateChannelsBySegments(prev_graph){
   var graph = prev_graph.slice();
   for(var node = 0; node < graph.length; node++){
-    for(var n = 1; n < graph[node].length; n++){
-      var sanad = graph[node][n][3].split(",");
+    for(var n = 0; n < graph[node]['edges'].length; n++){
+      var sanad = graph[node]['edges'][n]["channel"].split(",");
       var commonLinks = get_sanad_commonlinks(sanad, graph); //initial assumption, myself
-      var node_index = sanad.indexOf(graph[node][0][0]);
+      var node_index = sanad.indexOf(graph[node]["info"]["node"]);
       for(var cl = commonLinks.length-1; cl >= 0; cl--){
         var cl_index = sanad.indexOf(commonLinks[cl]);
         var next_cl_index = sanad.indexOf(commonLinks[cl-1]);
         if(cl_index >= node_index && node_index > next_cl_index){
-          graph[node][n][3] = sanad.slice(next_cl_index, cl_index+1, sanad).toString();
+          graph[node]['edges'][n]["channel"] = sanad.slice(next_cl_index, cl_index+1, sanad).toString();
         }
       }
     }
@@ -638,7 +654,7 @@ function loadHadith(hadith){
     function(x){
       return typeof(x) == "number";
     });
-  matching_hadiths = matching_hadiths.map(idx => [idx, query(HadithArr, idx, true)]);
+  matching_hadiths = matching_hadiths.map(function (idx){ return {"id": idx, "asaneed": query(HadithArr, idx, true)}});
   afterProcess();
   openSearch();
   return;
@@ -691,7 +707,7 @@ function lookupNarrator(id) {
   );
   if (found == -1) {
     // else create a narrator data
-    return {'grade': "", 'name':id, 'rawi_index': id};
+    return {'grade': "", 'name':id, 'rawi_index': id, 'places': '[]', 'birth': 0, 'death': 0};
   }
   return narratorsData[found];
 }
@@ -867,17 +883,20 @@ function gradeAnalysis() {
 function gradeToColor(grade) {
   var mapping = {
     1: "#002700",
-    2: "#003f00",
-    3: "#005800",
-    4: "#008a00",
-    5: "#7cb840",
-    6: "#d8c100",
-    7: "#f0a30a",
-    8: "#fa6800",
-    9: "#e51400",
-    10: "#a20025",
-    11: "#4b0011",
+    2: "#005800",
+    3: "#008a00",
+    4: "#7cb840",
+    5: "#dde086",
+
     12: "silver",
+
+    8: "#fbb268",
+    9: "#ed6a57",
+    10: "#de425b",
+    11: "#a20025",
+
+    6: "#cbb683",
+    7: "#f0a30a",
     13: "lightslategray",
   };
   grade = simplifyArabic(grade);
@@ -966,6 +985,10 @@ var ready_data   = [];
 var data;
 var chart;
 var options;
+var g_dark_mode = true;
+function g_opacity(){ 
+  return g_dark_mode? 0.5: 0.75; //This value can be anyhing except 0.8
+};
 var layers_count = []; // used as indication of height of sankey
 var layers_total = [];
 var longest_sanad     = 0;
@@ -993,6 +1016,7 @@ $(function () {
 $(function () {
   $("#DayThemeSwitch").click(function () {
     swtichThemeColor();
+    prepareData();
   });
 });
 
@@ -1700,7 +1724,7 @@ function colorset(alignments, setlist){
         if (is_local_consensus !== false){
           for(var seq = 0; seq < set.length; seq++){
             if (colorings[set[seq]][0][i].split(" ")[0] != 'style'){
-              colorings[set[seq]][0][i] = 'style = "background-color: '+hexToRgba(color)+'">'+ colorings[set[seq]][0][i]; // not colored
+              colorings[set[seq]][0][i] = 'style = "background-color: '+hexToRgba(color,g_opacity())+'";>'+ colorings[set[seq]][0][i]; // not colored
             }
           }
         }
@@ -1711,12 +1735,12 @@ function colorset(alignments, setlist){
   return colorings.map(p=>p[0]);
 }
 
-function hexToRgba(hex) {
+function hexToRgba(hex, a) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result ?
     'rgba('+parseInt(result[1], 16)+','
            +parseInt(result[2], 16)+','
-           +parseInt(result[3], 16)+', 0.8)' : null;
+           +parseInt(result[3], 16)+', '+a+')' : null;
 }
 
 function sort_longest(a, b, hadiths_in_link) {
@@ -1794,5 +1818,6 @@ function connection_status(rawi_1, rawi_2){
 function swtichThemeColor(){
   document.body.classList.toggle("dark-mode");
   document.querySelector("#card").classList.toggle("dark-mode");
+  g_dark_mode = !g_dark_mode;
   closeNav()
 }
