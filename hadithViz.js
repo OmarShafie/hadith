@@ -8,17 +8,11 @@ var args = [
     key: "hadith-query",
     default: "",
     value: ""
-  },
-  {
-    key: "numNarrators",
-    default: "100",
-    value: "100"
   }
 ];
 
 var patternQuery = 0;
 var hadithQuery = 1;
-var numNarrators = 2;
 var colorLinks = [];
 var processingSanad;
 var matching_hadiths = [];
@@ -79,16 +73,16 @@ function process(array, callback) {
   function loop() {
     /* The way this loop is constructed is to allow the asynchronous of js */
     var cnt = chunk;
-    while (cnt-- && i < array.length - 1) {
+    while (cnt-- && i < array.length) {
       var hadithId = i;
       var chains = query(array, hadithId, false);
       if (chains && chains.length) {
-        var hadith_object = {"id": hadithId, "asaneed": chains};
+        var hadith_object = {"index": hadithId, "asaneed": chains};
         matching_hadiths.push(hadith_object);
       }
       i++;
     }
-    if (i < array.length - 1) {
+    if (i < array.length) {
       //the condition
       setTimeout(loop, 1); //rerun when condition is true
     } else {
@@ -147,7 +141,7 @@ function afterProcess() {
       '<th dir="rtl"> Matched Ahadith:' + matching_hadiths.length + "</th>";
     list += "</tr></thead><tbody>";
     for (var h = 0; h < matching_hadiths.length; h++) {
-      var hadith_id = matching_hadiths[h]["id"];
+      var hadith_id = matching_hadiths[h]["index"];
       list +=
         "<tr><td dir='rtl' onClick='loadHadith("+ hadith_id +")'>";
 
@@ -174,23 +168,23 @@ function prepareData() {
   function loop() {
     var cnt = chunk;
     while (cnt-- && i < matching_hadiths.length) {
-      var hadithId = matching_hadiths[i]["id"];
+      var hadithIdx = matching_hadiths[i]["index"];
       var chains = matching_hadiths[i]["asaneed"];
       for (var c = 0; c < chains.length; c++) {
         var sanad = chains[c];
         // take the first element of the takhreeg group is enough to indicate uniqueness
-        var hadith_takhreeg = getTakhreegByID(takhreegData, getHadithNum(HadithArr, hadithId));
+        var hadith_takhreeg = getTakhreegByID(takhreegData, getHadithNum(HadithArr, hadithIdx));
         var matn = hadith_takhreeg? getTakhreegIDs(hadith_takhreeg)[0]: "";
         for (var n = 0; n < sanad.length - 1; n++) {
           var channel = (colorLinksBySanad()? sanad :
                                             (colorLinksByMatn()? matn : 
                                                                 connection_status(sanad[n + 1], sanad[n])));
-          updateCount(edges, sanad[n + 1], sanad[n], hadithId, channel.toString());
+          updateCount(edges, sanad[n + 1], sanad[n], hadithIdx, channel.toString());
         }
       }
       i++;
     }
-    if (i < matching_hadiths.length - 1) {
+    if (i < matching_hadiths.length) {
       //the condition
       setTimeout(loop, 1); //rerun when condition is true
     } else {
@@ -282,9 +276,6 @@ function drawSankey(edges) {
   result_graph = build_graph(edges);
   document.getElementById("btnMessage").innerHTML =
     "<br>    Total of Narrators: " + result_graph.length;
-
-  //result_graph = result_graph.slice(0, parseInt(args[numNarrators]["value"]));
-
 
   layers_count = new Array(longest_sanad +1); // used as indication of height of sankey
   for(var l = 0; l <= longest_sanad; l++){
@@ -637,7 +628,7 @@ function getTakhreegByID(data, mainID) {
     return parseInt(x['hadithID']) - parseInt(y);
   });
   if (found == -1) {
-    return [];
+    return null;
   }
   return data[found];
 }
@@ -648,13 +639,13 @@ function getTakhreegIDs(takhreeg) {
 
 function loadHadith(hadith){
   var takhreeg = getTakhreegByID(takhreegData, getHadithNum(HadithArr, hadith));
-  matching_hadiths = getTakhreegIDs(takhreeg);
+  matching_hadiths = takhreeg? getTakhreegIDs(takhreeg): [];
   matching_hadiths = matching_hadiths.map(id => lookupHadithIndex(id));
   matching_hadiths = matching_hadiths.filter(
     function(x){
       return typeof(x) == "number";
     });
-  matching_hadiths = matching_hadiths.map(function (idx){ return {"id": idx, "asaneed": query(HadithArr, idx, true)}});
+  matching_hadiths = matching_hadiths.map(function (idx){ return {"index": idx, "asaneed": query(HadithArr, idx, true)}});
   afterProcess();
   openSearch();
   return;
@@ -707,7 +698,7 @@ function lookupNarrator(id) {
   );
   if (found == -1) {
     // else create a narrator data
-    return {'grade': "", 'name':id, 'rawi_index': id, 'places': '[]', 'birth': 0, 'death': 0};
+    return {'grade': "", 'name':'×', 'rawi_index': id, 'places': '[]', 'birth': 0, 'death': 0};
   }
   return narratorsData[found];
 }
@@ -760,13 +751,13 @@ function getNarratorDeath(index) {
 function getNarratorBirth_text(index) {
   var narrator = lookupNarrator(index);
   var val = narrator['date_birth'];
-  return (val.length > 0) ? val: "؟";
+  return (val && val.length > 0) ? val: "؟";
 }
 
 function getNarratorDeath_text(index) {
   var narrator = lookupNarrator(index);
   var val = narrator['date_death'];
-  return (val.length > 0) ? val: "؟";
+  return (val && val.length > 0) ? val: "؟";
 }
 
 function getNarratorPlaces(index) {
@@ -1045,6 +1036,33 @@ $(function () {
 });
 
 $(function () {
+  $("#download_data").click(function () {
+
+    const format =  ["hadithID", "title", "asaneed", "hadithTxt", "Matn"];
+    const rows = [format].concat(matching_hadiths.map(obj=>[getHadithNum(HadithArr,obj['index']),
+                                                            '"'+getTitle(HadithArr,obj['index'])+'"',
+                                                            '"['+obj['asaneed'].map(l=>"["+l+"]")+']"',
+                                                            '"'+getHadithTxt(HadithArr,obj['index'])+'"',
+                                                            '"'+getHadithMatn(HadithArr,obj['index'])+'"']));
+
+    let csvContent = "data:text/csv;charset=utf-8," 
+                    + rows.map(e => e.join(",")).join("\n");
+
+    var encodedUri = encodeURI(csvContent);
+    var link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+
+    var csv_file_name = (args[1]['value'].length > 0)?
+                          args[1]['value'].replace(" ", "_"):"my_data";
+    link.setAttribute("download", csv_file_name + '.csv');
+    //document.body.appendChild(link); // Required for FF
+
+    link.click(); // This will download the data file named "my_data.csv".
+
+  });
+});
+
+$(function () {
   $("#saveTopPdf").click(function () {
     var domURL;
     var fileName;
@@ -1198,7 +1216,7 @@ function completeParse(results) {
 }
 
 function check_dataset_format(data){
-  var format =  ["hadithID", "BookID", "title", "asaneed", "hadithTxt", "Matn"];
+  var format =  ["hadithID", "title", "asaneed", "hadithTxt", "Matn"];
   if(!data.length){
       document.getElementById("data-error").innerHTML = "Dataset is empty!";
       return;
@@ -1436,8 +1454,9 @@ var simplifyArabic = function (str) {
 function stringalign(matching, madarat, reward, mispen, gappen, skwpen)
 {  
   // Convert the list of matching hadiths to their matns
-  var hadithlist = matching.filter(h=>getHadithMatn(HadithArr, h[0]) !== "");
-  var strlist = hadithlist.map(x => getHadithMatn(HadithArr, x[0]).replace(/\n|\r|\t/g, ""));
+  var hadithlist = matching.filter(h=>getHadithMatn(HadithArr, h['index']) !== "");
+  var strlist = hadithlist.map(x => getHadithMatn(HadithArr, x['index']).replace(/\n|\r|\t/g, ""));
+  console.log(hadithlist.slice());
 
   // If only a single hadith, then never mind
   if (strlist.length > 1){
@@ -1486,9 +1505,10 @@ function stringalign(matching, madarat, reward, mispen, gappen, skwpen)
     for(var k = 0; k < madarat.length; k++){
       var s = [];
       var madar = madarat[k];
+        console.log(hadithlist.slice());
       for(var h = 0; h < hadithlist.length; h++){
-        for(var i = 0; i < hadithlist[h][1].length; i++){
-          if(hadithlist[h][1][i].toString().includes(madar)){
+        for(var i = 0; i < hadithlist[h]['asaneed'].length; i++){
+          if(hadithlist[h]['asaneed'][i].toString().includes(madar)){
             s.push(scores.findIndex(i => i['seq'] === h));
           }
         }

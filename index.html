@@ -70,26 +70,6 @@
   <form id="mySidesearch" class="sidesearch bg-dark text-center">
     <h3> Search Form <br> صفحة البحث <span class="fa fa-search"></span></h3>
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-
-    <div class="justify-content-center" style="margin: 10px">
-      <script>
- 
-        function handleFileSelect(evt) {
-          input_file = evt.target.files[0];
-          if (input_file){
-            new_upload = true;
-            inputType = "local";
-            document.getElementById("submit").click();
-          }
-        }
-       
-        $(document).ready(function(){
-          $("#csv-file").change(handleFileSelect);
-        });
-      </script>
-      <label> - Data البيانات - </label>
-      <input class="form-control" style="color: black" type="file" id="csv-file" name="files" accept=".csv"/>
-    </div>
     <div class="justify-content-center" style="margin: 10px">
       <label> - Sources المصادر - </label>
       <select class="selectpicker" multiple data-live-search="true">
@@ -135,26 +115,54 @@
         <button type="button" disabled id="draw" class="btn btn-primary">
           Draw رسم
         </button>
+      <div>
+      </div>
+        <button type="button" id="download_data" class="btn btn-primary-outline">
+        Download Data <br> تحميل البيانات<i class="fa fa-download"></i>
+        </button>
       </div>
     </div>
   </form>
   <form id="mySidesettings" class="sidesearch bg-dark text-center">
     <h3>Settings Form <br> صفحة الإعدادات<span class="fa fa-sliders-h"></span></h3>
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-    <div hidden class="row justify-content-center form-inline">
+
+
+    <div class="justify-content-center" style="margin: 10px">
+      <script>
+ 
+        function handleFileSelect(evt) {
+          input_file = evt.target.files[0];
+          if (input_file){
+            new_upload = true;
+            inputType = "local";
+            document.getElementById("submit").click();
+            closeNav();
+            openSearch();
+          }
+        }
+       
+        $(document).ready(function(){
+          $("#csv-file").change(handleFileSelect);
+        });
+      </script>
+      <label> - Data البيانات - </label>
+      <input class="form-control" style="color: black" type="file" id="csv-file" name="files" accept=".csv"/>
+    </div>
+    <!--div hidden class="row justify-content-center form-inline">
       <label for="numNarrators">- Max Narrators الحد الأقصى لعدد الرواة - </label>
       <input type="number" class="form-control" id="numNarrators" placeholder="100" />
-    </div>
+    </div-->
     <br />
 
-    <div class="row justify-content-around">
+    <div class="row px-2 justify-content-between">
       Color Sankey By Sanad <br> تمييز الأسانيد بالألوان
       <label  class="switch">
         <input id="colorLinksSwitchBySanad" type="checkbox" />
         <span class="switchSlider round"></span>
       </label>
     </div>
-    <div class="row justify-content-around">
+    <div class="row px-2 justify-content-between">
       Color Sankey By Matn <br> تمييز المتون بالألوان
       <label  class="switch">
         <input id="colorLinksSwitchByMatn"  type="checkbox" />
@@ -162,7 +170,7 @@
       </label>
     </div>
     <br>
-    <div class="row justify-content-around">
+    <div class="row px-2 justify-content-between">
       Friendly colors (20 colors) <br> ألوان سهلة:
       <label class="switch">
         <input id="distinguishableColorsSwitch" type="checkbox" />
@@ -170,7 +178,7 @@
       </label>
     </div>
     <br>
-    <div class="row justify-content-around">
+    <div class="row px-2 justify-content-between">
       Clear Route <br> إعادة الترتيب:
       <label class="switch">
         <input id="clearRouteSwitch" type="checkbox" />
@@ -178,15 +186,15 @@
       </label>
     </div>
     <br>
-    <div class="row justify-content-around">
-      Day Light Theme خلفية بيضاء:
+    <div class="row px-2 justify-content-between">
+      Day Light Theme <br> خلفية بيضاء:
       <label class="switch">
         <input id="DayThemeSwitch" type="checkbox" />
         <span class="switchSlider round"></span>
       </label>
     </div>
     <br>
-    <div class="row justify-content-around">
+    <div class="row px-2 justify-content-between">
       Log Scale <br> مقياس لوغاريتمي:
       <label class="switch">
         <input id="logScaleSwitch" type="checkbox" />
@@ -209,7 +217,7 @@
       </div>
     </div>
     <button type="button" id="saveTopPdf" class="btn btn-primary">
-        Download تحميل <i class="fa fa-download"></i>
+        Save Chart <br> حفظ التشجير <i class="fa fa-image"></i>
       </button>
   </form>
 
@@ -426,25 +434,24 @@
         }
       });
 
-      google.visualization.events.addListener(chart, "onmouseover", function (
-        e
-      ) {
+      google.visualization.events.addListener(chart, "onmouseover", function (e) {
         if (e.name) {
           var gradeTooltip = document.querySelector("#gradeTooltip");
           gradeTooltip.style.setProperty("visibility", "visible");
+          const narrator = getNarratorFromName(e.name);;
           gradeTooltip.innerHTML =
-            lookupNarrator(getNarratorFromName(e.name))["name"] +
+            lookupNarrator(narrator)["name"] +
             " : <span style = 'color :" +
-            gradeToColor(getNarratorGrade(getNarratorFromName(e.name))) +
+            gradeToColor(getNarratorGrade(narrator)) +
             ";'>" +
-            getNarratorGrade(getNarratorFromName(e.name)) +
+            getNarratorGrade(narrator) +
             "</span>" + 
             " ( " +
-            getNarratorPlaces(getNarratorFromName(e.name)) +
+            getNarratorPlaces(narrator) +
               " , " +
-              getNarratorBirth_text(getNarratorFromName(e.name)) +
+              getNarratorBirth_text(narrator) +
               "~" +
-              getNarratorDeath_text(getNarratorFromName(e.name)) +
+              getNarratorDeath_text(narrator) +
               " )";
         }
         if (!e.name) {
