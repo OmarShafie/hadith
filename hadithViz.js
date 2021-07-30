@@ -950,10 +950,10 @@ function gradeToColor(grade) {
 
 /****************** Library **********************/
 // Source: Kaggle Hadith Data Set
-var dir = "https://raw.githubusercontent.com/OmarShafie/hadith/master";
-var hadithURL    = dir + "/data/nine_books_data.csv";
-var takhreegURL  = dir + "/data/takhreeg_data.csv";
-var narratorsURL = dir + "/data/narrators_data.csv";
+var dir = "https://raw.githubusercontent.com/OmarShafie/hadith/master/data/";
+var hadithURL    = dir + "nine_books_data.csv";
+var takhreegURL  = dir + "takhreeg_data.csv";
+var narratorsURL = dir + "narrators_data.csv";
 
 function buildErrorMessage(e) {
   return e.message;
