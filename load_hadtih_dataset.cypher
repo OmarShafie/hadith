@@ -1,35 +1,43 @@
-// clear data
+//1 clear data
+DROP INDEX Narrator_id_idx IF EXISTS;
+DROP INDEX Hadith_id_idx IF EXISTS;
 MATCH (n)
 DETACH DELETE n;
 
-// load Hadith nodes
-LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/OmarShafie/hadith/master/data/neo4j/hadith_data.csv' AS row
-MERGE (h:Hadith {h_id: coalesce(row.hadithID, "X"), book: row.book, title: coalesce(row.title, "X"), text: coalesce(row.text, "X"), matn: coalesce(row.matn, "X")})
-RETURN count(h);
-
-// load Narrator nodes
+//2 load Narrator nodes
+USING PERIODIC COMMIT
 LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/OmarShafie/hadith/master/data/neo4j/narrators_data.csv' AS row
-MERGE (n:Narrator {n_id: coalesce(row.rawi_index, "X"), name: coalesce(row.name, "X"), grade: coalesce(row.grade, "X"), birth_date: coalesce(row.birth, "X"), death_date: coalesce(row.death, "X"), birth_date_text: coalesce(row.date_birth, "X"), death_date_text: coalesce(row.date_death, "X"), places:coalesce(row.places, "X")})
+CREATE (n:Narrator {n_id: coalesce(toInteger(row.rawi_index), 0), name: coalesce(row.name, "X"), grade: coalesce(row.grade, "X"), birth_date: coalesce(row.birth, "X"), death_date: coalesce(row.death, "X"), birth_date_text: coalesce(row.date_birth, "X"), death_date_text: coalesce(row.date_death, "X"), places:coalesce(row.places, "X")})
 RETURN count(n);
 
-// create takhreej relationships
-LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/OmarShafie/hadith/master/data/takhreej_data.csv' AS row
-MATCH (h1:Hadith {h_id: row.hadithID}) 
-UNWIND split(row.takhreegIDs, ',') AS h2 WITH h1, h2, row
-MERGE (h1)<-[:SHARES_TAKHREEJ_WITH]->(h2)
-RETURN *;
+//3 CREATE INDEX Narrator_id_idx
+CREATE INDEX Narrator_id_idx IF NOT EXISTS
+FOR (n:Narrator) ON (n.n_id);
 
-// create Book relationships
+//4 load Hadith nodes
+USING PERIODIC COMMIT
 LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/OmarShafie/hadith/master/data/neo4j/hadith_data.csv' AS row
-MATCH (h:Hadith {h_id: row.hadithID})
-MATCH (n:Narrator {n_id: row.author}) WITH h1, n, row
-MERGE (h1)-[:AUTHORED_BY]->(n)
-RETURN *;
+MATCH (n:Narrator {n_id:  coalesce(toInteger(row.author), 0)})
+CREATE (h:Hadith {id: toInteger(row.id ), book: row.book, name: coalesce(row.title, "X"), text: coalesce(row.text, "X")})
+CREATE (h)-[:AUTHORED_BY]->(n)
+RETURN count(h);
 
-// create Sanad relationships
+//5 CREATE INDEX Hadith_id_idx IF NOT EXISTS
+CREATE INDEX Hadith_id_idx IF NOT EXISTS
+FOR (h:Hadith) ON (h.id);
+
+//6 create Sanad relationships
+USING PERIODIC COMMIT
 LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/OmarShafie/hadith/master/data/neo4j/asaneed_data.csv' AS row
-MATCH (n1:Narrator {n_id: row.from_narrator})
-MATCH (n2:Narrator {n_id: row.to_narrator}) WITH n1, n2, ,row
+MATCH (n1:Narrator {n_id: toInteger(row.from_narrator)}),(n2:Narrator {n_id: toInteger(row.to_narrator)})
 MERGE (n1)-[r:NARRATED_BY]->(n2)
-SET r.hadiths = r.hadiths + row.hadithID
-RETURN *;
+ON CREATE (n1)-[r:NARRATED_BY {hadiths:toInteger(row.id)}]->(n2)
+ON MATCH SET r.hadiths = r.hadiths +  toInteger(row.id )
+RETURN count(row);
+
+//7 create takhreej relationships
+USING PERIODIC COMMIT
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/OmarShafie/hadith/master/data/neo4j/takhreej_data.csv' AS row
+MATCH (h1:Hadith {id: toInteger(row.id1)}), (h2:Hadith {id: toInteger(row.id2)})
+CREATE (h1)-[:SHARES_TAKHREEJ_WITH]->(h2)
+RETURN count(row);
