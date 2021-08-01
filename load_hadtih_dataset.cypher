@@ -9,7 +9,7 @@ MATCH (n) DETACH DELETE n;
 //USING PERIODIC COMMIT
 //LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/OmarShafie/hadith/master/data/neo4j/narrators_data.csv' AS row
 LOAD CSV WITH HEADERS FROM 'file:///narrators_data.csv' AS row
-CREATE (n:Narrator {n_id: coalesce(toInteger(row.rawi_index), 0), name: coalesce(row.name, "X"), grade: coalesce(row.grade, "X"), birth_date: coalesce(row.birth, "X"), death_date: coalesce(row.death, "X"), birth_date_text: coalesce(row.date_birth, "X"), death_date_text: coalesce(row.date_death, "X"), places:coalesce(row.places, "X")})
+CREATE (n:Narrator {n_id: coalesce(toInteger(row.rawi_index), 0), name: coalesce(row.name, ""), grade: coalesce(row.grade, ""), birth_date: coalesce(row.birth, ""), death_date: coalesce(row.death, ""), birth_date_text: coalesce(row.date_birth, ""), death_date_text: coalesce(row.date_death, ""), places:coalesce(row.places, "")})
 RETURN count(n);
 
 //3 CREATE INDEX Narrator_id_idx
@@ -20,7 +20,7 @@ FOR (n:Narrator) ON (n.n_id);
 //USING PERIODIC COMMIT
 //LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/OmarShafie/hadith/master/data/neo4j/hadith_data.csv' AS row
 LOAD CSV WITH HEADERS FROM 'file:///hadith_data.csv' AS row
-CREATE (h:Hadith {id: toInteger(row.id), book: row.book, name: coalesce(row.name, "X")}) WITH row, h
+CREATE (h:Hadith {id: toInteger(row.id), book: row.book, name: coalesce(row.name, ""), text: coalesce(row.text, "")}) WITH row, h
 UNWIND SPLIT(row.isnad_ids,",") AS id
   CREATE (i:Isnad  {id: toInteger(id)})
   CREATE (h)-[:ISNAD]->(i)
@@ -40,8 +40,8 @@ FOR (i:Isnad) ON (i.id);
 LOAD CSV WITH HEADERS FROM 'file:///asaneed_data.csv' AS row
 MATCH (n:Narrator {n_id: toInteger(row.n_id)}) WITH n, row
 MATCH (i:Isnad {id: toInteger(row.id)}) WITH n, i, row
-MERGE (i)-[r:HAS_NARRATOR]->(n)
-//ON CREATE //SET r.rank=toInteger(row.rank), r.from=toInteger(row.from_narrator), r.to=toInteger(row.to_narrator)
+CREATE (i)-[r:HAS_NARRATOR]->(n)
+SET r.rank=toInteger(row.rank), r.from=toInteger(row.from_narrator), r.to=toInteger(row.to_narrator)
 RETURN count(row); 
 
 //8 create Sanad relationships between narrators
