@@ -51,8 +51,8 @@ LOAD CSV WITH HEADERS FROM 'file:///asaneed_data.csv' AS row
 MATCH (n:Narrator {n_id: toInteger(row.n_id)}) WITH n, row
 MATCH (n1:Narrator {n_id: toInteger(row.from_narrator)}) WITH n, n1, row
 MERGE (n)-[r:NARRATED_FROM]->(n1)
-ON CREATE SET r.isnads = [toInteger(row.id)]
-ON MATCH SET r.isnads = r.isnads + toInteger(row.id)
+//ON CREATE SET r.isnads = [toInteger(row.id)]
+//ON MATCH SET r.isnads = r.isnads + toInteger(row.id)
 RETURN count(row); 
 
 //6 CREATE INDEX Takhreej_id_idx IF NOT EXISTS
