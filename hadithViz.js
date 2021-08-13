@@ -527,11 +527,13 @@ function build_graph(edges) {
     for (var neighbor = 0; neighbor < graph[roots[r]]["edges"].length; neighbor++) {
         var w = graph[roots[r]]["edges"][neighbor]["edge_weight"];
         var neighbor_index = getIndex(graph[roots[r]]["edges"][neighbor]["target"], graph);
+
         var formula = logScale()? Math.sqrt(c * Math.log(w+1)): w;
-        visited_ancistors[neighbor_index]                += 1;
-        graph[neighbor_index]["info"]["sankey_weight"]   += formula;
         graph[roots[r]]["info"]["sankey_weight"]         += formula;
+        graph[neighbor_index]["info"]["sankey_weight"]   += formula;
         graph[roots[r]]["edges"][neighbor]["edge_weight"] = formula;
+
+        visited_ancistors[neighbor_index]                += 1;
 
          // possible that another root has already visited
         if (visited_ancistors[neighbor_index] === get_parents(graph[roots[r]]["edges"][neighbor]["target"], graph).length) {
@@ -544,24 +546,46 @@ function build_graph(edges) {
 
   //While there are nodes left to visit...
   while (queue.length) {
-      var node = graph[queue.shift()];
-      var check_sum = 0;
-      for (var e = 0; e < node["edges"].length; e++) {
-        var neighbor_index = getIndex(node["edges"][e]["target"], graph);
+    var node = graph[queue.shift()];
+    var check_sum = 0;
+
+    var in_lt_out = node["info"]["out_weight_sum"] - node["info"]["in_weight_sum"];
+    for (var e = 0; e < node["edges"].length; e++) {
+      var neighbor_index = getIndex(node["edges"][e]["target"], graph);
+      visited_ancistors[neighbor_index] += 1;
+      if (in_lt_out === 0){
         var frac = node["edges"][e]["hadith_list"].length / node["info"]["out_weight_sum"];
-        visited_ancistors[neighbor_index] += 1;
-        node["edges"][e]["edge_weight"]  = frac * node["info"]["sankey_weight"];
+        node["edges"][e]["edge_weight"]                 = frac * node["info"]["sankey_weight"];
         graph[neighbor_index]["info"]["sankey_weight"] += frac * node["info"]["sankey_weight"];
-        check_sum                   += frac;
-        if (visited_ancistors[neighbor_index] === get_parents(node["edges"][e]["target"], graph).length) {
-          queue.push(neighbor_index);
-          graph[neighbor_index]["info"]["rank_in_graph"] = node["info"]["rank_in_graph"]+1;
+
+      } else if (in_lt_out > 0){
+        var new_hadith_frac_in_e = node["edges"][e]["hadith_list"].filter(h=> getHadithAsaneed(HadithArr, h).filter(i=>i[i.length-1] == node['info']['node'])).length / node["edges"][e]["hadith_list"].length;
+        if (new_hadith_frac_in_e > 0){
+          var w = new_hadith_frac_in_e * node["edges"][e]["edge_weight"];
+          var formula = logScale()? Math.sqrt(c * Math.log(w+1)): w;
+          var old_frac = 1-new_hadith_frac_in_e;
+          //node["info"]["sankey_weight"]                  += formula;
+          graph[neighbor_index]["info"]["sankey_weight"] += formula + old_frac * node["info"]["sankey_weight"];
+          node["edges"][e]["edge_weight"]                 = formula + old_frac * node["info"]["sankey_weight"];
+
+        } else {
+          var frac = node["edges"][e]["hadith_list"].length / node["info"]["in_weight_sum"];
+          node["edges"][e]["edge_weight"]                 = frac * node["info"]["sankey_weight"];
+          graph[neighbor_index]["info"]["sankey_weight"] += frac * node["info"]["sankey_weight"];
         }
+
+      } else {
+          var frac = node["edges"][e]["hadith_list"].length / node["info"]["in_weight_sum"];
+          node["edges"][e]["edge_weight"]                 = frac * node["info"]["sankey_weight"];
+          graph[neighbor_index]["info"]["sankey_weight"] += frac * node["info"]["sankey_weight"];
       }
-      longest_sanad = Math.max(node["info"]["rank_in_graph"]+1, longest_sanad);
-      if (check_sum != 1 && node["edges"].length > 0){
-        console.log("WARNING: IN !=== OUT !!!", node["info"]["node"]);
+
+      if (visited_ancistors[neighbor_index] === get_parents(node["edges"][e]["target"], graph).length) {
+        queue.push(neighbor_index);
+        graph[neighbor_index]["info"]["rank_in_graph"] = node["info"]["rank_in_graph"]+1;
       }
+    }
+    longest_sanad = Math.max(node["info"]["rank_in_graph"]+1, longest_sanad);
   }
   return graph
 }
@@ -977,6 +1001,8 @@ var data;
 var chart;
 var options;
 var g_dark_mode = true;
+var g_dotified =  false;
+
 function g_opacity(){ 
   return g_dark_mode? 0.5: 0.75; //This value can be anyhing except 0.8
 };
@@ -1000,6 +1026,13 @@ $(function () {
 
 $(function () {
   $("#colorLinksSwitchBySanad").click(function () {
+    prepareData();
+  });
+});
+
+$(function () {
+  $("#dotificationSwitch").click(function () {
+    swtichDotification();
     prepareData();
   });
 });
@@ -1456,7 +1489,6 @@ function stringalign(matching, madarat, reward, mispen, gappen, skwpen)
   // Convert the list of matching hadiths to their matns
   var hadithlist = matching.filter(h=>getHadithMatn(HadithArr, h['index']) !== "");
   var strlist = hadithlist.map(x => getHadithMatn(HadithArr, x['index']).replace(/\n|\r|\t/g, ""));
-  console.log(hadithlist.slice());
 
   // If only a single hadith, then never mind
   if (strlist.length > 1){
@@ -1505,7 +1537,6 @@ function stringalign(matching, madarat, reward, mispen, gappen, skwpen)
     for(var k = 0; k < madarat.length; k++){
       var s = [];
       var madar = madarat[k];
-        console.log(hadithlist.slice());
       for(var h = 0; h < hadithlist.length; h++){
         for(var i = 0; i < hadithlist[h]['asaneed'].length; i++){
           if(hadithlist[h]['asaneed'][i].toString().includes(madar)){
@@ -1545,7 +1576,7 @@ function stringalign(matching, madarat, reward, mispen, gappen, skwpen)
     }
     alignment_table += "</tbody></table>";
 
-    $("#card").html(alignment_table);
+    $("#card_content").html(alignment_table);
   }
 }
 
@@ -1706,7 +1737,7 @@ function get_consensus(seqs){
     for(var s = 0; s <seqs.length; s++){
       // if it is equal to the mode, then it can be deleted
       if (seqs[s][i] == mode_item){
-        seqs[s][i] = simplifyArabic(mode_item).replace(/./g,'.');
+        seqs[s][i] = g_dotified? simplifyArabic(mode_item).replace(/./g,'.') : mode_item;
       }
       // if the mode is not a gap, then the sequence made a deletion
       else if (seqs[s][i][0] == 'ـ' && mode_item[0] != 'ـ'){
@@ -1840,4 +1871,9 @@ function swtichThemeColor(){
   document.querySelector("#card").classList.toggle("dark-mode");
   g_dark_mode = !g_dark_mode;
   closeNav()
+}
+
+function swtichDotification(){
+  g_dotified = !g_dotified;
+
 }
