@@ -698,7 +698,8 @@ function recursiveSearch(arr, x, start, end, cmpFn) {
   let mid = Math.floor((start + end) / 2);
 
   // Compare mid with given key x
-  var cmp = cmpFn(arr[mid], x); //
+  var cmp = cmpFn(arr[mid], x);
+  console.log(arr[mid], x);
   if (cmp == 0) return mid;
 
   // If element at mid is greater than x,
@@ -736,7 +737,7 @@ function lookupHadith(id) {
     return parseInt(x['hadithID']) - parseInt(y);
   });
   if (found == -1) {
-    // else create a narrator data
+    // else create a hadith data
     return [];
   }
   return HadithArr[found];
