@@ -584,7 +584,7 @@ input[type=submit] {
   margin-bottom: 200px;
 }
 
-#card {
+{
   overflow: scroll;
   position: fixed;
   left: 5%;
@@ -594,17 +594,49 @@ input[type=submit] {
   height: 200px;
 }
 
-#card th , #card td {
+#rsz th , #rsz td {
   padding: 5px;
   font-family: "Amiri";
   color: inherit;
   background: inherit;
 }
 
-#card th {
+#rsz th {
   position: sticky;
   top: 0; /* Don't forget this, required for the stickiness */
   border-radius: 0px !important;
+}
+
+#card {
+   /* Here's the trick: rotate the entire element so the resize handle is in the other corner. */
+  transform: rotateZ(180deg);
+  /* Note that in order to make resize: both work, an overflow is needed with anything other than visible.
+     Set it to auto so we don't see scrollbars,
+     but this element should never actually overflow as the only child has fixed 100% width and height.
+  */
+  resize: vertical;
+  overflow: scroll;
+  /* Need a little padding for this element for the resize handle to be clickable.
+     Also note the rotation flips the directions that need padding. */
+  padding: 0 8px 8px 0;
+  /* Should work for position fixed or absolute, as long as it is bottom/right positioned. */
+  position: fixed;
+  bottom: 30px;
+  right: 5%;
+  /* initial size can be anything, but usually wise to set it to something sensible initially. */
+  height: 200px;
+  width: 90%;
+  z-index: 3;
+}
+
+#rsz {
+  /* Rotate everything back so content is right way up: */
+  transform: rotateZ(180deg);
+  /* Grow along with resizable parent: */
+  width: 100%;
+  height: 100%;
+  /* make contents scrollable if resizable parent gets to small: */
+  overflow: auto;
 }
 
 .btn-primary-outline {

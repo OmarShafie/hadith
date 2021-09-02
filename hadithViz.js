@@ -108,9 +108,9 @@ function query(data, index, onTakhreej) {
       //return a list of chains
       var txt = simplifyArabic(getHadithTxt(data, index));
       var chains = [];
-      //var re = new RegExp(simplifyArabic(args[hadithQuery]["value"]), "g");
+      var re = new RegExp(simplifyArabic(args[hadithQuery]["value"]), "g");
 
-      if (onTakhreej || txt.includes(simplifyArabic(args[hadithQuery]["value"]))) {
+      if (onTakhreej || txt.match(re)) {
         var asaneed = getHadithAsaneed(data, index);
         for (var i = 0; i < asaneed.length; i++) {
           processingSanad = asaneed[i].slice().reverse();
@@ -1004,7 +1004,7 @@ var g_dark_mode = true;
 var g_dotified =  false;
 
 function g_opacity(){ 
-  return g_dark_mode? 0.5: 0.75; //This value can be anyhing except 0.8
+  return g_dark_mode? 0.3: 0.75; //This value can be anyhing except 0.8
 };
 var layers_count = []; // used as indication of height of sankey
 var layers_total = [];
