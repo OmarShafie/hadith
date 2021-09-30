@@ -20,7 +20,7 @@ FOR (n:Narrator) ON (n.n_id);
 //USING PERIODIC COMMIT
 //LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/OmarShafie/hadith/master/data/neo4j/hadith_data.csv' AS row
 LOAD CSV WITH HEADERS FROM 'file:///hadith_data.csv' AS row
-CREATE (h:Hadith {id: toInteger(row.id), book: row.book, name: coalesce(row.name, ""), text: coalesce(row.text, "")}) WITH row, h
+CREATE (h:Hadith {id: toInteger(row.id), book: row.book, name: coalesce(row.name, ""), text: coalesce(row.text, ""), matn: coalesce(row.matn, ""), type: coalesce(row.type, "")}) WITH row, h
 UNWIND SPLIT(row.isnad_ids,",") AS id
   CREATE (i:Isnad  {id: toInteger(id)})
   CREATE (h)-[:ISNAD]->(i)
@@ -30,11 +30,11 @@ RETURN count(h);
 CREATE INDEX Hadith_id_idx IF NOT EXISTS
 FOR (h:Hadith) ON (h.id);
 
-//9 CREATE INDEX Isnad_id_idx IF NOT EXISTS
+//6 CREATE INDEX Isnad_id_idx IF NOT EXISTS
 CREATE INDEX Isnad_id_idx IF NOT EXISTS
 FOR (i:Isnad) ON (i.id);
 
-//10 create Sanad relationships with isnad
+//7 create Sanad relationships with isnad
 //USING PERIODIC COMMIT
 //LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/OmarShafie/hadith/master/data/neo4j/asaneed_data.csv' AS row
 LOAD CSV WITH HEADERS FROM 'file:///asaneed_data.csv' AS row
@@ -55,11 +55,11 @@ MERGE (n)-[r:NARRATED_FROM]->(n1)
 //ON MATCH SET r.isnads = r.isnads + toInteger(row.id)
 RETURN count(row); 
 
-//6 CREATE INDEX Takhreej_id_idx IF NOT EXISTS
+//9 CREATE INDEX Takhreej_id_idx IF NOT EXISTS
 CREATE INDEX Takhreej_id_idx IF NOT EXISTS
 FOR (t:Takhreej) ON (t.id);
 
-//7 create takhreej relationships
+//10 create takhreej relationships
 //USING PERIODIC COMMIT
 //LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/OmarShafie/hadith/master/data/neo4j/takhreej_data.csv' AS row
 LOAD CSV WITH HEADERS FROM 'file:///takhreej_data.csv' AS row
