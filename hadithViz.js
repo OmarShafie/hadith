@@ -176,9 +176,11 @@ function prepareData() {
         var hadith_takhreeg = getTakhreegByID(takhreegData, getHadithNum(HadithArr, hadithIdx));
         var matn = hadith_takhreeg? getTakhreegIDs(hadith_takhreeg)[0]: "";
         for (var n = 0; n < sanad.length - 1; n++) {
-          var channel = (colorLinksBySanad()? sanad :
-                                            (colorLinksByMatn()? matn : 
-                                                                connection_status(sanad[n + 1], sanad[n])));
+          var channel = colorConnectivityAssessment()? connection_status(sanad[n + 1], sanad[n])
+                                                     : colorLinksByMatn()? matn
+                                                                         : sanad;
+                                            
+                                                                ;
           updateCount(edges, sanad[n + 1], sanad[n], hadithIdx, channel.toString());
         }
       }
@@ -202,7 +204,7 @@ function updateCount(data, source, target, hadith, channel) {
   while (!found && i < data.length) {
     if (data[i]["source"] === source                                                && 
         data[i]["target"] === target                                                && 
-        (data[i]["channel"] === channel || (colorLinksBySanad() && colorLinksByMatn()))) {
+        (data[i]["channel"] === channel || colorMultipleMatnAlignment())) {
       // narrators index matءches
       found = true;
       data[i]["edge_weight"]++; //increment count of the link
@@ -268,8 +270,7 @@ function drawSankey(edges) {
 
   connection_colors = ['#004c6d','#00aba9','silver','#d80073'];
   connection_color_assignments = ['true,true','true,false','false,true','false,false'];
-  colorPool  = (colorLinksBySanad() || colorLinksByMatn())? (friendlyColor()? colorBlindPool: very_large_color_set)
-                                                           : connection_colors;
+  colorPool  = (colorConnectivityAssessment())? connection_colors : (friendlyColor()? colorBlindPool: very_large_color_set);
 
   //filter cycles and add lables
   // graph = [..., [[key, Sum(w[1],w[2] ...w[m])], [n1,w[1]], [n2,w[2]], ..., [nm,w[m]] [h1,h2...] ], ...]
@@ -295,7 +296,7 @@ function drawSankey(edges) {
     names.push(s);
   }
 
-  var color_assignments = (colorLinksBySanad() || colorLinksByMatn())? []: connection_color_assignments;
+  var color_assignments = colorConnectivityAssessment()? connection_color_assignments : [];
   var hadiths_in_link = [];
   for (var i = 0; i < result_graph.length; i++) {
     var node = result_graph[i];
@@ -362,7 +363,7 @@ function drawSankey(edges) {
   google.charts.setOnLoadCallback(
     drawChart(data)
   );
-  if(colorLinksBySanad() && colorLinksByMatn()){
+  if(colorMultipleMatnAlignment()){
     document.getElementById("card").style.setProperty("visibility", "visible");
     stringalign(matching_hadiths, color_assignments, -1.0*align_reward, 1.0*align_mispen, 1.0*align_gappen, 1.0*align_skwpen);
   }
@@ -506,7 +507,7 @@ function build_graph(edges) {
   /* Adjust the weights of the graph to scale first layer to
    * Sqrt(c * n * lon(n)) and propagete the sum through the layers.
    */
-  if(colorLinksBySanad() && colorLinksByMatn()){
+  if(colorMultipleMatnAlignment()){
     graph = updateChannelsBySegments(graph);
   }
   var c = 1000; //constnant value 
@@ -662,17 +663,18 @@ function getTakhreegIDs(takhreeg) {
 }
 
 function loadHadith(hadith){
-  var takhreeg = getTakhreegByID(takhreegData, getHadithNum(HadithArr, hadith));
-  matching_hadiths = takhreeg? getTakhreegIDs(takhreeg): [];
-  matching_hadiths = matching_hadiths.map(id => lookupHadithIndex(id));
-  matching_hadiths = matching_hadiths.filter(
-    function(x){
-      return typeof(x) == "number";
-    });
-  matching_hadiths = matching_hadiths.map(function (idx){ return {"index": idx, "asaneed": query(HadithArr, idx, true)}});
-  afterProcess();
-  openSearch();
-  return;
+  if (inputType !== "demoTask"){
+    var takhreeg = getTakhreegByID(takhreegData, getHadithNum(HadithArr, hadith));
+    matching_hadiths = takhreeg? getTakhreegIDs(takhreeg): [];
+    matching_hadiths = matching_hadiths.map(id => lookupHadithIndex(id));
+    matching_hadiths = matching_hadiths.filter(
+      function(x){
+        return typeof(x) == "number";
+      });
+    matching_hadiths = matching_hadiths.map(function (idx){ return {"index": idx, "asaneed": query(HadithArr, idx, true)}});
+    afterProcess();
+    openSearch();
+  }
 }
 
 
@@ -1025,7 +1027,7 @@ $(function () {
 });
 
 $(function () {
-  $("#colorLinksSwitchBySanad").click(function () {
+  $("#sankey_view").change(function () {
     prepareData();
   });
 });
@@ -1040,12 +1042,6 @@ $(function () {
 $(function () {
   $("#DayThemeSwitch").click(function () {
     swtichThemeColor();
-    prepareData();
-  });
-});
-
-$(function () {
-  $("#colorLinksSwitchByMatn").click(function () {
     prepareData();
   });
 });
@@ -1272,7 +1268,7 @@ function buildConfig(completeFn, input_type) {
     header: true,
     complete: completeFn,
     error: errorFn,
-    download: input_type == "remote"
+    download: input_type !== "local"
   };
 }
 
@@ -1401,12 +1397,18 @@ function autocomplete(inp, arr) {
   });
 }
 
+function colorLinksByMatn() {
+  return document.getElementById("sankey_view").selectedIndex == 0;
+}
 function colorLinksBySanad() {
-  return document.getElementById("colorLinksSwitchBySanad").checked;
+  return document.getElementById("sankey_view").selectedIndex == 1;
+}
+function colorMultipleMatnAlignment() {
+  return document.getElementById("sankey_view").selectedIndex == 2;
 }
 
-function colorLinksByMatn() {
-  return document.getElementById("colorLinksSwitchByMatn").checked;
+function colorConnectivityAssessment() {
+  return document.getElementById("sankey_view").selectedIndex == 3;
 }
 
 function friendlyColor() {

@@ -33,7 +33,7 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" />
 </head>
 
-<body id="screen" class="dark-mode">
+<body id="screen">
   <nav id="sidebar" class="active">
     <ul class="list-unstyled components mb-5">
       <li class="active fab icon">
@@ -70,7 +70,7 @@
   <form id="mySidesearch" class="sidesearch bg-dark text-center">
     <h3> Search Form <br> صفحة البحث <span class="fa fa-search"></span></h3>
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-    <div class="justify-content-center" style="margin: 10px">
+    <div hidden class="justify-content-center" style="margin: 10px">
       <label> - Sources المصادر - </label>
       <select class="selectpicker" multiple data-live-search="true">
         <option id="0" value="1" selected> Bukhari البخاري</option>
@@ -84,22 +84,54 @@
         <option id="8" value="9" selected> Ahmad أحمد</option>
       </select>
     </div>
+    <div class="justify-content-center" style="margin: 10px">
+      <label> - Task Example التمرين - </label>
+      <select id="task" class="selectpicker" onchange="load_task()">
+        <option> 1. Hadith Analysis استعراض الحديث</option>
+        <option> 2. Matn Comparison فروق المتون</option>
+        <option> 3. Paths Comparison الرفع والوقف</option>
+        <option> 4. Hadith Disorders العلل</option>
+      </select>
+      <script>
+        function load_task(){
+          var task_id = document.getElementById("task").selectedIndex;
+          load_task_data(0);
+          load_task_discription(task_id);
+        }
+        function load_task_data(task_id) {
+          var dir = "https://raw.githubusercontent.com/OmarShafie/hadith/master/data/";
+          input_file = dir + "demo/task0"+task_id+".csv";
+          if (input_file){
+            new_upload = true;
+            inputType = "demoTask";
+            document.getElementById("submit").click();
+            closeNav();
+            openSearch();
+          }
+        }
+        function load_task_discription(task_id) {
+          return;
+        }
+      </script>
+    </div>
 
     <div class="justify-content-center autocomplete" style="margin: 10px">
-      <label for="pattern-query"> - Sanad Pattern قالب إسناد - </label>
-      <input type="search" class="form-control " id="pattern-query" dir="rtl" required placeholder="مثلا: @محمد بن مسلم"
+      <label for="pattern-query"> - Task Discription تفاصيل التمرين - </label>
+      <p style="color: orange;"> In this task, you will examine the following hadith by visualizing the isnad tree.</p>
+      <input hidden type="search" class="form-control " id="pattern-query" dir="rtl" required placeholder="مثلا: @محمد بن مسلم"
         autocomplete="on" />
     </div>
     <div class="justify-content-center" style="margin: 10px">
-      <label for="hadith-query"> - Hadith Query عبارة البحث - </label>
-      <input type="search" class="form-control " id="hadith-query" dir="rtl" value ="" required placeholder="مثلا: الأعمال بالنية"
+      <label for="hadith-query"> - Task Questions أسئلة التمرين - </label>
+      <p style="color: orange;"> Who is the "Common Link" In this Hadith? </p>
+      <input hidden type="search" class="form-control " id="hadith-query" dir="rtl" value =" " required placeholder="مثلا: الأعمال بالنية"
         autocomplete="on" />
-      <label id="pattern-error" style="color:orange"></label>
+      <label hidden id="pattern-error" style="color:orange"></label>
     </div>
     <div class="justify-content-center mx-3 form-inline">
       <div>
         <button type="button" id="submit" class="btn btn-primary">
-          Submit بحث
+          Load عرض
         </button>
       </div>
     </div>
@@ -115,11 +147,6 @@
         <button type="button" disabled id="draw" class="btn btn-primary">
           Draw رسم
         </button>
-      <div>
-      </div>
-        <button type="button" id="download_data" class="btn btn-primary-outline">
-        Download Data <br> تحميل البيانات<i class="fa fa-download"></i>
-        </button>
       </div>
     </div>
   </form>
@@ -127,52 +154,24 @@
     <h3>Settings Form <br> صفحة الإعدادات<span class="fa fa-sliders-h"></span></h3>
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 
-
-    <div class="justify-content-center" style="margin: 10px">
-      <script>
- 
-        function handleFileSelect(evt) {
-          input_file = evt.target.files[0];
-          if (input_file){
-            new_upload = true;
-            inputType = "local";
-            document.getElementById("submit").click();
-            closeNav();
-            openSearch();
-          }
-        }
-       
-        $(document).ready(function(){
-          $("#csv-file").change(handleFileSelect);
-        });
-      </script>
-      <label> - Data البيانات - </label>
-      <input class="form-control" style="color: black" type="file" id="csv-file" name="files" accept=".csv"/>
-    </div>
-    <!--div hidden class="row justify-content-center form-inline">
-      <label for="numNarrators">- Max Narrators الحد الأقصى لعدد الرواة - </label>
-      <input type="number" class="form-control" id="numNarrators" placeholder="100" />
-    </div-->
-    <br />
     <div class="justify-content-center" style="margin: 10px">
       <label> - Links Coloring تغيير العرض - </label>
       <select id="sankey_view" class="selectpicker"  data-width="fit">
         <option selected> Group by Matn <br> تمييز المتون بالألوان </option>
         <option> Group by Sanad <br> تمييز الأسانيد بالألوان</option>
         <option> Multiple Matn Alignment <br> مقارنة المتون بالألوان </option>
-        <option> Connectivity Assessment <br> تمييز الاتصال بالألوان</option>
       </select>
     </div>
     <br>
-    <div class="row px-2 justify-content-between">
+    <div hidden class="row px-2 justify-content-between">
       Friendly colors (20 colors) <br> ألوان سهلة:
       <label class="switch">
-        <input id="distinguishableColorsSwitch" type="checkbox" />
+        <input id="distinguishableColorsSwitch" type="checkbox" checked/>
         <span class="switchSlider round"></span>
       </label>
     </div>
     <br>
-    <div class="row px-2 justify-content-between">
+    <div hidden class="row px-2 justify-content-between">
       Clear Route <br> إعادة الترتيب:
       <label class="switch">
         <input id="clearRouteSwitch" type="checkbox" />
@@ -180,15 +179,15 @@
       </label>
     </div>
     <br>
-    <div class="row px-2 justify-content-between">
+    <div hidden class="row px-2 justify-content-between">
       Day Light Theme <br> خلفية بيضاء:
       <label class="switch">
-        <input id="DayThemeSwitch" type="checkbox" />
+        <input id="DayThemeSwitch" type="checkbox" checked />
         <span class="switchSlider round"></span>
       </label>
     </div>
     <br>
-    <div class="row px-2 justify-content-between">
+    <div hidden class="row px-2 justify-content-between">
       Log Scale <br> مقياس لوغاريتمي:
       <label class="switch">
         <input id="logScaleSwitch" type="checkbox" />
@@ -196,13 +195,13 @@
       </label>
     </div>
     <br>
-    <div>
+    <div hidden >
       <button type="button" id="rotate" class="btn btn-primary">
         Rotate قلب <i class="fa fa-sync-alt"></i>
       </button>
     </div>
     <br>
-    <div class="row justify-content-center form-inline">
+    <div hidden class="row justify-content-center form-inline">
       <div class="col form-inline slidecontainer">
         <p>
           Nodes Spread تباعد الطرق<span id="demo"></span>
@@ -234,7 +233,6 @@
         <ul class="legend-labels">
           <li style="width: 65%;">Narrator Grades الجرح والتعديل</li>
           <li style="width: 5%"></li>
-          <li style="width: 30%;">Connectivity الاتصال والانقطاع</li>
         </ul>
         <ul class="legend-labels">
           <li><span style="background:#002700;"></span>صحابي</li>
@@ -249,12 +247,6 @@
           <li><span style="background:#de425b;"></span>منكر \ متروك</li>
           <li><span style="background:#a20025;"></span>كذاب</li>
           <li><span style="background:silver;"></span>مجهول \ مستور</li>
-          <!--li><span style="background:#778899;"></span>أخرى</li-->
-          <li><span ></span></li>
-          <li><span style="background:#004c6d;"></span>متصل</li>
-          <li><span style="background:#00aba9;"></span>منقطع (مكان)</li>
-          <li><span style="background:silver;"></span>منقطع (زمان)</li>
-          <li><span style="background:#d80073;"></span>منقطع</li>
         </ul>
       </div>
       <span class="tooltiptext" id="gradeTooltip">Tooltip text</span>
@@ -554,7 +546,7 @@
   <i class="fa fa-copyright"></i> 2019 <a href="https://www.linkedin.com/in/omarshafie/">Omar Shafie</a> in Doha, Qatar- All Rights
   Reserved -
 </footer>
-<div id="card" dir="rtl" class="dark-mode" style="visibility: hidden;">
+<div id="card" dir="rtl" style="visibility: hidden;">
 
   <div id="rsz">
     <div class="row pt-2 align-items-center">
