@@ -318,14 +318,14 @@
       var dense_layer_count = layers_density[layers_density.indexOf(Math.max(...layers_density))];
       var padding = parseInt(slider.value) * Math.min(node_height/2, 
                                                       Math.sqrt(dense_layer_count)*node_height);
-      var expected_lable_length = isVertical? 50:100;
+      var expected_lable_length = isVertical? 50:150;
       var verticalDistance   = isVertical? expected_lable_length*4 : padding; // between nodes
-      var horizontalDistance = isVertical? padding : (expected_lable_length*2.5); // between nodes
+      var horizontalDistance = isVertical? padding : (expected_lable_length); // between nodes
       sankey_h = dense_layer_count * node_height + (dense_layer_count-1)* verticalDistance;
       sankey_w = isVertical? Math.max(longest_sanad * verticalDistance,
                                       Math.min(screen.width, screen.height) - 80 /*menue*/ - 2*nodeWidth) :
                              Math.max(longest_sanad * horizontalDistance,
-                                      Math.max(screen.width, screen.height) - 80 /*menu*/ - 2*nodeWidth);
+                                      Math.max(screen.width, screen.height) - 80 /*menu*/ - 2*nodeWidth)
       document
         .querySelector("#screen")
         .style.setProperty(
@@ -396,6 +396,10 @@
                 getNarratorGrade(getNarratorFromName(node.innerHTML))
               );
               textIndex++;
+              if (node.getAttribute("text-anchor") !== "start") {
+                node.setAttribute("text-anchor", "start");
+                node.setAttribute("x", parseInt(node.getAttribute("x")) + 20);
+              }
             }
             if (node.tagName === "rect") {
               node.setAttribute("fill", colorNodes[rectIndex]);
@@ -466,7 +470,8 @@
       });
       chart.draw(data, options);
       closeNav();
-    }
+      document.querySelectorAll("svg")[0].setAttribute("width", parseInt(sankey_w + expected_lable_length + 2*nodeWidth) + "px");
+    }2
 
     var xOffset;
     var yOffset;
