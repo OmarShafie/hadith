@@ -392,16 +392,28 @@
         mutations.forEach(function (mutation) {
           mutation.addedNodes.forEach(function (node) {
             if (node.tagName === "text") {
-              colorNodes[textIndex] = gradeToColor(
+              node_color = gradeToColor(
                 getNarratorGrade(getNarratorFromName(node.innerHTML))
               );
+              colorNodes[textIndex] = node_color;
               textIndex++;
               if (node.getAttribute("text-anchor") !== "start") {
                 node.setAttribute("text-anchor", "start");
                 node.setAttribute("x", parseInt(node.getAttribute("x")) + 20);
               }
+              /*SVGRect = node.getBBox();
+              var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                  rect.setAttribute("x", SVGRect.x);
+                  rect.setAttribute("y", SVGRect.y);
+                  rect.setAttribute("width", SVGRect.width);
+                  rect.setAttribute("height", SVGRect.height);
+                  rect.setAttribute("rx", 15);
+                  rect.setAttribute("fill", node_color);
+                  rect.setAttribute("class", "node_lable_box");
+                  node.parentElement.insertBefore(rect, node);
+                  */
             }
-            if (node.tagName === "rect") {
+            if (node.tagName === "rect" && node.getAttribute("class") !== "node_lable_box") {
               node.setAttribute("fill", colorNodes[rectIndex]);
               rectIndex++;
             }
