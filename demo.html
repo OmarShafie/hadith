@@ -87,17 +87,47 @@
     <div class="justify-content-center" style="margin: 10px">
       <label> - Task Example التمرين - </label>
       <select id="task" class="selectpicker" onchange="load_task()">
+        <option disabled selected value> -- Select a task -- </option>
         <option> 1. Hadith Analysis استعراض الحديث</option>
         <option> 2. Matn Comparison فروق المتون</option>
         <option> 3. Paths Comparison الرفع والوقف</option>
-        <option> 4. Hadith Disorders العلل</option>
+        <option disabled> 4. Hadith Disorders العلل</option>
       </select>
+    </div>
+
+    <div class="justify-content-center autocomplete" style="margin: 10px">
+      <label for="pattern-query"> - Task Discription تفاصيل التمرين - </label>
+      <p style="color: orange;" id="task_description"></p>
+      <input hidden type="search" class="form-control " id="pattern-query" dir="rtl" required placeholder="مثلا: @محمد بن مسلم"
+        autocomplete="on" />
+    </div>
+    <div class="justify-content-center" style="margin: 10px">
+      <label for="hadith-query"> - Task Questions أسئلة التمرين - </label>
+      <p style="color: orange;" id="task_questions"> </p>
+      <input hidden type="search" class="form-control " id="hadith-query" dir="rtl" value =" " required placeholder="مثلا: الأعمال بالنية"
+        autocomplete="on" />
+      <label hidden id="pattern-error" style="color:orange"></label>
+    </div>
+    <div class="justify-content-center mx-3 form-inline">
+      <div>
+        <button type="button" id="load_task_btn" class="btn btn-primary" disabled>
+          Load Task عرض التمرين
+        </button>
+
       <script>
-        function load_task(){
+        function load_task() {
+          $("#load_task_btn").prop("disabled", false);
           var task_id = document.getElementById("task").selectedIndex;
-          load_task_data(0);
+          load_task_data(task_id);
           load_task_discription(task_id);
         }
+        $(function () {
+          $("#load_task_btn").click(function () {
+              $("#submit").click();
+          });
+        });
+        
+
         function load_task_data(task_id) {
           var dir = "https://raw.githubusercontent.com/OmarShafie/hadith/master/data/";
           input_file = dir + "demo/task0"+task_id+".csv";
@@ -110,27 +140,19 @@
           }
         }
         function load_task_discription(task_id) {
+          var tasks = [{"task_description": "In this task, you will examine the following (إنما الأعمال بالنية) hadith by visualizing the isnad tree.",
+                        "task_questions": "Who is the 'Common Link' In this Hadith?\n Where is the book sources that this hadith can be found?"},
+                        {"task_description": "In this task, you will examine the differences between the Matns of hadith (إن في المال حقا).",
+                        "task_questions": "Can you identify what is the key differences between different instances? Which is more likely to be accepted?"},
+                        {"task_description": "In this task, you will examine the differences between the Isnads of a hadith.",
+                        "task_questions": "Who is the 'Common Link' In this Hadith?\n Was this Hadith attributed to the Prophet (p.b.u.h.)"},
+                        ]
+           document.getElementById("task_description").innerHTML = tasks[task_id]["task_description"];
+           document.getElementById("task_questions").innerHTML = tasks[task_id]["task_questions"];
           return;
         }
       </script>
-    </div>
-
-    <div class="justify-content-center autocomplete" style="margin: 10px">
-      <label for="pattern-query"> - Task Discription تفاصيل التمرين - </label>
-      <p style="color: orange;"> In this task, you will examine the following hadith by visualizing the isnad tree.</p>
-      <input hidden type="search" class="form-control " id="pattern-query" dir="rtl" required placeholder="مثلا: @محمد بن مسلم"
-        autocomplete="on" />
-    </div>
-    <div class="justify-content-center" style="margin: 10px">
-      <label for="hadith-query"> - Task Questions أسئلة التمرين - </label>
-      <p style="color: orange;"> Who is the "Common Link" In this Hadith? </p>
-      <input hidden type="search" class="form-control " id="hadith-query" dir="rtl" value =" " required placeholder="مثلا: الأعمال بالنية"
-        autocomplete="on" />
-      <label hidden id="pattern-error" style="color:orange"></label>
-    </div>
-    <div class="justify-content-center mx-3 form-inline">
-      <div>
-        <button type="button" id="submit" class="btn btn-primary">
+        <button hidden type="button" id="submit" class="btn btn-primary">
           Load عرض
         </button>
       </div>
@@ -310,14 +332,14 @@
       var dense_layer_count = layers_density[layers_density.indexOf(Math.max(...layers_density))];
       var padding = parseInt(slider.value) * Math.min(node_height/2, 
                                                       Math.sqrt(dense_layer_count)*node_height);
-      var expected_lable_length = isVertical? 50:100;
+      var expected_lable_length = isVertical? 50:150;
       var verticalDistance   = isVertical? expected_lable_length*4 : padding; // between nodes
-      var horizontalDistance = isVertical? padding : (expected_lable_length*2.5); // between nodes
+      var horizontalDistance = isVertical? padding : (expected_lable_length); // between nodes
       sankey_h = dense_layer_count * node_height + (dense_layer_count-1)* verticalDistance;
       sankey_w = isVertical? Math.max(longest_sanad * verticalDistance,
                                       Math.min(screen.width, screen.height) - 80 /*menue*/ - 2*nodeWidth) :
                              Math.max(longest_sanad * horizontalDistance,
-                                      Math.max(screen.width, screen.height) - 80 /*menu*/ - 2*nodeWidth);
+                                      Math.max(screen.width, screen.height) - 80 /*menu*/ - 2*nodeWidth)
       document
         .querySelector("#screen")
         .style.setProperty(
@@ -384,12 +406,28 @@
         mutations.forEach(function (mutation) {
           mutation.addedNodes.forEach(function (node) {
             if (node.tagName === "text") {
-              colorNodes[textIndex] = gradeToColor(
+              node_color = gradeToColor(
                 getNarratorGrade(getNarratorFromName(node.innerHTML))
               );
+              colorNodes[textIndex] = node_color;
               textIndex++;
+              if (node.getAttribute("text-anchor") !== "start") {
+                node.setAttribute("text-anchor", "start");
+                node.setAttribute("x", parseInt(node.getAttribute("x")) + 20);
+              }
+              /*SVGRect = node.getBBox();
+              var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                  rect.setAttribute("x", SVGRect.x);
+                  rect.setAttribute("y", SVGRect.y);
+                  rect.setAttribute("width", SVGRect.width);
+                  rect.setAttribute("height", SVGRect.height);
+                  rect.setAttribute("rx", 15);
+                  rect.setAttribute("fill", node_color);
+                  rect.setAttribute("class", "node_lable_box");
+                  node.parentElement.insertBefore(rect, node);
+                  */
             }
-            if (node.tagName === "rect") {
+            if (node.tagName === "rect" && node.getAttribute("class") !== "node_lable_box") {
               node.setAttribute("fill", colorNodes[rectIndex]);
               rectIndex++;
             }
@@ -458,6 +496,7 @@
       });
       chart.draw(data, options);
       closeNav();
+      document.querySelectorAll("svg")[0].setAttribute("width", parseInt(sankey_w + expected_lable_length + 2*nodeWidth) + "px");
     }
 
     var xOffset;
