@@ -1,9 +1,17 @@
-# KASHAF: The Hadith Visual Search Engine الكشاف: محرك بحثي بصري لتتبع شجرة أسانيد الأحاديث النبوية
+# Hashtag 1
+## Hashtag 2
+### Hashtag 3
+#### Hashtag 4
+##### Hashtag 5
+###### Hashtag 6
 
-تتفرد نصوص الأخبار المسندة بكونها ذات شقين: السند والمتن. 
-هنا نستعرض **[الكشاف](https://dev.omarshafie.com/hadith/)**، وهو محرك بحث بصري للأحاديث النبوية يقدم تجسيداً بصرياً مرضِ وفعّال لمختلف احتياجات المستخدمين الدارسين للأحاديث النبوية، ويتيح للمستخدم دراسة أي مجموعة من الأحاديث (سواء مجموعة تخريج أو مجموعته خاصة) عن طريق أتمتة رسم شجرة والتي تمكنه من تحديد المدارات العالية والنازلة وتعيين فروقات المتن والمدار المتفرع عنها. تم عرض المحرك على أساتذة كلية الشريعة في ندوة في جامعة قطر ونشر الورقة البحثية على اليوتيوب:
-https://youtu.be/WXzXmeWEz2o?si=De57nvNXtxVD4cuM
+# KASHAF: The Hadith Visual Search Engine
+
 [![YOUTUBE_TALK_QU](https://img.youtube.com/vi/WXzXmeWEz2o/0.jpg)](https://youtu.be/WXzXmeWEz2o)
+
+### الكشاف: محرك بحثي بصري لتتبع شجرة أسانيد الأحاديث النبوية
+###### تتفرد نصوص الأخبار المسندة بكونها ذات شقين: السند والمتن. 
+###### هنا نستعرض **[الكشاف](https://dev.omarshafie.com/hadith/)**، وهو محرك بحث بصري للأحاديث النبوية يقدم تجسيداً بصرياً مرضِ وفعّال لمختلف احتياجات المستخدمين الدارسين للأحاديث النبوية، ويتيح للمستخدم دراسة أي مجموعة من الأحاديث (سواء مجموعة تخريج أو مجموعته خاصة) عن طريق أتمتة رسم شجرة والتي تمكنه من تحديد المدارات العالية والنازلة وتعيين فروقات المتن والمدار المتفرع عنها. تم عرض المحرك على أساتذة كلية الشريعة في ندوة في جامعة قطر ونشر [الورقة البحثية](https://drive.google.com/file/d/1N_oa_m_W8y8QMs4s3HNkgdh5VvHdCjp5/view) على اليوتيوب: https://youtu.be/WXzXmeWEz2o?si=De57nvNXtxVD4cuM
 
 **The Hadith** is Narration of sayings and actions of the prophet. In its classic form, a hadith has two parts — the sequence of reporting individuals who have transmitted the report (*the isnad*), and the actual sayings of the prophet/companion (*the matn*). Hadith books are collections of hadiths written in the classic forms.
 
@@ -11,6 +19,8 @@ https://youtu.be/WXzXmeWEz2o?si=De57nvNXtxVD4cuM
 The engine also allows the user to study any group of hadiths (whether a known *Takhreej* collection of hadiths or a private collection) by automating the drawing of a tree, which enables the researcher to identify common links and determine the differences in the reports branches from it. 
 
 ## The Hadith Sankey Diagram ##
+
+###### مخططات "سانكي Sanky" التي تعطي استعارة بصرية مناسبة للعديد من مهام تحليل الحديث. مخططات سانكي هي رسوم بيانية للمشجرات تجسد بصريا الروابط بين العناصر وإضافة قيمة وزنية للروابط. مخططات سانكي مناسبة لتصوير "تدفقات" نقل الرواية في شجرة الأسانيد، حيث تمثل عناصر الشجرة الرواة ، وتمثل الروابط علاقة الرواية والتلقي بين الرواة. على سبيل المثال، تجسد روابط المدخلات للعنصر روابط التلاميذ عن الراوي في الشجرة ويقابلها روابط المخرجات التي تجسد روابط الراوي عن شيوخه.
 
 ![Sankey Diagram example](https://github.com/OmarShafie/hadith/blob/master/Hadith%20Sankey.png)
 
