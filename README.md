@@ -1,13 +1,6 @@
-# Hashtag 1
-## Hashtag 2
-### Hashtag 3
-#### Hashtag 4
-##### Hashtag 5
-###### Hashtag 6
-
 # KASHAF: The Hadith Visual Search Engine
 
-[![YOUTUBE_TALK_QU](https://img.youtube.com/vi/WXzXmeWEz2o/0.jpg)](https://youtu.be/WXzXmeWEz2o)
+[![YOUTUBE_TALK_QU](https://github.com/OmarShafie/hadith/blob/master/QU.png)](https://youtu.be/WXzXmeWEz2o)
 
 ### الكشاف: محرك بحثي بصري لتتبع شجرة أسانيد الأحاديث النبوية
 ###### تتفرد نصوص الأخبار المسندة بكونها ذات شقين: السند والمتن. 
@@ -22,11 +15,33 @@ The engine also allows the user to study any group of hadiths (whether a known *
 
 ###### مخططات "سانكي Sanky" التي تعطي استعارة بصرية مناسبة للعديد من مهام تحليل الحديث. مخططات سانكي هي رسوم بيانية للمشجرات تجسد بصريا الروابط بين العناصر وإضافة قيمة وزنية للروابط. مخططات سانكي مناسبة لتصوير "تدفقات" نقل الرواية في شجرة الأسانيد، حيث تمثل عناصر الشجرة الرواة ، وتمثل الروابط علاقة الرواية والتلقي بين الرواة. على سبيل المثال، تجسد روابط المدخلات للعنصر روابط التلاميذ عن الراوي في الشجرة ويقابلها روابط المخرجات التي تجسد روابط الراوي عن شيوخه.
 
-![Sankey Diagram example](https://github.com/OmarShafie/hadith/blob/master/Hadith%20Sankey.png)
-
-## The Sanad Pattern Search ##
+![Sankey Diagram example](https://github.com/OmarShafie/hadith/blob/master/Sankey_example.png)
 
 ## The Narrator Grade Classification ##
+###### يمكن تلوين عناصر المخطط لتعكس درجات الراوي  أمام اسمه، علما أن درجات الرواة المستخرجة من كتاب تقريب التهذيب لا تغني عن النظر في تراجمهم ولا يمكن الحكم على الحديث من خلالها وحسب، إلا أنها تعد مفاتيح تذكير لبداية النظر في أحوال الرواة وللإشارة إلى أي علامة واضحة على الضعف في إحدى طرق الإسناد.
+
+![Narrator_Grades](https://github.com/OmarShafie/hadith/blob/master/Narrator_Grades.png)
+![Sankey_Narrator_Grades](https://github.com/OmarShafie/hadith/blob/master/Sankey_Narrator_Grades.png)
+
+
+## The Narrator Grade Classification ##
+###### على غرار العناصر، يمكن تلوين الروابط وتجميعها لتلبي مختلف الاستخدامات والحاجات. فعلى سبيل المثال ، في الشكل 6 ، يمكن تلوين الروابط لعرض علاقات المسارات المختلفة واستمراريتها لتوضيح اضطراب الرواة من حيث الوقف والرفع. فمثلا، بمجرد النظر يمكن للباحث معرفة أن المسار ذو اللون البني وهي رواية عبدالرحمن بن زيد (وهو ضعيف) تفردت بالرفع.
+
+![Sankey_Path_highlihgt](https://github.com/OmarShafie/hadith/blob/master/Sankey_Path_highlihgt.png)
+
+
+## Multiple Matn Alignment ##
+###### بناء مصفوفة مقارنة متعددة المتون آليا هو أحد أشكال مسألة محاذاة السلاسل المتعددة Multiple Sequence Alignment. استخدام خوارزميات البرمجة الديناميكية التقريبية Star Alignment Approximation using Dynamic Programming، والتي تعتمد مسافة التعديل وهي الحد الأدنى من التغييرات المطلوبة للانتقال من نص إلى آخر. النتيجة هي مصفوفة من الكلمات في مواقع توافقها بين المتون كما في الشكل:
+
+
+![MMA_1](https://github.com/OmarShafie/hadith/blob/master/MMA_1.png)
+###### يلي ذلك، اختيار الكلمة الأكثر شيوعا في كل موضع لتشكيل نص جديد ملفق من مجموع الروايات مع ترك فراغات للدلالة على الزيادات والتفردات، أما في باقي نصوص المقارنة يتم استبدال التوافق بالنقط للدلالة على التوافق (...) أو ( x ) للدلالة على الحذف أو الكلمة الأقل شيوعا للدلالة على المخالفة كما في الشكل
+![MMA_2](https://github.com/OmarShafie/hadith/blob/master/MMA_2.png)
+###### وأخيرا، يتم تلوين مواضع تفرد كل إسناد فرعي عن الأفرع التي تشترك معها في نفس المدار كما في الشكل
+
+![MMA_3](https://github.com/OmarShafie/hadith/blob/master/MMA_3.png)
+![MMA_4](https://github.com/OmarShafie/hadith/blob/master/MMA_4.png)
+
 
 ## Current Release Features ##
 
@@ -93,10 +108,11 @@ What I would like to be able to do with this tool?
 ### If you used this tool, please cite my thesis:
 Shafie, Omar Abdulfattah. KASHAF: A Knowledge-Graphs Approach Search-Engine for Hadith Analysis & Flow-Visualization. MS thesis. Hamad Bin Khalifa University (Qatar), 2021.
 
+```
 @mastersthesis{shafie2021kashaf,
   title={KASHAF: A Knowledge-Graphs Approach Search-Engine for Hadith Analysis \& Flow-Visualization},
   author={Shafie, Omar Abdulfattah},
   year={2021},
   school={Hamad Bin Khalifa University (Qatar)}
 }
-
+```
