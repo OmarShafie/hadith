@@ -1,8 +1,13 @@
-# The Hadith Visual Search Engine
+# KASHAF: The Hadith Visual Search Engine الكشاف: محرك بحثي بصري لتتبع شجرة أسانيد الأحاديث النبوية
 
-Welcome to **[Hadith Visual Search Engine](https://omarshafie.github.io/hadith/)**, a search engine which provides Visual analysis of *Hadith Isnad tree* (Narration routes) highlighting narrators and narrator grades. The engine also provides the ability to search for Isnad patterns.
+تتفرد نصوص الأخبار المسندة بكونها ذات شقين: السند والمتن. 
+هنا نستعرض **[الكشاف](https://dev.omarshafie.com/hadith/)**، وهو محرك بحث بصري للأحاديث النبوية يقدم تجسيداً بصرياً مرضِ وفعّال لمختلف احتياجات المستخدمين الدارسين للأحاديث النبوية، ويتيح للمستخدم دراسة أي مجموعة من الأحاديث (سواء مجموعة تخريج أو مجموعته خاصة) عن طريق أتمتة رسم شجرة والتي تمكنه من تحديد المدارات العالية والنازلة وتعيين فروقات المتن والمدار المتفرع عنها. تم عرض المحرك على أساتذة كلية الشريعة في ندوة في جامعة قطر ونشر الورقة البحثية على اليوتيوب:
+https://youtu.be/WXzXmeWEz2o?si=De57nvNXtxVD4cuM/
 
 **The Hadith** is Narration of sayings and actions of the prophet. In its classic form, a hadith has two parts — the sequence of reporting individuals who have transmitted the report (*the isnad*), and the actual sayings of the prophet/companion (*the matn*). Hadith books are collections of hadiths written in the classic forms.
+
+**[KHASHAF](https://dev.omarshafie.com/hadith/)** is a search engine which provides Visual analysis of *Hadith Isnad tree* (Narration routes) highlighting narrators and narrator grades. It attempts to provide a satisfactory and effective visual embodiment for the various needs of users studying the Prophet’s hadiths.
+The engine also allows the user to study any group of hadiths (whether a known *Takhreej* collection of hadiths or a private collection) by automating the drawing of a tree, which enables the researcher to identify common links and determine the differences in the reports branches from it. 
 
 ## The Hadith Sankey Diagram ##
 
@@ -73,3 +78,14 @@ ID | Title | Hadith Span | Asaneed (Comma separated) | Hadith XML
 
 ###### Use Case Examples ######
 What I would like to be able to do with this tool?
+
+### If you used this tool, please cite my thesis:
+Shafie, Omar Abdulfattah. KASHAF: A Knowledge-Graphs Approach Search-Engine for Hadith Analysis & Flow-Visualization. MS thesis. Hamad Bin Khalifa University (Qatar), 2021.
+
+@mastersthesis{shafie2021kashaf,
+  title={KASHAF: A Knowledge-Graphs Approach Search-Engine for Hadith Analysis \& Flow-Visualization},
+  author={Shafie, Omar Abdulfattah},
+  year={2021},
+  school={Hamad Bin Khalifa University (Qatar)}
+}
+
